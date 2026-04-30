@@ -3,12 +3,13 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
+// Same shader as the hero's AnimatedBackground — rendered once with a fixed
+// u_time so the gradient is a true static "frame" of the hero gradient.
 const fragmentShader = /* glsl */ `
 precision highp float;
 
 uniform vec2 u_resolution;
 uniform float u_time;
-uniform float u_speed;
 
 const vec3 c0 = vec3(0.024, 0.024, 0.078); // #060614 deep ink
 const vec3 c1 = vec3(0.078, 0.063, 0.275); // #141046 night royal
@@ -56,7 +57,7 @@ vec3 palette(float t){
 
 void main(){
   vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-  float t = u_time * u_speed;
+  float t = u_time;
 
   vec2 q = vec2(
     fbm(uv * 1.6 + vec2(0.0, t * 0.6)),
@@ -71,19 +72,15 @@ void main(){
   float hue = fract(f * 1.10 + t * 0.16);
   vec3 col = palette(hue);
 
-  // Specular crests — biased toward mauve/violet (no red bias)
   float crest = smoothstep(0.58, 0.95, f);
   col += crest * mix(vec3(0.10, 0.04, 0.18), vec3(0.20, 0.06, 0.22), 0.5 + 0.5 * sin(t * 0.6));
 
-  // Troughs sink toward deep ink (not pure black) — keeps shadows plummy
   float trough = 1.0 - smoothstep(0.0, 0.50, f);
   col = mix(col, c0 * 0.5, trough * 0.55);
 
-  // Radial vignette — gentler than before so corners still carry color
   float vig = smoothstep(1.15, 0.25, length(uv));
   col *= mix(0.55, 1.0, vig);
 
-  // Mild gamma lift for depth without crushing midtones
   col = pow(col, vec3(1.08));
 
   gl_FragColor = vec4(col, 1.0);
@@ -96,7 +93,13 @@ void main(){
 }
 `;
 
-export default function AnimatedBackground() {
+export default function StaticGradientBackground({
+  seed = 7.4,
+}: {
+  // Different seeds yield different "snapshots" of the same shader. Tuned to
+  // produce a composition with the mauve crest off to one side.
+  seed?: number;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -106,7 +109,7 @@ export default function AnimatedBackground() {
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: false,
-      powerPreference: "high-performance",
+      powerPreference: "low-power",
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -114,8 +117,7 @@ export default function AnimatedBackground() {
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
     const uniforms = {
-      u_time: { value: 0 },
-      u_speed: { value: 0.06 },
+      u_time: { value: seed },
       u_resolution: { value: new THREE.Vector2(1, 1) },
     };
 
@@ -135,38 +137,22 @@ export default function AnimatedBackground() {
     renderer.domElement.style.height = "100%";
     renderer.domElement.style.display = "block";
 
-    const resize = () => {
+    const render = () => {
       const { clientWidth: w, clientHeight: h } = container;
       renderer.setSize(w, h, false);
       const dpr = renderer.getPixelRatio();
       uniforms.u_resolution.value.set(w * dpr, h * dpr);
-    };
-    resize();
-
-    const ro = new ResizeObserver(resize);
-    ro.observe(container);
-
-    const start = performance.now();
-    let raf = 0;
-    let visible = true;
-
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
-      if (!visible) return;
-      uniforms.u_time.value = (performance.now() - start) / 1000;
       renderer.render(scene, camera);
     };
-    tick();
+    render();
 
-    const onVisibility = () => {
-      visible = document.visibilityState === "visible";
-    };
-    document.addEventListener("visibilitychange", onVisibility);
+    // Re-render only when the container resizes — the gradient stays static
+    // otherwise (no animation loop).
+    const ro = new ResizeObserver(render);
+    ro.observe(container);
 
     return () => {
-      cancelAnimationFrame(raf);
       ro.disconnect();
-      document.removeEventListener("visibilitychange", onVisibility);
       mesh.geometry.dispose();
       material.dispose();
       renderer.dispose();
@@ -174,7 +160,7 @@ export default function AnimatedBackground() {
         container.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [seed]);
 
   return <div ref={containerRef} className="absolute inset-0" />;
 }

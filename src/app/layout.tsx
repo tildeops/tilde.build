@@ -1,70 +1,49 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
-import { Poppins, Inter, Cormorant_Garamond } from "next/font/google";
-import AnimatedBackground from "@/components/AnimatedBackground";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
-});
-const satoshi = localFont({
-  src: "./fonts/Satoshi-Regular.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-const power = localFont({
-  src: "./fonts/PowerGrotesk-Regular.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
   display: "swap",
 });
 
-const poppins = Poppins({
-  subsets: ["latin"],
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
   display: "swap",
-  variable: "--font-poppins",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  display: "swap",
   variable: "--font-cormorant",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
-const garet = localFont({
-  src: "./fonts/Garet-Book.woff",
-  variable: "--font-garet",
-  weight: "100 900",
-});
-
-export const metadata = {
-  title: "Tilde - Crafting Digital Experiences",
+export const metadata: Metadata = {
+  title: "Tilde — approximate to precise",
   description:
-    "Tilde is a cutting-edge software development studio specializing in Web2, Web3, App Development, Data Analytics, and UI/UX design. We deliver pixel-perfect, high-performance solutions tailored to elevate your business.",
+    "Tilde is a three-person software studio. We design and build headless Shopify storefronts, custom ecommerce, bots, and SaaS — fast, because we're small.",
   keywords: [
     "Tilde",
-    "Software Development Studio",
-    "Web Development",
-    "Web3 Solutions",
-    "App Development",
-    "UI/UX Design",
-    "Data Analytics",
-    "Custom Software Solutions",
-    "Innovative Technology",
-    "Pixel-Perfect Design",
+    "software studio",
+    "headless Shopify",
+    "custom ecommerce",
+    "WhatsApp bot",
+    "Telegram bot",
+    "SaaS development",
+    "Next.js",
+    "design engineering",
   ],
   openGraph: {
-    title: "Tilde - Crafting Digital Experiences",
+    title: "Tilde — approximate to precise",
     description:
-      "Elevate your business with Tilde, a software studio delivering state-of-the-art Web2, Web3, and app solutions.",
+      "A three-person studio that designs and ships software. Headless Shopify, custom ecommerce, bots, SaaS.",
     url: "https://tilde.build",
     siteName: "Tilde",
     images: [
@@ -72,7 +51,7 @@ export const metadata = {
         url: "https://tilde.build/meta/tildeCard.png",
         width: 1200,
         height: 630,
-        alt: "Tilde - Crafting Digital Experiences",
+        alt: "Tilde",
       },
     ],
     locale: "en_US",
@@ -82,28 +61,26 @@ export const metadata = {
     card: "summary_large_image",
     site: "@TildeStudio",
     creator: "@TildeStudio",
-    title: "Tilde - Crafting Digital Experiences",
+    title: "Tilde — approximate to precise",
     description:
-      "Pixel-perfect software solutions for Web2, Web3, apps, and data analytics.",
-    images: ["https://tilde.build/tildeCard.png"],
+      "A three-person studio. Design and engineering, in the same conversation.",
+    images: ["https://tilde.build/meta/tildeCard.png"],
   },
-  themeColor: "#0a0a0a",
+};
+
+export const viewport = {
+  themeColor: "#05060a",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${power.variable} ${power.className} ${satoshi.variable} ${poppins.variable} ${inter.variable} ${cormorant.variable} ${garet.variable} antialiased relative w-full h-full`}
-      >
-        <AnimatedBackground />
-        <div className="grainOverlay" />
-        {children}
-      </body>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable}`}
+    >
+      <body className="font-sans bg-bg text-fg antialiased">{children}</body>
     </html>
   );
 }
