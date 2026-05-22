@@ -1,0 +1,257 @@
+<h2>Editorial direction, dark blue palette — content to pick from</h2>
+<p class="subtitle">Six hero treatments in Direction A (Cormorant + Inter) on a black/deep-blue palette. Click any you like — multi-select is on. You can mix: "headline from 3, eyebrow from 5, sub from 1", etc.</p>
+
+<style>
+  .hero-grid { display: grid; gap: 22px; margin-top: 8px; }
+  .h-card {
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #05080f;
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease;
+    position: relative;
+  }
+  .h-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.25); }
+  .h-card.selected { border-color: #60a5fa; box-shadow: 0 0 0 2px rgba(96,165,250,.35); }
+
+  .h-hero {
+    position: relative;
+    aspect-ratio: 16 / 7;
+    overflow: hidden;
+  }
+
+  /* Palette variants — all deep blue / black, no purple */
+  .pal-1 { background:
+    radial-gradient(820px 440px at 75% 55%, rgba(30, 80, 200, .55), transparent 62%),
+    radial-gradient(540px 480px at 90% 65%, rgba(10, 30, 90, .7), transparent 72%),
+    linear-gradient(180deg, #02030a 0%, #050a18 100%); }
+  .pal-2 { background:
+    radial-gradient(700px 500px at 82% 48%, rgba(20, 60, 160, .5), transparent 60%),
+    radial-gradient(500px 380px at 70% 80%, rgba(5, 15, 60, .9), transparent 70%),
+    linear-gradient(180deg, #01020a 0%, #03060f 100%); }
+  .pal-3 { background:
+    radial-gradient(900px 500px at 78% 60%, rgba(40, 100, 220, .45), transparent 65%),
+    linear-gradient(180deg, #03050e 0%, #06101e 100%); }
+
+  .h-hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/></svg>");
+    opacity: .14; mix-blend-mode: overlay; pointer-events: none;
+  }
+
+  .ascii {
+    position: absolute;
+    right: -1%;
+    top: 6%;
+    width: 54%;
+    height: 90%;
+    font-family: ui-monospace, monospace;
+    font-size: 9px;
+    line-height: 9px;
+    color: rgba(180, 210, 255, .55);
+    white-space: pre;
+    filter: blur(.3px);
+    mask-image: radial-gradient(70% 70% at 45% 50%, #000 55%, transparent 100%);
+    -webkit-mask-image: radial-gradient(70% 70% at 45% 50%, #000 55%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .content {
+    position: absolute; left: 40px; top: 50%; transform: translateY(-50%);
+    max-width: 56%; color: #fff;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 999px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    font-size: 11px; letter-spacing: .02em; color: rgba(255,255,255,.8);
+    margin-bottom: 18px;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: #60a5fa; }
+
+  .headline {
+    font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+    font-weight: 500; font-size: 52px; line-height: 1.02; letter-spacing: -.005em;
+    margin: 0 0 14px;
+  }
+  .headline em { font-style: italic; color: rgba(255,255,255,.78); }
+  .sub { margin: 0 0 22px; color: rgba(255,255,255,.62); font-size: 14px; line-height: 1.55; max-width: 30em; }
+  .cta {
+    display: inline-flex; gap: 10px; align-items: center;
+    padding: 10px 18px; border-radius: 999px;
+    background: #fff; color: #0a0a0b; font-weight: 500; font-size: 13px;
+  }
+  .cta.ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.2); }
+  .ctas { display: flex; gap: 10px; }
+
+  .meta {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center;
+    padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.08);
+    color: rgba(255,255,255,.55); font-size: 11.5px;
+  }
+  .meta .id { color: #60a5fa; font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: .04em; }
+  .meta .angle { color: rgba(255,255,255,.7); }
+  .meta .pick { font-size: 10px; color: rgba(255,255,255,.4); letter-spacing: .06em; text-transform: uppercase; }
+</style>
+
+<div class="hero-grid" data-multiselect>
+
+  <!-- 1 — Poetic / philosophical -->
+  <div class="h-card" data-choice="hero-1" onclick="toggleSelect(this)">
+    <div class="h-hero pal-1">
+      <div class="ascii">
+░░▒▒▓▓██▓▓▒░░· · ·  ∙  ∙  ∙
+▒▒▓▓███▓▓▒░ ·∙·∙  ~  ∙·∙·
+▓▓███▓▓▒░░·∙≈≈~≈∙·∙·∙
+████▓▓▒░·∙~≈≈≈~∙·∙·∙·
+▓▓▓▒▒░·∙·≈·∙·∙·∙·∙·∙
+▒▒░·∙·∙·∙·∙·∙·∙·∙·∙·∙
+░·∙·∙·∙·∙·∙·∙·∙·∙·∙·∙
+      </div>
+      <div class="content">
+        <span class="eyebrow"><span class="dot"></span>A studio for software that almost shipped</span>
+        <h1 class="headline">Your product is <em>close</em>.<br/>We close the gap.</h1>
+        <p class="sub">Tilde designs and builds the software that moves approximate ideas into precise, shipping products.</p>
+        <div class="ctas">
+          <a class="cta">Start a project →</a>
+          <a class="cta ghost">See our work</a>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id">hero-1</span><span class="angle">Poetic · calm · approximation as craft</span><span class="pick">click to pick</span></div>
+  </div>
+
+  <!-- 2 — Problem-first / founder pain -->
+  <div class="h-card" data-choice="hero-2" onclick="toggleSelect(this)">
+    <div class="h-hero pal-2">
+      <div class="ascii">
+· · · · · · · · · · · · · · ·
+· ░ ░ ▒ ▒ ▒ ░ ░ · · · · · ·
+░ ▒ ▓ ▓ █ ▓ ▓ ▒ ░ · · · ·
+▒ ▓ █ █ █ █ ▓ ▒ ░ · · ·
+▒ ▓ █ █ █ █ ▓ ▒ ░ · · ·
+░ ▒ ▓ ▓ █ ▓ ▒ ░ · · · ·
+· ░ ▒ ▒ ▓ ▒ ░ · · · · ·
+· · ░ ░ ▒ ░ ░ · · · · · ·
+      </div>
+      <div class="content">
+        <span class="eyebrow"><span class="dot"></span>For founders stuck in 'almost shipping'</span>
+        <h1 class="headline">You've been <em>almost done</em><br/>for six months.</h1>
+        <p class="sub">Fragmented stack. Missing attribution. Design in Figma that never makes it to production. Tilde is the small team that finishes it.</p>
+        <div class="ctas">
+          <a class="cta">Tell us what's stuck →</a>
+          <a class="cta ghost">How we work</a>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id">hero-2</span><span class="angle">Direct · names the pain · confrontational</span><span class="pick">click to pick</span></div>
+  </div>
+
+  <!-- 3 — Tilde-as-symbol, mathematical -->
+  <div class="h-card" data-choice="hero-3" onclick="toggleSelect(this)">
+    <div class="h-hero pal-3">
+      <div class="ascii">
+∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙
+∙  ∙  ~  ~  ~  ~  ~  ∙  ∙
+~ ∙ ≈ ≈ ≈ ≈ ≈ ≈ ≈ ∙ ∙
+~   ▒▒▒▓▓▓▓▓▓▒▒▒   ~
+≈  ▒▓██████████▓▒  ≈
+≈   ▒▓████████▓▒   ≈
+~    ▒▓▓▓▓▓▓▓▒    ~
+∙ ∙ ~ ~ ~ ~ ~ ~ ∙ ∙ ∙
+      </div>
+      <div class="content">
+        <span class="eyebrow"><span class="dot"></span>Tilde — the approximation symbol</span>
+        <h1 class="headline">~ means <em>approximately</em>.<br/>We make it exact.</h1>
+        <p class="sub">A design and engineering studio for founders who have a shape of an idea and need it shipped as real, scaling software.</p>
+        <div class="ctas">
+          <a class="cta">Start a project →</a>
+          <a class="cta ghost">Our services</a>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id">hero-3</span><span class="angle">Leans into the brand symbol · math-y</span><span class="pick">click to pick</span></div>
+  </div>
+
+  <!-- 4 — Balance & precision -->
+  <div class="h-card" data-choice="hero-4" onclick="toggleSelect(this)">
+    <div class="h-hero pal-1">
+      <div class="ascii">
+· · · · · · · · · · · · · · ·
+· · · ░ ░ ▒ ▒ ░ ░ · · · · ·
+· ░ ▒ ▓ ▓ █ ▓ ▓ ▒ ░ · · ·
+░ ▒ ▓ █ █ █ █ ▓ ▒ ░ · ·
+▒ ▓ █ █ █ █ █ █ ▓ ▒ ·
+░ ▒ ▓ █ █ █ █ ▓ ▒ ░ ·
+· ░ ▒ ▓ ▓ ▓ ▒ ░ · · ·
+· · · ░ ▒ ▒ ░ · · · · · ·
+      </div>
+      <div class="content">
+        <span class="eyebrow"><span class="dot"></span>Design + Engineering, in balance</span>
+        <h1 class="headline">The balance<br/>your product needs.</h1>
+        <p class="sub">Two engineers. One designer. A small team that ships quickly because design and engineering are never debating across a table — they're the same conversation.</p>
+        <div class="ctas">
+          <a class="cta">Start a project →</a>
+          <a class="cta ghost">Meet the team</a>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id">hero-4</span><span class="angle">Brand-story · team as the proof</span><span class="pick">click to pick</span></div>
+  </div>
+
+  <!-- 5 — Shopify / commerce flavored -->
+  <div class="h-card" data-choice="hero-5" onclick="toggleSelect(this)">
+    <div class="h-hero pal-2">
+      <div class="ascii">
+░▒▓██████▓▒░ · · · · · · ·
+▒▓████████▓▒ · · · · · ·
+▓██████████▓ · · · · · ·
+▓██████████▓ · · · · · ·
+▒▓████████▓▒ · · · · · ·
+░▒▓██████▓▒░ · · · · · ·
+· ░▒▓▓▓▓▒░ · · · · · · ·
+· · · · · · · · · · · · ·
+      </div>
+      <div class="content">
+        <span class="eyebrow"><span class="dot"></span>Headless Shopify · Custom ecommerce · Bots</span>
+        <h1 class="headline">Your store is <em>fast</em>.<br/>The data shouldn't be the slow part.</h1>
+        <p class="sub">Next.js-hosted frontends, pixel and GA4 wired up, PostHog replays, and a custom attribution dashboard for the parts Shopify doesn't show you.</p>
+        <div class="ctas">
+          <a class="cta">Book a walkthrough →</a>
+          <a class="cta ghost">See the dashboard</a>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id">hero-5</span><span class="angle">Lead with the flagship product</span><span class="pick">click to pick</span></div>
+  </div>
+
+  <!-- 6 — Quiet confidence / small team brag -->
+  <div class="h-card" data-choice="hero-6" onclick="toggleSelect(this)">
+    <div class="h-hero pal-3">
+      <div class="ascii">
+∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙ ∙
+∙ ∙ ░ ░ ▒ ▒ ░ ░ ∙ ∙ ∙ ∙
+∙ ░ ▒ ▓ ▓ ▓ ▒ ░ ∙ ∙ ∙ ∙
+░ ▒ ▓ █ █ ▓ ▒ ░ ∙ ∙ ∙ ∙
+░ ▒ ▓ █ █ ▓ ▒ ░ ∙ ∙ ∙ ∙
+∙ ░ ▒ ▓ ▓ ▒ ░ ∙ ∙ ∙ ∙ ∙
+∙ ∙ ░ ░ ▒ ░ ∙ ∙ ∙ ∙ ∙ ∙
+      </div>
+      <div class="content">
+        <span class="eyebrow"><span class="dot"></span>Two engineers · One designer · Zero filler</span>
+        <h1 class="headline">Small team.<br/><em>Uncomfortably</em> fast.</h1>
+        <p class="sub">We skip the layers that slow agencies down. You talk directly to the people writing the code and drawing the screens. Ship in weeks, not quarters.</p>
+        <div class="ctas">
+          <a class="cta">Start a project →</a>
+          <a class="cta ghost">See recent work</a>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><span class="id">hero-6</span><span class="angle">Speed as the benefit · team as the reason</span><span class="pick">click to pick</span></div>
+  </div>
+
+</div>
