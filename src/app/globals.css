@@ -1,125 +1,291 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
-  :root {
-    --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
-    --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-    --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+/* Tailwind v4: enable `dark:` variant tied to <html data-mode="dark"> */
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
-    --color-bg: #05060a;
-    --color-fg: #f5f5f7;
-    --color-muted: #8a8a94;
-    --color-accent: #3b82f6;
-    --color-glow: #0b2a6b;
-    --color-divider: 255 255 255;
-  }
+@theme {
+  --color-bg: #faf6f1;
+  --color-bg-elevated: #f5efe7;
+  --color-ink: #171413;
+  --color-ink-muted: #6b6360;
+  --color-accent: #3a1480;
+  --color-accent-soft: #ede9fe;
+  --color-accent-hover: #2d0f6e;
+  --color-accent-deep: #1e0840;
+  --color-accent-bright: #6d28d9;
+  --color-accent-glow: #a78bfa;
+  --color-rule: #e3dbd3;
+  /* Always-light foreground for use ON accent surfaces (mode-invariant) */
+  --color-on-accent: #faf6f1;
+  /* Always-dark foreground for use ON the always-light surfaces (mode-invariant) */
+  --color-on-light: #171413;
 
-  html {
-    background: var(--color-bg);
-    color: var(--color-fg);
-    color-scheme: dark;
-  }
+  --font-display: var(--font-cormorant), "Iowan Old Style",
+    "Apple Garamond", Baskerville, "Times New Roman", serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular,
+    monospace;
 
-  body {
-    background: var(--color-bg);
-    color: var(--color-fg);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
+  --container-content: 1240px;
 
-  ::selection {
-    background: var(--color-accent);
-    color: var(--color-bg);
-  }
+  /* Accordion timings — defined as theme tokens so Tailwind v4 generates
+     the `animate-accordion-*` utilities at the right duration/easing. */
+  --animate-accordion-down: accordion-down 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-accordion-up: accordion-up 720ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-@layer utilities {
-  /* Dot ornament animation — radial breathing wave.
-     Drives both "on" (pattern) dots and "off" (background) dots; per-circle
-     animationDelay, --dot-min, --dot-max are set inline. */
-  .dot-twinkle {
-    animation: dot-twinkle 4.2s ease-in-out infinite;
-  }
-
-  .ornament-spin {
-    animation: ornament-spin 32s linear infinite;
-    transform-origin: 50% 50%;
-    transform-box: fill-box;
-  }
-
-  .ornament-drift {
-    animation: ornament-drift 7s ease-in-out infinite;
-    transform-origin: 50% 50%;
-    transform-box: fill-box;
-  }
+/* Accent palette — switch via <html data-theme="..."> (driven by src/lib/theme.ts) */
+:root,
+[data-theme="purple"] {
+  --color-accent: #3a1480;
+  --color-accent-soft: #ede9fe;
+  --color-accent-hover: #2d0f6e;
+  --color-accent-deep: #1e0840;
+  --color-accent-bright: #6d28d9;
+  --color-accent-glow: #a78bfa;
+  --accent-rgb: 58 20 128;
+  --shimmer-mid: #8b5cf6;
+}
+[data-theme="red"] {
+  --color-accent: #6e1423;
+  --color-accent-soft: #f1dde0;
+  --color-accent-hover: #5a0f1c;
+  --color-accent-deep: #4a0e1a;
+  --color-accent-bright: #9e329a;
+  --color-accent-glow: #c26dc2;
+  --accent-rgb: 110 20 35;
+  --shimmer-mid: #a92847;
 }
 
-@keyframes dot-twinkle {
-  0%,
+/* Light/dark mode — switch via <html data-mode="..."> */
+:root {
+  color-scheme: light;
+}
+[data-mode="dark"] {
+  color-scheme: dark;
+  --color-bg: #000000;
+  --color-bg-elevated: #0a0a0a;
+  --color-ink: #f5efe7;
+  --color-ink-muted: #9a8f88;
+  --color-rule: #1c1a19;
+  /* Soften the pale accent-tint to a low-alpha glow in dark mode */
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 22%, #000);
+}
+[data-mode="dark"][data-theme="purple"] {
+  --color-accent-hover: #4a1aa0;
+}
+[data-mode="dark"][data-theme="red"] {
+  --color-accent-hover: #8a1c33;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+/* Hide scrollbar in horizontal logo strip */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Subtle film grain on body for warmth (override per-page via --page-grain) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: var(--page-grain, 0.025);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================ */
+/* Page-scoped theme: Bridge-style (cool white + electric blue) */
+/* Triggered when a descendant carries data-page-theme="bridge" */
+/* ============================================================ */
+html:has([data-page-theme="bridge"]) {
+  --color-bg: #ffffff;
+  --color-bg-elevated: #f5f6f8;
+  --color-ink: #0b0c0e;
+  --color-ink-muted: #6e7681;
+  --color-rule: #e6e8ec;
+  --color-accent: #155DFC;
+  --color-accent-soft: #e0eaff;
+  --color-accent-hover: #0f47cc;
+  --color-accent-deep: #0a2f8a;
+  --color-accent-bright: #3b82f6;
+  --color-accent-glow: #93b5ff;
+  --color-on-accent: #ffffff;
+  --accent-rgb: 21 93 252;
+  --shimmer-mid: #3b82f6;
+  --font-display: var(--font-inter), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --page-grain: 0;
+}
+/* Dot grid overlay for the bridge page — replaces film grain with techy texture */
+[data-page-theme="bridge"] {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(11, 12, 14, 0.06) 1px,
+    transparent 0
+  );
+  background-size: 24px 24px;
+}
+
+/* Force LIGHT color-scheme on bridge pages regardless of system / user dark mode. */
+html:has([data-page-theme="bridge"]) {
+  color-scheme: light;
+}
+
+/* Lenis owns smooth scroll; we keep scroll-padding-top for anchor offset */
+html {
+  scroll-padding-top: 80px;
+}
+
+html.lenis {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Shimmer text — animated gradient sweep used on accent phrases & eyebrows */
+.shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--color-accent) 0%,
+    var(--shimmer-mid) 50%,
+    var(--color-accent) 100%
+  );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-sweep 8s linear infinite;
+}
+@keyframes shimmer-sweep {
+  0% {
+    background-position: 220% 0;
+  }
   100% {
-    opacity: var(--dot-min, 0.18);
-  }
-  50% {
-    opacity: var(--dot-max, 0.45);
+    background-position: -120% 0;
   }
 }
 
-@keyframes ornament-spin {
-  to {
+/* Holographic shimmer — slow conic-gradient rotation for tile chrome */
+@keyframes tile-shimmer {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
 }
-
-@keyframes ornament-drift {
-  0%,
-  100% {
-    transform: rotate(-6deg);
+/* Diagonal flash sweep — bright streak that travels across a card.
+   Fades in at the start of the sweep and fades out at the end so the
+   reset back to the starting position is invisible (no jarring jump). */
+@keyframes flash-diagonal {
+  0% {
+    transform: translateX(-120%) skewX(-22deg);
+    opacity: 0;
   }
-  50% {
-    transform: rotate(6deg);
+  12% {
+    transform: translateX(-80%) skewX(-22deg);
+    opacity: 1;
+  }
+  48% {
+    transform: translateX(220%) skewX(-22deg);
+    opacity: 1;
+  }
+  58%,
+  100% {
+    transform: translateX(260%) skewX(-22deg);
+    opacity: 0;
   }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  .ornament-spin,
-  .ornament-drift,
-  .dot-twinkle {
+  [style*="tile-shimmer"],
+  [style*="flash-diagonal"] {
     animation: none !important;
   }
 }
 
-@layer utilities {
-  .mask-fade-left {
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent 0%,
-      #000 35%,
-      #000 100%
-    );
-    mask-image: linear-gradient(
-      to right,
-      transparent 0%,
-      #000 35%,
-      #000 100%
-    );
-  }
+/* Subtle gloss for solid accent surfaces */
+.gloss-inset {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+}
 
-  .noise {
-    position: relative;
-    isolation: isolate;
+/* Accordion — smooth height + fade for Radix Accordion */
+@keyframes accordion-down {
+  from {
+    height: 0;
+    opacity: 0;
   }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+/* Bulletproof fallback in case the Tailwind v4 utility resolution doesn't pick
+   the theme token (specificity bumped via !important so nothing overrides it). */
+.animate-accordion-down {
+  animation: accordion-down 900ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+.animate-accordion-up {
+  animation: accordion-up 720ms cubic-bezier(0.32, 0.72, 0, 1) !important;
+}
 
-  .noise::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.08;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/></svg>");
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none;
+    background-position: 0 0;
   }
+  .animate-accordion-down,
+  .animate-accordion-up {
+    animation-duration: 1ms;
+  }
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
 }

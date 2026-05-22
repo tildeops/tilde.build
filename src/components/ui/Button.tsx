@@ -1,59 +1,54 @@
-import Link from "next/link";
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight } from "lucide-react";
 
-type Variant = "primary" | "ghost";
+const buttonVariants = cva(
+  // Base: relative + isolate + overflow-hidden for the fill-wipe pseudo.
+  // before is the sliding underlay; we hide it offscreen and slide in on hover.
+  "group/btn relative isolate overflow-hidden inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:relative [&_svg]:z-[1] before:content-[''] before:absolute before:inset-0 before:-z-10 before:-translate-x-[101%] before:transition-transform before:duration-[600ms] before:ease-[cubic-bezier(0.22,1,0.36,1)] hover:before:translate-x-0 motion-reduce:before:transition-none motion-reduce:before:translate-x-0 motion-reduce:before:opacity-0",
+  {
+    variants: {
+      variant: {
+        primary:
+          "bg-accent text-on-accent gloss-inset shadow-[0_6px_20px_-8px_rgb(var(--accent-rgb)/0.5)] before:bg-accent-deep",
+        secondary:
+          "bg-bg-elevated text-ink border border-rule hover:border-ink/30 before:bg-ink/[0.06]",
+        ghost:
+          "text-ink before:bg-bg-elevated",
+        link:
+          "text-accent underline-offset-4 hover:underline rounded-none px-0 before:hidden",
+        invert:
+          "bg-on-accent text-on-light before:bg-on-light/10",
+      },
+      size: {
+        sm: "h-9 px-4",
+        md: "h-11 px-5",
+        lg: "h-12 px-6 text-[15px]",
+      },
+    },
+    defaultVariants: { variant: "primary", size: "md" },
+  }
+);
 
-type Props = {
-  href?: string;
-  variant?: Variant;
-  className?: string;
-  children: React.ReactNode;
-  arrow?: boolean;
-  external?: boolean;
-};
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+}
 
-const base =
-  "inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
-
-const variants: Record<Variant, string> = {
-  primary: "bg-fg text-bg hover:bg-fg/90",
-  ghost:
-    "border border-white/[0.08] bg-white/[0.02] text-fg/90 hover:bg-white/[0.06] hover:border-white/[0.18]",
-};
-
-export function Button({
-  href,
-  variant = "primary",
-  className,
-  children,
-  arrow = false,
-  external = false,
-}: Props) {
-  const content = (
-    <>
-      {children}
-      {arrow && <ArrowUpRight className="h-4 w-4" aria-hidden />}
-    </>
-  );
-
-  if (href) {
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
     return (
-      <Link
-        href={href}
-        className={cn(base, variants[variant], className)}
-        {...(external
-          ? { target: "_blank", rel: "noopener noreferrer" }
-          : {})}
-      >
-        {content}
-      </Link>
+      <Comp
+        className={cn(buttonVariants({ variant, size }), className)}
+        ref={ref}
+        {...props}
+      />
     );
   }
+);
+Button.displayName = "Button";
 
-  return (
-    <button className={cn(base, variants[variant], className)}>
-      {content}
-    </button>
-  );
-}
+export { buttonVariants };

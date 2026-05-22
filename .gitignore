@@ -28,16 +28,18 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
 
+# local dev screenshots
+.screenshots/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# superpowers brainstorm session data
-.superpowers/
