@@ -93,3 +93,5 @@ Defined in `src/app/globals.css` `@theme {}`:
 | `accent-soft` | `#F1DDE0` |
 | `accent-hover` | `#5A0F1C` |
 | `rule` | `#E3DBD3` hairline |
+
+redeploy 1
