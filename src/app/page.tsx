@@ -1,31 +1,31 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Hero } from "@/components/sections/Hero";
-import { PainPoints } from "@/components/sections/PainPoints";
-import { Offerings } from "@/components/sections/Offerings";
-import { Collaboration } from "@/components/sections/Collaboration";
-import { Pricing } from "@/components/sections/Pricing";
-import { Team } from "@/components/sections/Team";
-import { FocusSpeciality } from "@/components/sections/FocusSpeciality";
-import { FAQ } from "@/components/sections/FAQ";
-import { Contact } from "@/components/sections/Contact";
+import { OrganizationLd, ServiceLd, FAQLd } from "@/components/seo/json-ld";
+import { Hero } from "@/components/sections/hero";
+import { PainPoints } from "@/components/sections/pain-points";
+import { Offerings } from "@/components/sections/offerings";
+import { Pricing } from "@/components/sections/pricing";
+import { Process } from "@/components/sections/process";
+import { TechStack } from "@/components/sections/tech-stack";
+import { Testimonials } from "@/components/sections/testimonials";
+import { About } from "@/components/sections/about";
+import { FAQ } from "@/components/sections/faq";
+import { FinalCTA } from "@/components/sections/final-cta";
 
 export default function Home() {
   return (
     <>
-      <Header />
-      <main>
-        <Hero />
-        <PainPoints />
-        <Offerings />
-        <Collaboration />
-        <Pricing />
-        <Team />
-        <FocusSpeciality />
-        <FAQ />
-        <Contact />
-      </main>
-      <Footer />
+      <OrganizationLd />
+      <ServiceLd />
+      <FAQLd />
+      <Hero />
+      <PainPoints />
+      <Offerings />
+      <Pricing />
+      <Process />
+      <TechStack />
+      <Testimonials />
+      <About />
+      <FAQ />
+      <FinalCTA />
     </>
   );
 }

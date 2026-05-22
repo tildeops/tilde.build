@@ -1,591 +1,759 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
-  type MotionValue,
-} from "framer-motion";
-import { Button } from "@/components/ui/Button";
-import { HeroBackgroundClient } from "@/components/HeroBackgroundClient";
-import { site } from "@/content/site";
-
-type Item = (typeof site.offerings.items)[number];
-
-const SPRING = { stiffness: 140, damping: 28, mass: 0.55 } as const;
-const ACTIVE_VW = 40;
-const COLLAPSED_VW = 8; // wide enough that the 56px ornament + side margins fit
-const CTA_VW = 100;
-const NAVBAR_OFFSET = 88; // px — clears the floating nav chip
-
-// Per-card top-spotlight tints. Desaturated, very low alpha — atmospheric, not
-// graphic. Each card gets a distinct hue so the four reads as a quartet.
-const VARIANT_GLOWS = [
-  "rgba(59, 130, 246, 0.13)",  // 0 — cool blue
-  "rgba(139, 92, 246, 0.10)",  // 1 — violet
-  "rgba(217, 119, 87, 0.09)",  // 2 — warm ember
-  "rgba(45, 212, 191, 0.08)",  // 3 — pale teal
-] as const;
-
-const PILL_CLASS =
-  "inline-flex items-center rounded-full border border-white/[0.10] " +
-  "bg-gradient-to-b from-white/[0.09] to-white/[0.025] backdrop-blur-md " +
-  "shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_1px_2px_rgba(0,0,0,0.35)] " +
-  "px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-fg/85 " +
-  "whitespace-nowrap transition-colors duration-300 " +
-  "hover:from-white/[0.13] hover:to-white/[0.04] hover:text-fg/95";
-
-const SECTION_MESH =
-  "radial-gradient(70% 55% at 8% 12%, rgba(11,42,107,0.28) 0%, transparent 55%)," +
-  "radial-gradient(55% 45% at 92% 95%, rgba(120,82,170,0.10) 0%, transparent 60%)," +
-  "radial-gradient(40% 60% at 50% 110%, rgba(217,119,87,0.06) 0%, transparent 70%)";
+  Check,
+  ArrowRight,
+  Plus,
+  Mic,
+  Search,
+  SquarePen,
+  Smile,
+} from "lucide-react";
+import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
+import { RevealLines } from "@/components/motion/reveal-lines";
+import { FadeUp } from "@/components/motion/fade-up";
+import { CountUp } from "@/components/motion/count-up";
+import { offerings } from "@/lib/content";
+import { cn } from "@/lib/utils";
 
 export function Offerings() {
-  const o = site.offerings;
-  const items = o.items;
-  const N = items.length;
-  const stages = N;
-
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
-
   return (
-    <>
-      {/* Desktop: pinned column-collapse. Slightly shorter than v2 so the
-          section doesn't overstay its welcome. */}
-      <section
-        ref={ref}
-        id="offerings"
-        className="relative hidden lg:block"
-        style={{ height: `${stages * 100 + 50}vh` /* 450vh @ N=4 */ }}
-      >
-        <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden bg-bg">
-          {/* Premium gradient mesh — atmospheric depth, not saturated color. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 -z-10"
-            style={{ background: SECTION_MESH }}
-          />
-          <div
-            aria-hidden
-            className="noise pointer-events-none absolute inset-0 -z-10"
-          />
-
-          <div aria-hidden className="shrink-0" style={{ height: NAVBAR_OFFSET }} />
-
-          <SectionHeader eyebrow={o.eyebrow} count={N} />
-
-          <div
-            className="flex min-h-0 flex-1 flex-row"
-            style={{ width: "max-content" }}
-          >
-            {items.map((item, i) => (
-              <ServiceColumn
-                key={item.id}
-                item={item}
-                index={i}
-                total={N}
-                progress={scrollYProgress}
-                stages={stages}
-              />
-            ))}
-            <CTAColumn cta={o.cta} progress={scrollYProgress} stages={stages} />
-          </div>
-        </div>
-      </section>
-
-      {/* Mobile fallback */}
-      <section id="offerings-mobile" className="relative overflow-hidden bg-bg lg:hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10"
-          style={{ background: SECTION_MESH }}
-        />
-        <div
-          aria-hidden
-          className="noise pointer-events-none absolute inset-0 -z-10"
-        />
-        <div className="border-t border-divider/[0.06]">
-          {items.map((item, i) => (
-            <MobileCard key={item.id} item={item} index={i} total={N} />
-          ))}
-          <MobileCTA cta={o.cta} />
-        </div>
-      </section>
-    </>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Section header — editorial, hero-like                                       */
-/* -------------------------------------------------------------------------- */
-
-function SectionHeader({ eyebrow, count }: { eyebrow: string; count: number }) {
-  return (
-    <header className="relative shrink-0 px-8 py-10 lg:px-12 lg:py-14">
-      {/* Mask-faded hairlines — gradient borders that breathe instead of
-          slicing the section in two. */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
-      />
-
-      {/* Editorial horizon glow behind the headline — no text tint, just
-          ambient color sitting underneath. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(60% 100% at 12% 70%, rgba(59,130,246,0.08), transparent 60%)",
-        }}
-      />
-
-      {/* Top meta row: eyebrow on the left, counter on the right. */}
-      <div className="relative flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.24em] text-fg/40">
-        <span className="flex items-center gap-3">
-          <span
-            aria-hidden
-            className="block h-px w-10 bg-divider/[0.18]"
-          />
-          {eyebrow}
-        </span>
-        <span className="flex items-center gap-3">
-          <span className="text-fg/65">{String(count).padStart(2, "0")}</span>
-          <span className="text-fg/25">/</span>
-          <span>services</span>
-          <span
-            aria-hidden
-            className="block h-px w-10 bg-divider/[0.18]"
-          />
-        </span>
-      </div>
-
-      {/* Headline: editorial, italic accent. Cormorant's italic is the
-          highlight here — same display family used throughout the site. */}
-      <h2 className="relative mt-7 font-display text-[clamp(40px,4.6vw,72px)] font-normal leading-[0.96] tracking-[-0.022em] text-fg/95">
-        Four things we do,{" "}
-        <span className="italic text-fg/75">well.</span>
-      </h2>
-    </header>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Desktop service column with collapse-to-ornament                            */
-/* -------------------------------------------------------------------------- */
-
-function ServiceColumn({
-  item,
-  index,
-  total,
-  progress,
-  stages,
-}: {
-  item: Item;
-  index: number;
-  total: number;
-  progress: MotionValue<number>;
-  stages: number;
-}) {
-  const collapseStart = index / stages;
-  const collapseEnd = (index + 1) / stages;
-
-  const widthRaw = useTransform(
-    progress,
-    [collapseStart, collapseEnd],
-    [ACTIVE_VW, COLLAPSED_VW],
-  );
-  const widthSpring = useSpring(widthRaw, SPRING);
-  const width = useTransform(widthSpring, (v) => `${v}vw`);
-
-  const contentOpacity = useTransform(
-    progress,
-    [collapseStart, collapseStart + (collapseEnd - collapseStart) * 0.5],
-    [1, 0],
-  );
-
-  const glow = VARIANT_GLOWS[index % VARIANT_GLOWS.length];
-
-  return (
-    <motion.article
-      style={{ width }}
-      className="relative flex h-full min-h-0 shrink-0 flex-col overflow-hidden border-r border-divider/[0.06] will-change-[width]"
-    >
-      {/* Per-card top spotlight — distinct hue per index, fades with collapse. */}
-      <motion.div
-        aria-hidden
-        style={{
-          opacity: contentOpacity,
-          background: `radial-gradient(120% 70% at 50% -10%, ${glow}, transparent 65%)`,
-        }}
-        className="pointer-events-none absolute inset-0"
-      />
-      {/* Lit top edge — 1px linear that hints at the spotlight above. */}
-      <motion.span
-        aria-hidden
-        style={{ opacity: contentOpacity }}
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
-      />
-
-      {/* Ornament strip — independent padding so the dot grid stays visible
-          even after the column collapses. */}
-      <div className="relative flex shrink-0 items-start justify-between px-4 pt-7 lg:px-5 lg:pt-9">
-        <Ornament variant={index} size={56} />
-        <motion.div
-          style={{ opacity: contentOpacity }}
-          className="font-mono text-[10px] tracking-widest text-fg/40 whitespace-nowrap"
+    <SectionFrame id="offerings">
+      <div className="text-center">
+        <Eyebrow shimmer>~ What we ship</Eyebrow>
+        <RevealLines
+          as="h2"
+          className="mx-auto mt-5 max-w-3xl font-display font-medium leading-[1.05] tracking-[-0.02em] text-[clamp(2rem,4.6vw,3.5rem)]"
         >
-          <span className="text-fg/70">{String(index + 1).padStart(2, "0")}</span>
-          <span className="mx-2 text-fg/30">/</span>
-          <span>{String(total).padStart(2, "0")}</span>
-        </motion.div>
+          Three offerings.{" "}
+          <span className="italic text-ink-muted">One job: better commerce.</span>
+        </RevealLines>
       </div>
 
-      {/* Tag */}
-      <motion.div
-        style={{ opacity: contentOpacity }}
-        className="relative mt-4 px-7 font-mono text-[10px] uppercase tracking-[0.2em] text-fg/45 whitespace-nowrap lg:px-9"
-      >
-        {item.tag}
-      </motion.div>
-
-      {/* Title */}
-      <motion.h3
-        style={{ opacity: contentOpacity }}
-        className="relative mt-3 px-7 font-display text-[clamp(30px,2.8vw,48px)] font-normal leading-[0.98] tracking-[-0.02em] whitespace-nowrap lg:px-9"
-      >
-        {item.title}
-      </motion.h3>
-
-      {/* Pills */}
-      <motion.div
-        style={{ opacity: contentOpacity }}
-        className="relative mt-5 flex flex-wrap gap-2 px-7 lg:px-9"
-      >
-        {item.pills.slice(0, 4).map((p) => (
-          <span key={p} className={PILL_CLASS}>
-            {p}
-          </span>
-        ))}
-      </motion.div>
-
-      {/* Bottom: image + description side-by-side. items-stretch + a capped
-          image height keeps the right column's text inside the viewport on
-          short laptop heights (~720px). */}
-      <motion.div
-        style={{ opacity: contentOpacity }}
-        className="relative mt-auto grid grid-cols-[1.1fr_1fr] items-stretch gap-5 px-7 pb-7 pt-3 lg:px-9"
-      >
-        <div className="relative aspect-[4/3] max-h-[36vh] overflow-hidden rounded-xl bg-divider/[0.04] ring-1 ring-divider/[0.08]">
-          <Image
-            src={item.media}
-            alt=""
-            fill
-            sizes="(min-width: 1024px) 22vw, 50vw"
-            className="object-cover"
-          />
-        </div>
-        <div className="flex flex-col justify-end gap-3">
-          <p className="line-clamp-3 text-[14px] leading-relaxed text-fg/70">
-            {item.pitch}
-          </p>
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-fg/45">
-            Best for{" "}
-            <span className="normal-case tracking-normal text-fg/65">
-              · {item.bestFor}
-            </span>
-          </p>
-        </div>
-      </motion.div>
-    </motion.article>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* CTA column with WebGL gradient                                              */
-/* -------------------------------------------------------------------------- */
-
-function CTAColumn({
-  cta,
-  progress,
-  stages,
-}: {
-  cta: typeof site.offerings.cta;
-  progress: MotionValue<number>;
-  stages: number;
-}) {
-  const opacity = useTransform(
-    progress,
-    [(stages - 1) / stages - 0.05, 1],
-    [0, 1],
-  );
-
-  return (
-    <motion.article
-      style={{ width: `${CTA_VW}vw` }}
-      className="relative flex h-full shrink-0 flex-col items-start justify-center overflow-hidden text-white"
-    >
-      <div className="absolute inset-0 z-0">
-        <HeroBackgroundClient />
-      </div>
-
-      <motion.div
-        style={{ opacity }}
-        className="relative z-10 max-w-2xl px-12 lg:px-20"
-      >
-        <p className="font-display text-[44px] font-normal italic leading-none tracking-[-0.01em] text-white/85 sm:text-[64px] lg:text-[80px]">
-          {cta.kicker}
-        </p>
-        <h3 className="mt-3 font-display text-[64px] font-normal leading-[0.96] tracking-[-0.02em] sm:text-[88px] lg:text-[112px]">
-          {cta.headline}
-        </h3>
-        <p className="mt-8 max-w-md text-[16px] leading-relaxed text-white/75 sm:text-[17px]">
-          {cta.sub}
-        </p>
-        <div className="mt-10">
-          <Button href={cta.primary.href} variant="primary" arrow>
-            {cta.primary.label}
-          </Button>
-        </div>
-      </motion.div>
-
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-20 opacity-[0.06] mix-blend-overlay"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/></svg>\")",
-        }}
-      />
-    </motion.article>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Mobile cards                                                                */
-/* -------------------------------------------------------------------------- */
-
-function MobileCard({
-  item,
-  index,
-  total,
-}: {
-  item: Item;
-  index: number;
-  total: number;
-}) {
-  const glow = VARIANT_GLOWS[index % VARIANT_GLOWS.length];
-
-  return (
-    <article className="relative overflow-hidden border-b border-divider/[0.06] px-6 py-16 sm:px-8">
-      {/* Per-card spotlight */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: `radial-gradient(110% 60% at 50% -10%, ${glow}, transparent 65%)`,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
-      />
-
-      <div className="relative flex items-start justify-between">
-        <Ornament variant={index} size={56} />
-        <div className="font-mono text-[10px] tracking-widest text-fg/40">
-          <span className="text-fg/70">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-          <span className="mx-2 text-fg/30">/</span>
-          <span>{String(total).padStart(2, "0")}</span>
-        </div>
-      </div>
-      <div className="relative mt-8 font-mono text-[10px] uppercase tracking-[0.2em] text-fg/45">
-        {item.tag}
-      </div>
-      <h3 className="relative mt-4 font-display text-[44px] font-normal leading-[0.98] tracking-[-0.02em] sm:text-[56px]">
-        {item.title}
-      </h3>
-      <div className="relative mt-8 flex flex-wrap gap-2">
-        {item.pills.map((p) => (
-          <span key={p} className={PILL_CLASS}>
-            {p}
-          </span>
+      <div className="mt-14 space-y-6">
+        {offerings.map((o, i) => (
+          <OfferingCard key={o.title} offering={o} variant={i} />
         ))}
       </div>
-      <div className="relative mt-10 grid grid-cols-1 items-stretch gap-6 sm:grid-cols-[1.1fr_1fr]">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-divider/[0.04] ring-1 ring-divider/[0.08]">
-          <Image
-            src={item.media}
-            alt=""
-            fill
-            sizes="(min-width: 640px) 50vw, 100vw"
-            className="object-cover"
-          />
-        </div>
-        <div className="flex flex-col justify-end gap-3">
-          <p className="text-[15px] leading-relaxed text-fg/70">{item.pitch}</p>
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-fg/45">
-            Best for{" "}
-            <span className="normal-case tracking-normal text-fg/65">
-              · {item.bestFor}
-            </span>
-          </p>
-        </div>
-      </div>
-    </article>
+    </SectionFrame>
   );
 }
 
-function MobileCTA({ cta }: { cta: typeof site.offerings.cta }) {
+function OfferingCard({
+  offering: o,
+  variant,
+}: {
+  offering: (typeof offerings)[number];
+  variant: number;
+}) {
+  const cardRef = useRef<HTMLElement | null>(null);
+  const visualWrapRef = useRef<HTMLDivElement | null>(null);
+
+  // Parallax: visual translates slower than the text column while card is in viewport
+  useGSAP(
+    () => {
+      const card = cardRef.current;
+      const visual = visualWrapRef.current;
+      if (!card || !visual) return;
+
+      const st = ScrollTrigger.create({
+        trigger: card,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 0.6,
+        onUpdate: (self) => {
+          // -24px at start, +24px at end (subtle)
+          const y = (self.progress - 0.5) * -48;
+          gsap.set(visual, { y });
+        },
+      });
+      return () => st.kill();
+    },
+    { scope: cardRef as React.RefObject<HTMLElement>, dependencies: [] }
+  );
+
   return (
     <article
-      className="px-6 py-20 text-center text-white sm:px-8"
-      style={{
-        background:
-          "radial-gradient(120% 80% at 70% 20%, #4a1a8e 0%, #2a0e54 45%, #140843 100%)",
-      }}
+      ref={cardRef as React.RefObject<HTMLElement>}
+      className={cn(
+        "group relative flex flex-col gap-10 rounded-2xl border bg-bg p-6 md:p-10 transition-shadow duration-500 overflow-hidden",
+        variant === 0
+          ? "border-accent/40 shadow-[0_30px_80px_-50px_rgb(var(--accent-rgb)/0.4)] hover:shadow-[0_40px_100px_-40px_rgb(var(--accent-rgb)/0.55)]"
+          : "border-rule hover:shadow-[0_30px_80px_-50px_rgb(var(--accent-rgb)/0.3)]"
+      )}
     >
-      <p className="font-display text-[36px] font-normal italic leading-none tracking-[-0.01em] text-white/85 sm:text-[44px]">
-        {cta.kicker}
-      </p>
-      <h3 className="mt-3 font-display text-[56px] font-normal leading-[0.96] tracking-[-0.02em] sm:text-[72px]">
-        {cta.headline}
-      </h3>
-      <p className="mx-auto mt-8 max-w-md text-[15px] leading-relaxed text-white/75">
-        {cta.sub}
-      </p>
-      <div className="mt-10">
-        <Button href={cta.primary.href} variant="primary" arrow>
-          {cta.primary.label}
-        </Button>
+      <div className="grid gap-6 md:grid-cols-12 md:items-end">
+        <div className="md:col-span-7 flex flex-col">
+          <Eyebrow>{o.eyebrow}</Eyebrow>
+          <RevealLines
+            as="h3"
+            className="mt-3 font-display text-3xl md:text-4xl leading-tight"
+          >
+            {o.title}
+          </RevealLines>
+          <FadeUp
+            as="p"
+            delay={0.05}
+            className="mt-4 text-base md:text-lg text-ink-muted leading-relaxed max-w-prose"
+          >
+            {o.blurb}
+          </FadeUp>
+        </div>
+        <FadeUp className="md:col-span-5 flex flex-col md:items-end" delay={0.12} y={18}>
+          <ul className="grid w-fit gap-2 sm:grid-cols-2 md:grid-cols-1">
+            {o.bullets.map((b) => (
+              <li
+                key={b}
+                className="flex items-start gap-2 text-sm text-ink"
+              >
+                <Check className="mt-0.5 size-4 text-accent shrink-0" />
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href={o.href}
+            className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-accent group-hover:gap-2.5 transition-all"
+          >
+            {o.cta} <ArrowRight className="size-4" />
+          </Link>
+        </FadeUp>
+      </div>
+
+      <div ref={visualWrapRef} className="w-full">
+        <OfferingVisual variant={variant} />
       </div>
     </article>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Ornament — animated dot matrix. Each circle twinkles with a delay based    */
-/* on its distance from the center, producing a soft radial pulse.            */
-/* -------------------------------------------------------------------------- */
+function OfferingVisual({ variant }: { variant: number }) {
+  if (variant === 0) return <ShopifyVisual />;
+  if (variant === 1) return <CustomVisual />;
+  return <WhatsappVisual />;
+}
 
-function Ornament({ variant, size = 80 }: { variant: number; size?: number }) {
-  const grid = 8;
-  const step = 100 / (grid + 1);
-  const center = (grid + 1) / 2;
+function BrowserShell({
+  url,
+  badge,
+  children,
+}: {
+  url: string;
+  badge?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative aspect-[21/9] rounded-xl overflow-hidden border border-rule bg-bg shadow-[0_20px_60px_-40px_rgb(var(--accent-rgb)/0.35)]">
+      <div className="flex items-center gap-1.5 border-b border-rule bg-bg-elevated/60 px-3 py-2">
+        <span className="size-1.5 rounded-full bg-rule" />
+        <span className="size-1.5 rounded-full bg-rule" />
+        <span className="size-1.5 rounded-full bg-rule" />
+        <div className="ml-2 flex h-5 flex-1 items-center rounded bg-bg/70 px-2 font-mono text-[9px] text-ink-muted">
+          {url}
+        </div>
+        {badge}
+      </div>
+      <div className="relative h-[calc(100%-30px)]">{children}</div>
+    </div>
+  );
+}
 
-  type Cell = {
-    cx: number;
-    cy: number;
-    on: boolean;
-    dist: number;
-  };
-  const cells: Cell[] = [];
+function ShopifyBadge() {
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-[9px] font-medium text-white"
+      style={{ backgroundColor: "#95BF47" }}
+      aria-label="Shopify"
+    >
+      <span className="font-display italic text-[11px] leading-none">S</span>
+      Shopify
+    </span>
+  );
+}
 
-  const v = variant % 4;
+function ShopifyVisual() {
+  const ref = useRef<HTMLDivElement | null>(null);
 
-  for (let y = 1; y <= grid; y++) {
-    for (let x = 1; x <= grid; x++) {
-      const cx = x * step;
-      const cy = y * step;
-      const dx = x - center; // ∈ {-3.5, -2.5, ..., 3.5}
-      const dy = y - center;
-      const dist = Math.hypot(dx, dy);
+  useGSAP(
+    () => {
+      const root = ref.current;
+      if (!root) return;
+      const tiles = Array.from(root.querySelectorAll<HTMLElement>("[data-product-tile]"));
+      const leftBlocks = Array.from(root.querySelectorAll<HTMLElement>("[data-left]"));
 
-      let on = false;
-      switch (v) {
-        case 0: {
-          // Plus — orthogonal cross through center.
-          on = (Math.abs(dx) < 0.6 || Math.abs(dy) < 0.6) && dist <= 3.6;
-          break;
-        }
-        case 1: {
-          // Circle — single ring.
-          on = dist > 2.0 && dist < 3.3;
-          break;
-        }
-        case 2: {
-          // Square — perimeter outline (outermost ring of cells, m === 3.5).
-          const m = Math.max(Math.abs(dx), Math.abs(dy));
-          on = m > 3.0;
-          break;
-        }
-        case 3: {
-          // Triangle — apex up. localY: 0 at apex row, ~5 at base.
-          const localY = dy + 2.5;
-          const halfWidth = localY * 0.55;
-          const onLeft =
-            Math.abs(dx + halfWidth) < 0.55 && localY >= 0 && localY <= 5;
-          const onRight =
-            Math.abs(dx - halfWidth) < 0.55 && localY >= 0 && localY <= 5;
-          const onBase =
-            Math.abs(localY - 5) < 0.6 && Math.abs(dx) < halfWidth + 0.4;
-          on = onLeft || onRight || onBase;
-          break;
-        }
-      }
-      cells.push({ cx, cy, on, dist });
-    }
-  }
+      gsap.set(leftBlocks, { opacity: 0, x: -16 });
+      gsap.set(tiles, { opacity: 0, y: 16, scale: 0.95 });
 
-  // Determine ornament's max radius for delay normalization
-  const maxDist = Math.hypot(center - 1, center - 1);
-
-  const baseR = size <= 56 ? 1.2 : 1.6;
-  const dimR = size <= 56 ? 0.5 : 0.7;
-
-  // Per-variant motion: circle and triangle slowly rotate, plus and square
-  // gently wobble. Tuned durations keep the four reading as a quartet.
-  const motionClass =
-    v === 1 || v === 3 ? "ornament-spin" : "ornament-drift";
-  const animationDuration =
-    v === 1 ? "32s" : v === 3 ? "44s" : v === 2 ? "11s" : "7s";
+      const st = ScrollTrigger.create({
+        trigger: root,
+        start: "top 80%",
+        once: true,
+        onEnter: () => {
+          gsap.to(leftBlocks, {
+            opacity: 1,
+            x: 0,
+            duration: 0.7,
+            stagger: 0.07,
+            ease: "editorial",
+          });
+          gsap.to(tiles, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.7,
+            ease: "editorial",
+            stagger: { grid: "auto", from: "start", amount: 0.5 },
+            delay: 0.2,
+          });
+        },
+      });
+      return () => st.kill();
+    },
+    { scope: ref as React.RefObject<HTMLElement>, dependencies: [] }
+  );
 
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 100 100"
-      className={`text-fg/55 shrink-0 ${motionClass}`}
-      style={{ animationDuration }}
-      aria-hidden
+    <div ref={ref}>
+      <BrowserShell url="your-brand.com" badge={<ShopifyBadge />}>
+        <div className="grid grid-cols-12 h-full">
+          <div className="col-span-5 p-5 md:p-8 flex flex-col justify-between bg-gradient-to-br from-accent-soft/40 via-bg to-bg border-r border-rule">
+            <div>
+              <p data-left className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink-muted">
+                Spring &apos;26 · Atelier
+              </p>
+              <p data-left className="mt-3 font-display text-2xl md:text-3xl leading-[1.05] text-ink">
+                Made well.
+              </p>
+              <p data-left className="font-display italic text-2xl md:text-3xl leading-[1.05] text-ink-muted">
+                Made yours.
+              </p>
+              <p data-left className="mt-3 text-[10px] md:text-xs text-ink-muted max-w-[24ch] leading-snug">
+                Slow-crafted essentials, shipped from our studio in Bandra.
+              </p>
+            </div>
+            <div data-left className="flex items-center gap-2">
+              <span className="rounded-full bg-accent text-on-accent px-3 py-1.5 text-[10px] font-medium gloss-inset shadow-[0_4px_12px_-6px_rgb(var(--accent-rgb)/0.5)] transition-transform duration-300 group-hover:translate-x-1">
+                Shop now →
+              </span>
+              <span className="text-[9px] font-mono text-ink-muted">
+                Free ship · ₹2K+
+              </span>
+            </div>
+          </div>
+          <div className="col-span-7 p-3 md:p-4 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-ink-muted">
+                Bestsellers
+              </p>
+              <div className="flex gap-1 [&>span]:transition-colors [&>span]:duration-300">
+                <span className="size-1.5 rounded-full bg-accent group-hover:bg-rule" />
+                <span className="size-1.5 rounded-full bg-rule group-hover:bg-accent" />
+                <span className="size-1.5 rounded-full bg-rule" />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-2 flex-1">
+              {[10, 20, 15, 25, 18, 12, 22, 16].map((shade, idx) => (
+                <div
+                  key={idx}
+                  data-product-tile
+                  className="rounded-md border border-rule overflow-hidden flex flex-col transition-transform duration-500 hover:scale-[1.03] hover:border-accent/40"
+                  style={{ backgroundColor: `rgb(var(--accent-rgb) / ${shade / 100})` }}
+                >
+                  <div className="flex-1" />
+                  <div className="bg-bg/90 px-1.5 py-1 border-t border-rule">
+                    <p className="font-mono text-[7px] text-ink-muted">
+                      ₹{(shade * 99).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </BrowserShell>
+    </div>
+  );
+}
+
+function CustomBadge() {
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded bg-accent px-1.5 py-0.5 font-mono text-[9px] font-medium text-on-accent gloss-inset"
+      aria-label="Custom Next.js build"
     >
-      {cells.map((c, i) => {
-        const isOn = c.on;
-        // Stagger delay so the pulse ripples outward from center.
-        const delay = (c.dist / maxDist) * 1.4; // seconds, 0 → 1.4
-        const dotMin = isOn ? 0.85 : 0.1;
-        const dotMax = isOn ? 1 : 0.5;
-        return (
-          <circle
-            key={i}
-            cx={c.cx}
-            cy={c.cy}
-            r={isOn ? baseR : dimR}
-            fill="currentColor"
-            className="dot-twinkle"
-            style={
-              {
-                animationDelay: `${delay.toFixed(2)}s`,
-                ["--dot-min" as string]: String(dotMin),
-                ["--dot-max" as string]: String(dotMax),
-              } as React.CSSProperties
-            }
-          />
-        );
-      })}
+      <span className="font-display italic text-[11px] leading-none">~</span>
+      Custom · Next.js
+    </span>
+  );
+}
+
+function CustomVisual() {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useGSAP(
+    () => {
+      const root = ref.current;
+      if (!root) return;
+      const tiles = Array.from(root.querySelectorAll<HTMLElement>("[data-product-tile]"));
+      const leftBlocks = Array.from(root.querySelectorAll<HTMLElement>("[data-left]"));
+      const chips = Array.from(root.querySelectorAll<HTMLElement>("[data-chip]"));
+      const statChip = root.querySelector<HTMLElement>("[data-stat-chip]");
+
+      gsap.set(leftBlocks, { opacity: 0, x: -16 });
+      gsap.set(chips, { opacity: 0, y: 8 });
+      gsap.set(tiles, { opacity: 0, y: 16, scale: 0.95 });
+      if (statChip) gsap.set(statChip, { opacity: 0, y: 12 });
+
+      const st = ScrollTrigger.create({
+        trigger: root,
+        start: "top 80%",
+        once: true,
+        onEnter: () => {
+          gsap.to(leftBlocks, {
+            opacity: 1,
+            x: 0,
+            duration: 0.7,
+            stagger: 0.07,
+            ease: "editorial",
+          });
+          gsap.to(chips, {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.06,
+            ease: "editorial",
+            delay: 0.3,
+          });
+          gsap.to(tiles, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.7,
+            ease: "editorial",
+            stagger: { grid: "auto", from: "start", amount: 0.5 },
+            delay: 0.2,
+          });
+          if (statChip) {
+            gsap.to(statChip, {
+              opacity: 1,
+              y: 0,
+              duration: 0.7,
+              ease: "editorial",
+              delay: 0.7,
+            });
+          }
+        },
+      });
+      return () => st.kill();
+    },
+    { scope: ref as React.RefObject<HTMLElement>, dependencies: [] }
+  );
+
+  return (
+    <div ref={ref}>
+      <BrowserShell url="built.your-brand.com" badge={<CustomBadge />}>
+        <div className="grid grid-cols-12 h-full">
+          <div className="col-span-5 p-5 md:p-8 flex flex-col justify-between bg-gradient-to-br from-accent-soft/50 via-bg to-bg border-r border-rule">
+            <div>
+              <p data-left className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink-muted">
+                Bespoke · Atelier
+              </p>
+              <p data-left className="mt-3 font-display text-2xl md:text-3xl leading-[1.05] text-ink">
+                Yours, end to end.
+              </p>
+              <p data-left className="font-display italic text-2xl md:text-3xl leading-[1.05] text-ink-muted">
+                Built from scratch.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {["Subscriptions", "B2B portal", "Multi-store"].map((label) => (
+                  <span
+                    key={label}
+                    data-chip
+                    className="rounded-full border border-rule bg-bg/70 px-2 py-0.5 font-mono text-[8px] uppercase tracking-wider text-ink-muted"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div data-left className="flex items-center gap-2">
+              <span className="rounded-full bg-accent text-on-accent px-3 py-1.5 text-[10px] font-medium gloss-inset shadow-[0_4px_12px_-6px_rgb(var(--accent-rgb)/0.5)]">
+                Open store →
+              </span>
+              <span className="text-[9px] font-mono text-ink-muted">
+                Custom backend · Next.js
+              </span>
+            </div>
+          </div>
+
+          <div className="col-span-7 relative p-3 md:p-4 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-ink-muted">
+                Collection · SS&apos;26
+              </p>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-bg border border-rule px-2 py-0.5 gloss-inset shadow-sm">
+                <span className="relative inline-flex size-1.5">
+                  <span className="absolute inline-flex size-full rounded-full bg-emerald-500 opacity-60 animate-ping" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
+                </span>
+                <span className="font-mono text-[8px] text-ink">
+                  <CountUp to={127} duration={1.6} /> shopping now
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2 flex-1">
+              {[
+                { shade: 30, dark: true },
+                { shade: 18, dark: false },
+                { shade: 45, dark: true },
+                { shade: 22, dark: false },
+                { shade: 16, dark: false },
+                { shade: 38, dark: true },
+                { shade: 20, dark: false },
+                { shade: 28, dark: false },
+              ].map((tile, idx) => (
+                <div
+                  key={idx}
+                  data-product-tile
+                  className="relative rounded-md border border-rule overflow-hidden flex flex-col"
+                  style={{
+                    backgroundColor: tile.dark
+                      ? `rgba(23, 20, 19, ${tile.shade / 100 + 0.45})`
+                      : `rgb(var(--accent-rgb) / ${tile.shade / 100})`,
+                  }}
+                >
+                  <div className="flex-1" />
+                  <div className="bg-bg/90 px-1.5 py-1 border-t border-rule">
+                    <p className="font-mono text-[7px] text-ink-muted">
+                      ₹{(tile.shade * 99).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div
+              data-stat-chip
+              className="absolute bottom-3 right-3 rounded-md border border-rule bg-bg/95 px-2 py-1.5 shadow-sm gloss-inset transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-accent/40 cursor-default"
+            >
+              <p className="font-mono text-[7px] uppercase tracking-wider text-ink-muted">
+                MRR · This month
+              </p>
+              <p className="font-display text-sm leading-tight text-ink">
+                ₹4.2L{" "}
+                <span className="font-mono text-[8px] text-emerald-700">
+                  ↑ <CountUp to={18} duration={1.2} />%
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </BrowserShell>
+    </div>
+  );
+}
+
+function WhatsAppDoodlePattern() {
+  return (
+    <svg
+      aria-hidden
+      className="absolute inset-0 size-full"
+      width="100%"
+      height="100%"
+    >
+      <defs>
+        <pattern
+          id="wa-doodle"
+          x="0"
+          y="0"
+          width="80"
+          height="80"
+          patternUnits="userSpaceOnUse"
+        >
+          <g
+            fill="none"
+            stroke="rgba(255,255,255,0.07)"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M 14 18 c -3 -3 -7 0 -4 4 l 4 5 l 4 -5 c 3 -4 -1 -7 -4 -4 z" />
+            <path d="M 48 14 h 16 q 4 0 4 4 v 6 q 0 4 -4 4 h -10 l -4 4 v -4 h -2 q -4 0 -4 -4 v -6 q 0 -4 4 -4 z" />
+            <rect x="14" y="44" width="10" height="18" rx="2" />
+            <circle cx="19" cy="58" r="1" />
+            <path d="M 50 50 l 18 -4 l -8 16 l -3 -7 l -7 -5 z" />
+            <path d="M 53 55 l 12 -5" />
+            <circle cx="68" cy="70" r="5" />
+            <circle cx="66" cy="68.5" r="0.6" fill="rgba(255,255,255,0.07)" />
+            <circle cx="70" cy="68.5" r="0.6" fill="rgba(255,255,255,0.07)" />
+            <path d="M 65.5 71 q 2.5 2 5 0" />
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#wa-doodle)" />
     </svg>
+  );
+}
+
+const CHAT_LIST = [
+  {
+    initials: "AB",
+    name: "Atelier Bloom",
+    preview: "Out by 5pm today. Tracking incoming →",
+    time: "now",
+    active: true,
+    color: "#0a5a44",
+  },
+  {
+    initials: "ST",
+    name: "Service Team",
+    preview: "JY: @all Please finalize the…",
+    time: "12:40",
+    color: "#2a4d7a",
+    badge: 1,
+  },
+  {
+    initials: "RS",
+    name: "Ragul · SRM",
+    preview: "I'm using KOSH to spend…",
+    time: "12:39",
+    color: "#6b3a8a",
+  },
+  {
+    initials: "JJ",
+    name: "JY Juliet Janish",
+    preview: "Ya.. noted.. thank you da…",
+    time: "12:37",
+    color: "#a14a2a",
+    badge: 1,
+  },
+  {
+    initials: "C26",
+    name: "CAT 2026 Batch",
+    preview: "~deepanshu: Daily Article…",
+    time: "11:38",
+    color: "#7a5a2a",
+  },
+  {
+    initials: "TM",
+    name: "Tarun Merkle",
+    preview: "Also need to invite 5 users…",
+    time: "10:26",
+    color: "#3a6a4a",
+  },
+];
+
+function WhatsappVisual() {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useGSAP(
+    () => {
+      const root = ref.current;
+      if (!root) return;
+      const chatRows = Array.from(root.querySelectorAll<HTMLElement>("[data-chat-row]"));
+      const messages = Array.from(root.querySelectorAll<HTMLElement>("[data-msg]"));
+
+      gsap.set(chatRows, { opacity: 0, x: -10 });
+      gsap.set(messages, { opacity: 0, y: 14, scale: 0.95 });
+
+      const st = ScrollTrigger.create({
+        trigger: root,
+        start: "top 80%",
+        once: true,
+        onEnter: () => {
+          gsap.to(chatRows, {
+            opacity: 1,
+            x: 0,
+            duration: 0.55,
+            stagger: 0.06,
+            ease: "editorial",
+          });
+          gsap.to(messages, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.55,
+            stagger: 0.18,
+            ease: "editorial",
+            delay: 0.4,
+          });
+        },
+      });
+      return () => st.kill();
+    },
+    { scope: ref as React.RefObject<HTMLElement>, dependencies: [] }
+  );
+
+  return (
+    <div
+      ref={ref}
+      className="relative aspect-[21/9] rounded-xl overflow-hidden shadow-[0_20px_60px_-40px_rgb(var(--accent-rgb)/0.35)] grid grid-cols-12"
+      style={{ backgroundColor: "#0c382f" }}
+    >
+      <aside className="col-span-3 relative flex flex-col bg-[#082b25] border-r border-white/5">
+        <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/5">
+          <span className="font-display text-sm text-white/90 leading-none">
+            Chats
+          </span>
+          <SquarePen className="size-3 text-white/50" />
+        </div>
+        <div className="px-3 py-2">
+          <div className="flex items-center gap-1.5 rounded-md bg-white/5 px-2 py-1">
+            <Search className="size-2.5 text-white/40" />
+            <span className="font-mono text-[8px] text-white/40">Search</span>
+          </div>
+        </div>
+        <ul className="flex-1 overflow-hidden">
+          {CHAT_LIST.map((chat, idx) => (
+            <li
+              key={chat.name}
+              data-chat-row
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 border-b border-white/[0.03] transition-colors",
+                chat.active
+                  ? "bg-white/[0.06]"
+                  : "hover:bg-white/[0.03]"
+              )}
+            >
+              <span
+                className="inline-flex size-6 shrink-0 items-center justify-center rounded-full font-mono text-[8px] font-medium text-white/90"
+                style={{ backgroundColor: chat.color }}
+              >
+                {chat.initials}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-1">
+                  {chat.active ? (
+                    <span className="truncate font-sans text-[10px] font-medium text-white/90">
+                      {chat.name}
+                    </span>
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="block h-2 w-[55%] rounded-sm bg-white/15 animate-pulse [animation-duration:2.4s]"
+                      style={{ animationDelay: `${idx * 0.18}s` }}
+                    />
+                  )}
+                  <span className="font-mono text-[7px] text-white/40 shrink-0">
+                    {chat.time}
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center justify-between gap-1">
+                  {chat.active ? (
+                    <span className="truncate font-sans text-[9px] text-white/50">
+                      {chat.preview}
+                    </span>
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="block h-1.5 w-[80%] rounded-sm bg-white/10 animate-pulse [animation-duration:2.4s]"
+                      style={{ animationDelay: `${idx * 0.18 + 0.1}s` }}
+                    />
+                  )}
+                  {chat.badge ? (
+                    <span className="inline-flex size-3 shrink-0 items-center justify-center rounded-full bg-emerald-500 font-mono text-[7px] font-semibold text-[#082b25]">
+                      {chat.badge}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      <section className="col-span-9 relative flex flex-col">
+        <WhatsAppDoodlePattern />
+
+        <div className="relative z-10 flex items-center justify-between px-4 py-2.5 border-b border-white/5 bg-[#0c382f]/80 backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex size-6 items-center justify-center rounded-full bg-emerald-700/60 font-mono text-[8px] text-white">
+              AB
+            </span>
+            <div className="flex flex-col">
+              <span className="font-sans text-[11px] font-medium text-white/90 leading-tight">
+                Atelier Bloom
+              </span>
+              <span className="font-mono text-[8px] text-emerald-300/80">
+                online · typing…
+              </span>
+            </div>
+          </div>
+          <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-white/40">
+            WhatsApp Business
+          </span>
+        </div>
+
+        <div className="relative z-10 flex-1 px-4 py-3 flex flex-col gap-1.5 overflow-hidden">
+          <div data-msg className="w-fit max-w-[260px] rounded-2xl rounded-bl-sm bg-white/95 px-3 py-1.5 text-[11px] text-ink shadow">
+            Hey! Is the ivory camisole in stock?
+          </div>
+
+          <div data-msg className="ml-auto w-fit max-w-[260px] rounded-2xl rounded-br-sm bg-[#075e54] text-white px-3 py-1.5 text-[11px] shadow">
+            Yes — last 2 in M. Pay here ↓
+          </div>
+
+          <div data-msg className="w-fit max-w-[280px] rounded-2xl rounded-bl-sm bg-white/95 p-2.5 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg cursor-default">
+            <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-ink-muted">
+              Order · #AB-2841
+            </p>
+            <p className="mt-0.5 font-display text-[12px] text-ink leading-tight">
+              Silk camisole — Ivory · M
+            </p>
+            <div className="mt-1.5 flex items-center justify-between gap-3">
+              <span className="font-mono text-[10px] text-ink">₹2,475</span>
+              <span className="rounded-full bg-emerald-600/15 px-1.5 py-0.5 font-mono text-[8px] text-emerald-700">
+                Paid
+              </span>
+            </div>
+          </div>
+
+          <div data-msg className="ml-auto w-fit max-w-[260px] rounded-2xl rounded-br-sm bg-[#075e54] text-white px-3 py-1.5 text-[11px] shadow">
+            Paid ✓ — when will it ship?
+          </div>
+
+          <div data-msg className="w-fit max-w-[280px] rounded-2xl rounded-bl-sm bg-white/95 p-2.5 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg cursor-default">
+            <div className="flex items-center justify-between">
+              <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-ink-muted">
+                Tracking
+              </p>
+              <p className="font-mono text-[8px] text-ink-muted">DTDC</p>
+            </div>
+            <p className="mt-0.5 font-mono text-[10px] text-ink">BD-9921</p>
+            <div className="mt-1.5 flex items-center gap-1">
+              <span className="h-1 flex-1 rounded-full bg-accent" />
+              <span className="h-1 flex-1 rounded-full bg-accent" />
+              <span className="h-1 flex-1 rounded-full bg-rule" />
+              <span className="h-1 flex-1 rounded-full bg-rule" />
+            </div>
+            <p className="mt-1 font-mono text-[8px] text-ink-muted">
+              Picked up · in transit
+            </p>
+          </div>
+
+          <div data-msg className="ml-auto w-fit max-w-[260px] rounded-2xl rounded-br-sm bg-[#075e54] text-white px-3 py-1.5 text-[11px] shadow">
+            Out by 5pm today. Tracking sent ↑
+          </div>
+        </div>
+
+        <div className="relative z-10 flex items-center gap-2 px-3 py-2 border-t border-white/5 bg-[#082b25]">
+          <Plus className="size-3.5 text-white/60 shrink-0" />
+          <div className="flex flex-1 items-center gap-2 rounded-full bg-white/10 px-3 py-1.5">
+            <Smile className="size-3 text-white/40" />
+            <span className="flex-1 font-sans text-[10px] text-white/30">
+              Type a message
+            </span>
+            <span className="block h-3 w-px animate-pulse bg-white/40" />
+          </div>
+          <Mic className="size-3.5 text-white/60 shrink-0" />
+        </div>
+      </section>
+    </div>
   );
 }

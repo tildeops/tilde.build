@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# tilde
 
-## Getting Started
+Marketing site for tilde — a software development agency offering headless
+Shopify rebuilds, custom e-commerce, and WhatsApp sales channels.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router) + TypeScript
+- Tailwind v4 + shadcn-style primitives
+- Framer Motion for the `~` motif animations
+- `@calcom/embed-react` for the discovery-call booking
+- Resend for the fallback contact form
+- Burgundy `#6E1423` + cream `#FAF6F1` palette · Instrument Serif + Inter + JetBrains Mono
+
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev          # http://localhost:3000
+pnpm lint
+pnpm build && pnpm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy `.env.example` to `.env.local` and fill in:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Var | Purpose |
+|---|---|
+| `RESEND_API_KEY` | Sends contact-form fallback emails. Without it, submissions are logged server-side and the UI shows success (dev fallback). |
+| `RESEND_FROM` | Verified `From:` address in your Resend account. |
+| `RESEND_TO` | Where enquiries are delivered. Defaults to `site.contactEmail`. |
 
-## Learn More
+Update site-wide constants (contact email, Cal.com URL, social links, city) in
+`src/lib/site.ts`. Update marketing copy (offerings, pricing, FAQ, testimonials,
+process, pain points) in `src/lib/content.ts` and
+`src/lib/shopify-headless-content.ts`.
 
-To learn more about Next.js, take a look at the following resources:
+## Cal.com setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The booking widget loads `https://cal.com/{site.calcomUrl}` — set this in
+`src/lib/site.ts` once your Cal.com account is created (e.g. `tilde/discovery-call`).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Structure
 
-## Deploy on Vercel
+```
+src/
+  app/
+    page.tsx                   home (composes sections)
+    shopify-headless/page.tsx  flagship deep-dive
+    contact/page.tsx           Cal.com booking + fallback form
+    privacy, terms             legal
+    sitemap.ts, robots.ts      SEO
+    api/contact/route.ts       Resend POST handler
+  components/
+    layout/                    header, footer, SectionFrame
+    sections/                  hero, pain-points, offerings, pricing, ...
+    brand/                     TildeMark logo, scribble motif
+    seo/                       JSON-LD schema
+    ui/                        button, accordion
+  lib/
+    site.ts                    nav, contact, calcom, social
+    content.ts                 all home-page copy
+    shopify-headless-content.ts deep-dive copy
+    utils.ts                   cn() helper
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+All marketing copy lives in typed data files — edits don't touch JSX.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Verification checklist
+
+- [ ] `pnpm build` succeeds with no TS errors
+- [ ] `pnpm lint` clean
+- [ ] Home renders at 360 / 768 / 1280 / 1920
+- [ ] Anchor nav (Offerings / Pricing / Process / About) scrolls correctly
+- [ ] Mobile sheet menu opens, links scroll and close
+- [ ] Cal.com embed loads on `/contact` (after Cal.com account is set up)
+- [ ] Contact fallback form submits and Resend delivers the email
+- [ ] `/sitemap.xml` and `/robots.txt` resolve
+- [ ] JSON-LD on home validates ([Rich Results Test](https://search.google.com/test/rich-results))
+
+## Brand tokens (Tailwind v4)
+
+Defined in `src/app/globals.css` `@theme {}`:
+
+| Token | Value |
+|---|---|
+| `bg` | `#FAF6F1` cream |
+| `bg-elevated` | `#F5EFE7` |
+| `ink` | `#171413` near-black |
+| `ink-muted` | `#6B6360` |
+| `accent` | `#6E1423` burgundy |
+| `accent-soft` | `#F1DDE0` |
+| `accent-hover` | `#5A0F1C` |
+| `rule` | `#E3DBD3` hairline |

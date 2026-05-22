@@ -1,86 +1,88 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { Cormorant_Garamond } from "next/font/google";
+import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-  display: "swap",
-});
-
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-  display: "swap",
-});
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { LenisProvider } from "@/components/providers/lenis-provider";
+import { GSAPProvider } from "@/components/providers/gsap-provider";
+import {
+  ThemeModeProvider,
+  themeModeInitScript,
+} from "@/components/providers/theme-mode-provider";
+import { ACTIVE_THEME } from "@/lib/theme";
 
 const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
   variable: "--font-cormorant",
+  subsets: ["latin"],
+  display: "swap",
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Tilde — approximate to precise",
+  metadataBase: new URL("https://tilde.dev"),
+  title: {
+    default: "tilde — Headless Shopify, custom commerce, WhatsApp sales",
+    template: "%s · tilde",
+  },
   description:
-    "Tilde is a three-person software studio. We design and build headless Shopify storefronts, custom ecommerce, bots, and SaaS — fast, because we're small.",
-  keywords: [
-    "Tilde",
-    "software studio",
-    "headless Shopify",
-    "custom ecommerce",
-    "WhatsApp bot",
-    "Telegram bot",
-    "SaaS development",
-    "Next.js",
-    "design engineering",
-  ],
+    "We rebuild Shopify stores as fully custom, lightning-fast Next.js storefronts. Headless commerce for brands that have outgrown themes.",
   openGraph: {
-    title: "Tilde — approximate to precise",
+    title: "tilde — Headless Shopify, custom commerce, WhatsApp sales",
     description:
-      "A three-person studio that designs and ships software. Headless Shopify, custom ecommerce, bots, SaaS.",
-    url: "https://tilde.build",
-    siteName: "Tilde",
-    images: [
-      {
-        url: "https://tilde.build/meta/tildeCard.png",
-        width: 1200,
-        height: 630,
-        alt: "Tilde",
-      },
-    ],
-    locale: "en_US",
+      "We rebuild Shopify stores as fully custom, lightning-fast Next.js storefronts.",
     type: "website",
+    url: "https://tilde.dev",
+    siteName: "tilde",
   },
   twitter: {
     card: "summary_large_image",
-    site: "@TildeStudio",
-    creator: "@TildeStudio",
-    title: "Tilde — approximate to precise",
+    title: "tilde — Headless Shopify, custom commerce, WhatsApp sales",
     description:
-      "A three-person studio. Design and engineering, in the same conversation.",
-    images: ["https://tilde.build/meta/tildeCard.png"],
+      "We rebuild Shopify stores as fully custom, lightning-fast Next.js storefronts.",
   },
-};
-
-export const viewport = {
-  themeColor: "#05060a",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable}`}
+      data-theme={ACTIVE_THEME}
+      className={`${cormorant.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
+      suppressHydrationWarning
     >
-      <body className="font-sans bg-bg text-fg antialiased">{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeModeInitScript }} />
+      </head>
+      <body className="min-h-screen bg-bg text-ink">
+        <ThemeModeProvider>
+          <LenisProvider>
+            <GSAPProvider>
+              <div className="relative flex min-h-screen w-full flex-col">
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+            </GSAPProvider>
+          </LenisProvider>
+        </ThemeModeProvider>
+      </body>
     </html>
   );
 }
