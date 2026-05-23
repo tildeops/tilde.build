@@ -28,25 +28,27 @@ const STEPS = [
 
 export function EmailTemplateSwap() {
   const reduced = useReducedMotion();
-  const [mode, setMode] = useState<"loading" | "desktop" | "mobile">("loading");
 
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 1023px)");
-    setMode(mq.matches ? "mobile" : "desktop");
-    const handler = (e: MediaQueryListEvent) =>
-      setMode(e.matches ? "mobile" : "desktop");
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
-  if (mode === "loading") return <div className="h-[60vh]" />;
-  if (mode === "mobile" || reduced) return <EmailMobileStack />;
-  return <EmailSwapDesktop />;
+  if (reduced) {
+    return (
+      <div id="email-templates">
+        <EmailMobileStack />
+      </div>
+    );
+  }
+  // Sticky-pinned scroll-driven reveal runs on every viewport size. The pin
+  // uses CSS `position: sticky` + a native scroll listener — no GSAP pin —
+  // which works correctly on iOS Safari without fighting momentum scroll.
+  return (
+    <div id="email-templates">
+      <EmailSwap />
+    </div>
+  );
 }
 
 /* ============================================================ */
 
-function EmailSwapDesktop() {
+function EmailSwap() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const phoneScreenRef = useRef<HTMLDivElement | null>(null);
   const progressRailRef = useRef<HTMLDivElement | null>(null);
@@ -133,16 +135,16 @@ function EmailSwapDesktop() {
   return (
     <section
       ref={sectionRef}
-      id="email-templates"
-      className="relative w-full"
-      style={{ height: `${(STEPS.length + 1) * 100}vh` }}
+      className="relative mt-20 w-full md:mt-28 lg:mt-32"
+      style={{ height: `${STEPS.length * 100}vh` }}
     >
       {/* Sticky stage — whole section stays in viewport while user scrolls */}
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center px-6 md:px-10 lg:px-16">
-        <div className="grid w-full max-w-[1240px] gap-10 md:grid-cols-12 md:items-center md:gap-12">
-          {/* Left: phone */}
-          <div className="order-1 md:col-span-5">
-            <div className="mx-auto" ref={phoneScreenRef}>
+      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center px-4 pt-20 pb-6 sm:px-6 md:items-center md:px-10 md:pt-0 md:pb-0 lg:px-16">
+        <div className="grid w-full max-w-[1240px] gap-4 md:grid-cols-12 md:items-center md:gap-12">
+          {/* Phone (centerpiece). On mobile this is order-2 so the heading
+              renders above; on desktop it moves to order-1 (left column). */}
+          <div className="order-2 md:order-1 md:col-span-5">
+            <div ref={phoneScreenRef} className="flex w-full justify-center">
               <PhoneFrame>
                 <div className="relative h-full w-full">
                   <DefaultEmail />
@@ -199,8 +201,10 @@ function EmailSwapDesktop() {
             </div>
           </div>
 
-          {/* Right: copy + step switcher */}
-          <div className="order-2 md:col-span-7 md:pl-6">
+          {/* Copy + step switcher. Order-1 on mobile (above phone), col-span-7
+              on desktop (right side). Step descriptions hide on mobile to keep
+              the sticky stage within 100svh. */}
+          <div className="order-1 md:order-2 md:col-span-7 md:pl-6">
             <FadeUp>
               <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
                 <span
@@ -214,12 +218,12 @@ function EmailSwapDesktop() {
             </FadeUp>
             <RevealLines
               as="h2"
-              className="mt-4 font-display font-extrabold leading-[1.0] tracking-[-0.035em] text-ink text-[clamp(1.6rem,3.6vw,2.4rem)]"
+              className="mt-3 font-display font-extrabold leading-[1.0] tracking-[-0.035em] text-ink text-[clamp(1.5rem,5.5vw,2.4rem)] md:mt-4"
             >
               Your post-purchase moment shouldn&apos;t look like 2012.
             </RevealLines>
             <FadeUp delay={0.2}>
-              <p className="mt-4 max-w-xl text-[14px] text-ink-muted leading-relaxed md:text-[15px]">
+              <p className="mt-3 hidden max-w-xl text-[14px] text-ink-muted leading-relaxed md:mt-4 md:block md:text-[15px]">
                 Order confirmations, shipping pings, return labels — every
                 automated email matches the storefront they bought from.
                 Designed in Figma, built in React Email, deployed to your
@@ -227,7 +231,44 @@ function EmailSwapDesktop() {
               </p>
             </FadeUp>
 
-            <div className="mt-7 flex gap-6">
+            {/* Compact mobile label row — shows which step is active without
+                taking the full step-list height. Hidden on desktop. */}
+            <div className="mt-4 flex items-center justify-between font-mono text-[10px] font-semibold uppercase tracking-[0.18em] md:hidden">
+              <span
+                className={`flex items-center gap-1.5 transition-colors duration-300 ${
+                  active === 0 ? "text-ink" : "text-ink-muted/50"
+                }`}
+              >
+                <span
+                  className={`inline-block size-2 rounded-sm transition-colors duration-300 ${
+                    active === 0 ? "bg-ink" : "bg-ink-muted/30"
+                  }`}
+                  aria-hidden
+                />
+                Default Shopify
+              </span>
+              <span
+                className={`flex items-center gap-1.5 transition-colors duration-300 ${
+                  active === 1 ? "text-accent" : "text-ink-muted/50"
+                }`}
+              >
+                Tilde custom
+                <span
+                  className={`inline-block size-2 rounded-sm transition-colors duration-300 ${
+                    active === 1 ? "bg-accent" : "bg-ink-muted/30"
+                  }`}
+                  style={
+                    active === 1
+                      ? { boxShadow: "0 0 8px rgb(var(--accent-rgb) / 0.5)" }
+                      : undefined
+                  }
+                  aria-hidden
+                />
+              </span>
+            </div>
+
+            {/* Full step list — hidden on mobile, shown on desktop */}
+            <div className="mt-7 hidden gap-6 md:flex">
               {/* Vertical progress rail */}
               <div className="relative w-[2px] shrink-0 overflow-hidden rounded-full bg-rule">
                 <div
@@ -285,7 +326,7 @@ function EmailSwapDesktop() {
               </ul>
             </div>
 
-            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+            <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted md:mt-6">
               Scroll to swap ↓
             </p>
           </div>

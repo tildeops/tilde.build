@@ -83,14 +83,16 @@ export function MessagingBots() {
     <section
       ref={sectionRef}
       id="messaging-bots"
-      className="relative w-full"
+      className="relative mt-20 w-full md:mt-28 lg:mt-32"
       style={{ height: `${(botScripts.length + 1) * 100}vh` }}
     >
       {/* Sticky stage — whole section stays in viewport while user scrolls through capabilities */}
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center px-6 md:px-10 lg:px-16">
-        <div className="grid w-full max-w-[1240px] gap-10 md:grid-cols-12 md:items-center md:gap-12">
-          {/* Left: copy + capability switcher */}
-          <div className="md:col-span-7 md:pr-6">
+      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center px-4 pt-20 pb-6 sm:px-6 md:items-center md:px-10 md:pt-0 md:pb-0 lg:px-16">
+        <div className="grid w-full max-w-[1240px] gap-4 md:grid-cols-12 md:items-center md:gap-12">
+          {/* Copy column. Order-1 on mobile (above phone), col-span-7 on
+              desktop. On mobile we show only the active step's name + blurb;
+              on desktop, the full 4-step clickable list. */}
+          <div className="order-1 md:order-1 md:col-span-7 md:pr-6">
             <FadeUp>
               <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
                 <span
@@ -104,20 +106,58 @@ export function MessagingBots() {
             </FadeUp>
             <RevealLines
               as="h2"
-              className="mt-4 font-display font-extrabold leading-[1.0] tracking-[-0.035em] text-ink text-[clamp(1.6rem,3.6vw,2.4rem)]"
+              className="mt-3 font-display font-extrabold leading-[1.0] tracking-[-0.035em] text-ink text-[clamp(1.5rem,5.5vw,2.4rem)] md:mt-4"
             >
               Meet customers on WhatsApp. And Telegram.
             </RevealLines>
             <FadeUp delay={0.2}>
-              <p className="mt-4 max-w-xl text-[14px] text-ink-muted leading-relaxed md:text-[15px]">
+              <p className="mt-3 hidden max-w-xl text-[14px] text-ink-muted leading-relaxed md:mt-4 md:block md:text-[15px]">
                 Browse the catalog, place an order, get support, track delivery —
                 the whole journey lives inside one chat. Built on the official
                 Business APIs, no flaky third-party bots.
               </p>
             </FadeUp>
 
-            <div className="mt-7 flex gap-6">
-              {/* Vertical progress rail */}
+            {/* Mobile-only: single active step + dot indicator */}
+            <div className="mt-4 md:hidden">
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+                <span className="text-accent">
+                  0{active + 1}
+                </span>
+                <span>/ 0{botScripts.length}</span>
+              </div>
+              <p
+                key={`label-${active}`}
+                className="mt-2 font-display text-[20px] font-extrabold leading-tight tracking-[-0.01em] text-ink"
+              >
+                {script.label}
+              </p>
+              <p
+                key={`blurb-${active}`}
+                className="mt-1 text-[13px] text-ink-muted leading-snug"
+              >
+                {script.blurb}
+              </p>
+              {/* Dot indicator — clickable jump targets */}
+              <div className="mt-4 flex items-center gap-1.5">
+                {botScripts.map((s, i) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => handleStepClick(i)}
+                    aria-label={`Jump to ${s.label}`}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      i === active
+                        ? "w-8 bg-accent"
+                        : "w-1.5 bg-rule hover:bg-ink-muted/40"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop-only: full step list with progress rail */}
+            <div className="mt-7 hidden gap-6 md:flex">
               <div className="relative w-[2px] shrink-0 overflow-hidden rounded-full bg-rule">
                 <div
                   ref={progressRailRef}
@@ -174,14 +214,14 @@ export function MessagingBots() {
               </ul>
             </div>
 
-            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+            <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted md:mt-6">
               Scroll to step through ↓
             </p>
           </div>
 
-          {/* Right: phone frame (no longer sticky — the whole section is pinned) */}
-          <div className="md:col-span-5">
-            <div className="mx-auto" style={{ maxWidth: 300 }}>
+          {/* Phone column. Order-2 on mobile (below copy), col-span-5 on desktop. */}
+          <div className="order-2 md:order-2 md:col-span-5">
+            <div className="mx-auto w-[260px] sm:w-[280px] md:w-[280px] lg:w-[300px]">
               <PhoneFrame>
                 <div ref={phoneScreenRef} key={active} className="h-full">
                   <BotConversation script={script} />

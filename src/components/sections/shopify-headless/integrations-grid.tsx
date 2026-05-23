@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -9,29 +9,26 @@ import { RevealLines } from "@/components/motion/reveal-lines";
 import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 import { integrations, type Integration } from "@/lib/shopify-headless/integrations";
 
+/**
+ * Pinned horizontal scroll for the integrations grid. The section pins to the
+ * viewport and vertical scroll drives the horizontal track movement on every
+ * viewport size — phones get the same "stays in place, scroll reveals more"
+ * mechanic as desktop. Reduced-motion users get a static stack fallback.
+ */
 export function IntegrationsGrid() {
   const reduced = useReducedMotion();
-  const [isDesktop, setIsDesktop] = useState(false);
 
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    setIsDesktop(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
-  if (isDesktop && !reduced) {
-    return <DesktopHorizontalScroll />;
+  if (reduced) {
+    return <ReducedMotionFallback />;
   }
-  return <MobileSnapScroll />;
+  return (
+    <div id="integrations">
+      <PinnedHorizontalScroll />
+    </div>
+  );
 }
 
-/* ============================================================ */
-/* Desktop — pinned section, vertical scroll drives horizontal   */
-/* ============================================================ */
-
-function DesktopHorizontalScroll() {
+function PinnedHorizontalScroll() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
@@ -46,7 +43,6 @@ function DesktopHorizontalScroll() {
       const computeDistance = () => {
         const trackWidth = track.scrollWidth;
         const viewportWidth = window.innerWidth;
-        // Leave some breathing room at the end so the last card isn't flush against the edge.
         return Math.max(0, trackWidth - viewportWidth + 80);
       };
 
@@ -84,13 +80,12 @@ function DesktopHorizontalScroll() {
   return (
     <section
       ref={sectionRef}
-      id="integrations"
-      className="relative h-screen w-full overflow-hidden"
+      className="relative h-[100svh] w-full overflow-hidden"
     >
       <div className="absolute inset-0 flex flex-col">
         {/* Header band */}
         <div className="mx-auto w-full max-w-[1240px] px-4 pt-20 sm:px-6 md:px-10">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between md:gap-6">
             <div className="md:max-w-[560px]">
               <FadeUp>
                 <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated/80 backdrop-blur px-3 py-1.5">
@@ -105,13 +100,13 @@ function DesktopHorizontalScroll() {
               </FadeUp>
               <RevealLines
                 as="h2"
-                className="mt-5 font-display font-extrabold leading-[0.98] tracking-[-0.04em] text-ink text-[clamp(2rem,4.4vw,3.2rem)]"
+                className="mt-4 font-display font-extrabold leading-[0.98] tracking-[-0.04em] text-ink text-[clamp(1.75rem,5vw,3.2rem)] md:mt-5"
               >
                 Plug into everything you already pay for.
               </RevealLines>
             </div>
             <FadeUp delay={0.18}>
-              <p className="text-[15px] text-ink-muted leading-relaxed md:max-w-[400px]">
+              <p className="text-[14px] text-ink-muted leading-relaxed md:max-w-[400px] md:text-[15px]">
                 Attribution, analytics, payments, email, support — wired
                 server-side so the numbers finally match the platforms that own
                 the spend.
@@ -124,7 +119,7 @@ function DesktopHorizontalScroll() {
         <div className="relative flex-1 flex items-center overflow-hidden">
           <div
             ref={trackRef}
-            className="flex items-stretch gap-6 pl-[max(4vw,2rem)] pr-[80px] will-change-transform"
+            className="flex items-stretch gap-4 pl-[max(4vw,1rem)] pr-[80px] will-change-transform sm:gap-6 sm:pl-[max(4vw,2rem)]"
           >
             {integrations.map((i) => (
               <IntegrationTile key={i.id} item={i} />
@@ -133,8 +128,8 @@ function DesktopHorizontalScroll() {
         </div>
 
         {/* Footer caption + progress rail */}
-        <div className="mx-auto w-full max-w-[1240px] px-4 pb-14 sm:px-6 md:px-10">
-          <div className="flex items-center gap-4">
+        <div className="mx-auto w-full max-w-[1240px] px-4 pb-10 sm:px-6 md:px-10 md:pb-14">
+          <div className="flex items-center gap-3 md:gap-4">
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
               Scroll
             </span>
@@ -149,7 +144,7 @@ function DesktopHorizontalScroll() {
               {integrations.length} integrations
             </span>
           </div>
-          <p className="mt-5 text-center text-[13px] text-ink-muted">
+          <p className="mt-4 text-center text-[12px] text-ink-muted md:mt-5 md:text-[13px]">
             + custom integrations on request. yes, even that obscure one.
           </p>
         </div>
@@ -159,14 +154,12 @@ function DesktopHorizontalScroll() {
 }
 
 /* ============================================================ */
-/* Mobile / reduce-motion — snap scroll fallback                 */
+/* Reduced-motion fallback — non-pinned scroll                   */
 /* ============================================================ */
 
-function MobileSnapScroll() {
-  const trackRef = useRef<HTMLDivElement | null>(null);
-
+function ReducedMotionFallback() {
   return (
-    <section id="integrations" className="relative py-24">
+    <section id="integrations" className="relative py-20 md:py-28 lg:py-32">
       <div className="mx-auto w-full max-w-[1240px] px-4 sm:px-6 md:px-10">
         <FadeUp>
           <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
@@ -185,18 +178,11 @@ function MobileSnapScroll() {
         >
           Plug into everything you already pay for.
         </RevealLines>
-        <FadeUp delay={0.18}>
-          <p className="mt-5 text-base text-ink-muted leading-relaxed max-w-[600px]">
-            Attribution, analytics, payments, email, support — wired
-            server-side so the numbers finally match.
-          </p>
-        </FadeUp>
       </div>
 
-      <div
-        ref={trackRef}
-        className="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:px-6 md:px-10 no-scrollbar [scrollbar-width:none]"
-      >
+      {/* No GSAP pin under reduced motion. Use a normal horizontal scroll
+          rail so the tiles still display at their designed size. */}
+      <div className="mt-10 flex gap-4 overflow-x-auto pl-4 pr-12 pb-4 sm:pl-6 md:pl-10 no-scrollbar [scrollbar-width:none]">
         {integrations.map((i) => (
           <IntegrationTile key={i.id} item={i} />
         ))}
@@ -209,15 +195,14 @@ function MobileSnapScroll() {
 /* Tile — two-tone product chip                                  */
 /* ============================================================ */
 
-function IntegrationTile({ item }: { item: Integration }) {
+export function IntegrationTile({ item }: { item: Integration }) {
   return (
     <div
       data-int-tile
-      className="group relative flex-none w-[240px] sm:w-[260px] lg:w-[280px] snap-start overflow-hidden rounded-[20px] shadow-[0_24px_60px_-30px_rgba(8,30,90,0.30),0_2px_4px_-2px_rgba(8,30,90,0.10)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:rotate-[-0.4deg]"
+      className="group relative flex-none w-[240px] sm:w-[260px] lg:w-[280px] h-[280px] sm:h-[300px] lg:h-[320px] snap-start overflow-hidden rounded-[20px] shadow-[0_24px_60px_-30px_rgba(8,30,90,0.30),0_2px_4px_-2px_rgba(8,30,90,0.10)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:rotate-[-0.4deg]"
       style={{
         background: `linear-gradient(135deg, ${item.bg} 0%, ${darken(item.bg, 0.18)} 100%)`,
         color: item.fg,
-        height: 320,
       }}
     >
       {/* --- Intricate layered effects --- */}

@@ -75,7 +75,7 @@ export function HeroBento() {
           Frame holds the inset (margin). Band holds the rounded surface that
           fills the frame. Scroll scrubs the frame padding -> 0 and band
           radius -> 0, then the page scrolls on. */}
-      <div className="relative h-screen w-full">
+      <div className="relative h-[100svh] w-full">
         <div
           ref={frameRef}
           className="absolute inset-0 p-3 sm:p-5 md:p-6 lg:p-8"
@@ -121,16 +121,17 @@ export function HeroBento() {
               </RevealLines>
 
               <FadeUp delay={0.25}>
-                <p className="mx-auto mt-7 max-w-2xl text-base md:text-[17px] text-on-accent/80 leading-relaxed">
-                  Every Shopify theme looks the same, customising it breaks the
-                  theme, and the analytics never quite agree. Tilde rebuilds your
-                  storefront as a headless Next.js app on the Shopify backend you
-                  already use.
+                <p className="mx-auto mt-6 max-w-xl text-[15px] text-on-accent/80 leading-relaxed md:mt-7 md:text-[17px]">
+                  Tilde rebuilds your Shopify store as a headless Next.js
+                  storefront. Same backend, on-brand front, attribution that
+                  actually adds up.
                 </p>
               </FadeUp>
 
               <FadeUp delay={0.4}>
-                <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                {/* Mobile: stacked, both buttons full-width so they're visually
+                    equal. Tablet+: side-by-side with natural widths. */}
+                <div className="mx-auto mt-9 flex w-full max-w-xs flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:w-auto">
                   <Link
                     href="/contact"
                     className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-[15px] font-semibold text-accent shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:scale-[1.02]"
@@ -154,8 +155,8 @@ export function HeroBento() {
 
       {/* Bento grid — sits below the liquid hero band on the normal page surface */}
       <SectionFrame
-        className="pt-12 md:pt-16"
-        innerClassName="py-10 md:py-14 lg:py-16"
+        className="pt-16 md:pt-20"
+        innerClassName="py-14 md:py-20 lg:py-24"
       >
         {/* Section heading */}
         <FadeUp>
@@ -180,7 +181,7 @@ export function HeroBento() {
         </FadeUp>
 
         <StaggerChildren
-          className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 md:mt-12 md:grid-cols-4 md:gap-4 sm:auto-rows-[190px] md:auto-rows-[210px] lg:auto-rows-[230px]"
+          className="mt-10 grid grid-cols-1 auto-rows-[200px] gap-3 sm:grid-cols-2 sm:auto-rows-[190px] md:mt-12 md:grid-cols-4 md:gap-4 md:auto-rows-[210px] lg:auto-rows-[230px]"
           stagger={0.06}
           y={28}
           rotate={1}

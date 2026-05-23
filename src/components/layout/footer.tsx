@@ -5,18 +5,26 @@ import { site, navItems } from "@/lib/site";
 export function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-rule bg-bg-elevated/40">
-      {/* Giant "tilde" wordmark backdrop — subtle on most pages, accent-tinted on bridge */}
+      {/* Giant "tilde" wordmark backdrop. Sized down + pushed below on mobile
+          so it acts as a watermark peek instead of overlapping copyright. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -bottom-12 z-0 select-none text-center font-display font-extrabold leading-none tracking-[-0.06em] text-ink/[0.05] [[data-page-theme=bridge]_&]:text-accent/[0.08]"
+        className="pointer-events-none absolute inset-x-0 -bottom-2 z-0 select-none text-center font-display font-extrabold leading-none tracking-[-0.06em] text-ink/[0.06] md:hidden [[data-page-theme=bridge]_&]:text-accent/[0.09]"
+        style={{ fontSize: "9rem" }}
+      >
+        tilde
+      </span>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -bottom-12 z-0 hidden select-none text-center font-display font-extrabold leading-none tracking-[-0.06em] text-ink/[0.05] md:block [[data-page-theme=bridge]_&]:text-accent/[0.08]"
         style={{ fontSize: "clamp(10rem, 28vw, 24rem)" }}
       >
         tilde
       </span>
 
-      <div className="relative z-10 mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-10 pt-14 pb-32 md:pb-40">
-        <div className="grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-5">
+      <div className="relative z-10 mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-10 pt-14 pb-16 md:pb-16">
+        <div className="grid grid-cols-2 gap-y-8 gap-x-6 sm:grid-cols-3 sm:gap-10 md:grid-cols-12">
+          <div className="col-span-2 sm:col-span-3 md:col-span-5">
             <span className="font-display text-3xl leading-none tracking-tight text-ink">
               tilde
             </span>
@@ -32,7 +40,7 @@ export function Footer() {
             </a>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="col-span-1 sm:col-span-1 md:col-span-3">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
               Site
             </p>
@@ -66,7 +74,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="md:col-span-2">
+          <div className="col-span-1 sm:col-span-1 md:col-span-2">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
               Legal
             </p>
@@ -90,11 +98,13 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="md:col-span-2">
+          <div className="col-span-2 sm:col-span-1 md:col-span-2">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
               Elsewhere
             </p>
-            <ul className="mt-4 space-y-2">
+            {/* Mobile (2-col layout): inline row to use the full width.
+                Tablet/desktop: vertical list like the other link columns. */}
+            <ul className="mt-4 flex flex-row gap-5 sm:flex-col sm:gap-0 sm:space-y-2">
               <li>
                 <a
                   href={site.social.x}
@@ -129,22 +139,21 @@ export function Footer() {
           </div>
         </div>
 
-      </div>
-
-      {/* Copyright strip — pinned near the bottom of the footer */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-10 z-10 mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-10">
-        <div className="pointer-events-auto flex flex-col gap-3 text-sm text-ink-muted md:flex-row md:items-center md:justify-between">
-          <p>
-            © {new Date().getFullYear()} {site.name}. All rights reserved.
-          </p>
-          <p className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em]">
-            Made with
-            <Heart
-              className="inline-block size-3 fill-accent text-accent"
-              aria-hidden
-            />
-            in {site.city}
-          </p>
+        {/* Copyright strip — in normal flow so it can't overlap link columns. */}
+        <div className="mt-10 mb-24 border-t border-rule pt-6 md:mt-16">
+          <div className="flex flex-col gap-3 text-sm text-ink-muted md:flex-row md:items-center md:justify-between">
+            <p>
+              © {new Date().getFullYear()} {site.name}. All rights reserved.
+            </p>
+            <p className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em]">
+              Made with
+              <Heart
+                className="inline-block size-3 fill-accent text-accent"
+                aria-hidden
+              />
+              in {site.city}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

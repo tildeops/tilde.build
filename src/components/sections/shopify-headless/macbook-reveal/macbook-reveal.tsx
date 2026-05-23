@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -20,29 +20,31 @@ const RIGHT_COPY = "A storefront that feels like the brand.";
 const PAYOFF_COPY = "Same store. Built better.";
 
 /* ============================================================ */
-/* Entry — mode router                                           */
+/* Entry — CSS-gated router                                      */
+/* Mobile branch (<768px) and reduced-motion get the drag-slider */
+/* stack. iPad portrait + up runs the full GSAP scroll reveal.   */
 /* ============================================================ */
 
 export function MacbookReveal() {
   const reduced = useReducedMotion();
-  const [mode, setMode] = useState<"loading" | "desktop" | "mobile">("loading");
 
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 1023px)");
-    setMode(mq.matches ? "mobile" : "desktop");
-    const handler = (e: MediaQueryListEvent) =>
-      setMode(e.matches ? "mobile" : "desktop");
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
-  if (mode === "loading") {
-    return <div className="h-[60vh] w-full" />;
+  if (reduced) {
+    return (
+      <div id="macbook">
+        <MobileStack />
+      </div>
+    );
   }
-  if (mode === "mobile" || reduced) {
-    return <MobileStack />;
-  }
-  return <DesktopMacbookReveal />;
+  return (
+    <div id="macbook">
+      <div className="block md:hidden">
+        <MobileStack />
+      </div>
+      <div className="hidden md:block">
+        <DesktopMacbookReveal />
+      </div>
+    </div>
+  );
 }
 
 /* ============================================================ */
@@ -84,6 +86,12 @@ function DesktopMacbookReveal() {
       const pin = pinRef.current;
       const shell = shellRef.current;
       if (!pin || !shell) return;
+
+      // Only register the timeline when the desktop branch is actually visible.
+      // CSS handles the mobile/desktop split (block md:hidden / hidden md:block),
+      // and matchMedia ensures GSAP doesn't measure hidden DOM as zero-height.
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 768px)", () => {
 
       // ---------- Initial state ----------
       gsap.set(shell, { opacity: 0, y: 18, scale: 0.985, transformOrigin: "center top" });
@@ -276,12 +284,16 @@ function DesktopMacbookReveal() {
       return () => {
         ScrollTrigger.removeEventListener("refresh", onRefresh);
       };
+
+      }); // end matchMedia
+
+      return () => mm.revert();
     },
     { scope: sectionRef as React.RefObject<HTMLElement>, dependencies: [] }
   );
 
   return (
-    <section ref={sectionRef} id="macbook" className="relative w-full pt-12 md:pt-20">
+    <section ref={sectionRef} className="relative w-full pt-12 md:pt-20">
       <div ref={pinRef} className="relative flex h-screen w-full flex-col">
         {/* Heading — compact, locked to the top */}
         <div className="relative z-10 mx-auto w-full max-w-[860px] shrink-0 px-6 pt-8 pb-3 text-center md:pt-10 md:pb-4">

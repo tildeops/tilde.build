@@ -42,71 +42,66 @@ export function PricingHeadless() {
               "linear-gradient(135deg, #f5f6f8 0%, #e6e8ec 45%, #f0f1f3 70%, #d9dce1 100%)",
           }}
         >
-          {/* Diagonal flash sweep — a bright streak travels across the silver
-              every ~7s with a 3s rest between passes. Clearly visible without
-              being noisy. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0 z-0 w-[35%]"
-            style={{
-              left: 0,
-              background:
-                "linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 45%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.65) 55%, rgba(255,255,255,0) 100%)",
-              animation: "flash-diagonal 8s linear infinite",
-              mixBlendMode: "overlay",
-              filter: "blur(4px)",
-            }}
-          />
-
-          {/* Secondary softer wash — gentle ambient drift behind the flash */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-0"
-            style={{
-              background:
-                "radial-gradient(80% 60% at 30% 30%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0) 60%), radial-gradient(70% 50% at 80% 80%, rgba(160,170,185,0.16) 0%, rgba(160,170,185,0) 55%)",
-            }}
-          />
-          {/* Top-left highlight bloom */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-0"
-            style={{
-              background:
-                "radial-gradient(40% 50% at 8% 6%, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 55%)",
-            }}
-          />
-          {/* Bottom-right deeper silver pool */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-0"
-            style={{
-              background:
-                "radial-gradient(50% 50% at 95% 95%, rgba(115,125,140,0.22) 0%, rgba(115,125,140,0) 55%)",
-            }}
-          />
-          {/* Fine metallic grain */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-0 mix-blend-overlay opacity-[0.20]"
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-            }}
-          />
-          {/* Inner top + left highlight ring — embossed silver edge */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-0 rounded-[inherit]"
-            style={{
-              boxShadow:
-                "inset 0 1px 0 rgba(255,255,255,0.8), inset 1px 0 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(80,90,105,0.18), inset -1px 0 0 rgba(80,90,105,0.10)",
-            }}
-          />
+          {/* Decorative silver layers — desktop only. Mobile keeps the base
+              gradient so the card stays cleaner and the page lighter. */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 z-0 hidden md:block">
+            {/* Diagonal flash sweep */}
+            <div
+              className="absolute inset-y-0 w-[35%]"
+              style={{
+                left: 0,
+                background:
+                  "linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 45%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.65) 55%, rgba(255,255,255,0) 100%)",
+                animation: "flash-diagonal 8s linear infinite",
+                mixBlendMode: "overlay",
+                filter: "blur(4px)",
+              }}
+            />
+            {/* Ambient washes */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(80% 60% at 30% 30%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0) 60%), radial-gradient(70% 50% at 80% 80%, rgba(160,170,185,0.16) 0%, rgba(160,170,185,0) 55%)",
+              }}
+            />
+            {/* Top-left bloom */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(40% 50% at 8% 6%, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 55%)",
+              }}
+            />
+            {/* Bottom-right pool */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(50% 50% at 95% 95%, rgba(115,125,140,0.22) 0%, rgba(115,125,140,0) 55%)",
+              }}
+            />
+            {/* Metallic grain */}
+            <div
+              className="absolute inset-0 mix-blend-overlay opacity-[0.20]"
+              style={{
+                backgroundImage:
+                  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+              }}
+            />
+            {/* Embossed silver edge */}
+            <span
+              className="absolute inset-0 rounded-[inherit]"
+              style={{
+                boxShadow:
+                  "inset 0 1px 0 rgba(255,255,255,0.8), inset 1px 0 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(80,90,105,0.18), inset -1px 0 0 rgba(80,90,105,0.10)",
+              }}
+            />
+          </div>
 
           <div className="relative z-10 grid md:grid-cols-12">
             {/* LEFT — features */}
-            <div className="relative p-8 md:col-span-7 md:p-10 lg:p-12">
+            <div className="relative p-6 sm:p-7 md:col-span-7 md:p-10 lg:p-12">
               <div className="flex items-center justify-between gap-4">
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-ink-muted">
                   Tilde · headless package
@@ -135,22 +130,25 @@ export function PricingHeadless() {
                 {flagship.tagline}
               </p>
 
-              <div className="mt-10 flex items-end justify-between border-b border-ink/10 pb-2">
+              <div className="mt-8 flex items-end justify-between border-b border-ink/10 pb-2 md:mt-10">
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink-muted">
                   What&apos;s included
                 </p>
-                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink-muted">
+                {/* Item count — desktop only, cleaner on mobile without it */}
+                <p className="hidden font-mono text-[10px] uppercase tracking-[0.22em] text-ink-muted md:block">
                   {flagship.features.length} items
                 </p>
               </div>
 
-              <ul className="mt-5 grid gap-2.5 sm:grid-cols-2">
+              {/* On mobile, show only the emphasis features (the 3 headliners).
+                  Full breakdown lives on /pricing. */}
+              <ul className="mt-5 grid gap-2 sm:grid-cols-2 sm:gap-2.5">
                 {flagship.features.map((f) => (
                   <li
                     key={f.label}
                     className={`flex items-start gap-2.5 text-[13.5px] leading-snug ${
                       f.emphasis ? "text-ink" : "text-ink-muted"
-                    }`}
+                    } ${!f.emphasis ? "hidden md:flex" : ""}`}
                   >
                     <Check
                       className={`mt-0.5 size-4 shrink-0 ${
@@ -161,6 +159,15 @@ export function PricingHeadless() {
                   </li>
                 ))}
               </ul>
+
+              {/* Mobile-only link to the full breakdown */}
+              <Link
+                href="/pricing"
+                className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-accent md:hidden"
+              >
+                See full breakdown
+                <ArrowRight className="size-3.5" />
+              </Link>
             </div>
 
             {/* Perforated vertical divider — same silver continues, just a "tear" line */}
@@ -178,30 +185,30 @@ export function PricingHeadless() {
             />
 
             {/* RIGHT — price + CTA on the same silver surface */}
-            <div className="relative flex flex-col p-8 md:col-span-5 md:p-10 lg:p-12">
-              {/* Header row */}
-              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-ink-muted">
+            <div className="relative flex flex-col p-6 pt-2 sm:p-7 sm:pt-2 md:col-span-5 md:p-10 md:pt-10 lg:p-12 lg:pt-12">
+              {/* Quote-style header — desktop only */}
+              <div className="hidden items-center justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-ink-muted md:flex">
                 <span>Quote · TLD-0042</span>
                 <span className="text-ink-muted/70">PDF ↗</span>
               </div>
 
-              <div aria-hidden className="mt-5 border-t border-ink/10" />
+              <div aria-hidden className="mt-5 hidden border-t border-ink/10 md:block" />
 
-              <p className="mt-7 font-mono text-[10px] uppercase tracking-[0.24em] text-ink-muted">
+              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.24em] text-ink-muted md:mt-7">
                 Project total
               </p>
               <CountUp
                 to={flagship.price}
                 prefix={flagship.currency}
                 format={(n) => n.toLocaleString("en-IN")}
-                className="mt-2 block font-display font-extrabold text-[clamp(3rem,6.4vw,4.6rem)] leading-none tracking-[-0.045em] text-ink"
+                className="mt-2 block font-display font-extrabold text-[clamp(2.6rem,8vw,4.6rem)] leading-none tracking-[-0.045em] text-ink"
               />
               <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-muted">
                 {flagship.priceMeta}
               </p>
 
-              {/* Line-item-style mini table */}
-              <div className="mt-7 space-y-1.5 font-mono text-[11px] text-ink-muted">
+              {/* Line-item-style mini table — desktop only */}
+              <div className="mt-7 hidden space-y-1.5 font-mono text-[11px] text-ink-muted md:block">
                 <div className="flex justify-between">
                   <span>Build · 3–4 weeks</span>
                   <span className="text-ink">included</span>
@@ -216,11 +223,10 @@ export function PricingHeadless() {
                 </div>
               </div>
 
-              {/* CTA — inverted dark on silver so it punches */}
+              {/* CTA */}
               <Link
                 href={flagship.cta.href}
-                className="group mt-auto inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-ink px-6 text-[15px] font-semibold text-white shadow-[0_10px_30px_-12px_rgba(11,12,14,0.55)] transition-all duration-300 hover:bg-[#0a1126] hover:shadow-[0_16px_38px_-12px_rgba(11,12,14,0.7)]"
-                style={{ marginTop: "auto" }}
+                className="group mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-ink px-6 text-[15px] font-semibold text-white shadow-[0_10px_30px_-12px_rgba(11,12,14,0.55)] transition-all duration-300 hover:bg-[#0a1126] hover:shadow-[0_16px_38px_-12px_rgba(11,12,14,0.7)] md:mt-auto"
               >
                 {flagship.cta.label}
                 <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
@@ -233,8 +239,9 @@ export function PricingHeadless() {
         </div>
       </FadeUp>
 
-      {/* Add-ons */}
-      <div className="mt-16">
+      {/* Add-ons — desktop only. Mobile sends users to /pricing for the full
+          breakdown, since the page is already long with the pinned animations. */}
+      <div className="mt-16 hidden md:block">
         <div className="flex items-baseline justify-between">
           <FadeUp>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
@@ -249,14 +256,15 @@ export function PricingHeadless() {
         </div>
 
         <StaggerChildren
-          className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-5"
           stagger={0.06}
           y={20}
           grid
         >
           {addons.map((a) => (
-            <div
+            <Link
               key={a.id}
+              href="/pricing"
               className="group flex flex-col rounded-2xl bg-bg p-6 shadow-[0_1px_2px_rgba(11,12,14,0.04),0_8px_24px_-12px_rgba(11,12,14,0.10)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_1px_2px_rgba(11,12,14,0.04),0_18px_36px_-18px_rgba(11,12,14,0.20)]"
             >
               <p className="text-[16px] font-semibold tracking-[-0.005em] text-ink">
@@ -268,9 +276,23 @@ export function PricingHeadless() {
               <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.14em] text-accent">
                 {a.price}
               </p>
-            </div>
+            </Link>
           ))}
         </StaggerChildren>
+      </div>
+
+      {/* Mobile-only addons teaser link */}
+      <div className="mt-10 text-center md:hidden">
+        <Link
+          href="/pricing"
+          className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-5 py-3 text-[13px] font-semibold text-ink"
+        >
+          View add-ons &amp; full breakdown
+          <ArrowRight className="size-4" />
+        </Link>
+        <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+          {addons.length} optional modules
+        </p>
       </div>
     </SectionFrame>
   );
