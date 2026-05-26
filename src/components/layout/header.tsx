@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
@@ -9,6 +10,8 @@ import { navItems, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export function Header() {
+  const pathname = usePathname();
+  const useNotchInstead = pathname?.startsWith("/shopify-headless");
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -94,6 +97,9 @@ export function Header() {
         scrolled
           ? "top-6 px-6 md:px-4 lg:px-6"
           : "top-6 px-6 md:top-14 md:px-5 lg:top-16 lg:px-6",
+        // On /shopify-headless, the notch nav takes over from md+ — keep
+        // the regular pill on mobile only.
+        useNotchInstead && "md:hidden",
       )}
     >
       <div

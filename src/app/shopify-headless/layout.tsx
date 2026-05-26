@@ -1,4 +1,5 @@
 import * as React from "react";
+import { NotchNav } from "@/components/sections/shopify-headless/notch-nav";
 
 /**
  * Page-scoped Bridge-style theme: cool white + electric blue + heavy sans.
@@ -11,5 +12,10 @@ export default function ShopifyHeadlessLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div data-page-theme="bridge">{children}</div>;
+  return (
+    <div data-page-theme="bridge">
+      <NotchNav />
+      {children}
+    </div>
+  );
 }
