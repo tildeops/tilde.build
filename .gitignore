@@ -39,7 +39,7 @@ yarn-error.log*
 
 # local dev screenshots
 .screenshots/
-
+genxell.webflow.io/
 # typescript
 *.tsbuildinfo
 next-env.d.ts

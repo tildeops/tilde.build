@@ -7,7 +7,7 @@
 
 export type Theme = "purple" | "red" | "bridge";
 
-export const ACTIVE_THEME: Theme = "purple";
+export const ACTIVE_THEME: Theme = "bridge";
 
 type Vec3 = readonly [number, number, number];
 
