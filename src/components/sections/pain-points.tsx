@@ -5,7 +5,8 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Box, Lock, Gauge, CreditCard, type LucideIcon } from "lucide-react";
-import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
+import { SectionFrame } from "@/components/layout/section-frame";
+import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { painPoints } from "@/lib/content";
 
@@ -71,12 +72,22 @@ export function PainPoints() {
   return (
     <SectionFrame id="pain">
       <div className="text-center">
-        <Eyebrow shimmer>~ The reasons brands come to us</Eyebrow>
+        <FadeUp>
+          <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
+            <span
+              className="size-1.5 rounded-full bg-accent"
+              style={{ boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)" }}
+            />
+            <span className="text-[12px] font-medium text-ink-muted">
+              The reasons teams come to us
+            </span>
+          </div>
+        </FadeUp>
         <RevealLines
           as="h2"
-          className="mx-auto mt-5 max-w-3xl font-display font-medium leading-[1.05] tracking-[-0.02em] text-[clamp(2rem,4.6vw,3.5rem)]"
+          className="mx-auto mt-5 max-w-3xl font-display font-extrabold leading-[1.0] tracking-[-0.035em] text-ink text-[clamp(2rem,4.6vw,3.4rem)]"
         >
-          Sound familiar?
+          Sound <span className="italic">familiar?</span>
         </RevealLines>
       </div>
 

@@ -47,6 +47,7 @@ export function FinalCTA() {
           {/* WebGL liquid paint background */}
           <LiquidBackground
             animated
+            themeOverride="bridge"
             className="absolute inset-0 -z-10"
           />
 
@@ -71,14 +72,15 @@ export function FinalCTA() {
                 duration={1.15}
                 stagger={0.09}
                 yPercent={130}
-                className="mt-5 font-display font-medium leading-[1.04] tracking-[-0.02em] text-[clamp(2.25rem,5vw,4.25rem)]"
+                className="mt-5 font-display font-extrabold leading-[1.0] tracking-[-0.035em] text-[clamp(2.25rem,5vw,4.25rem)]"
               >
-                Ready to give your Shopify store a{" "}
-                <span className="italic">real identity?</span>
+                Ready to ship the software{" "}
+                <span className="italic">your business actually needs?</span>
               </RevealLines>
               <p className="mt-5 text-base md:text-lg text-on-accent/85 max-w-xl leading-relaxed">
-                30-minute discovery call, no commitment. We&apos;ll tell you
-                honestly whether headless is right for you.
+                30-minute discovery call, no commitment. Tell us what you&apos;re
+                trying to build — we&apos;ll tell you honestly what the shape of
+                the work should look like.
               </p>
               <div className="mt-9 flex flex-col sm:flex-row gap-3">
                 <Button asChild size="lg" variant="invert" className="gloss-inset group/cta">

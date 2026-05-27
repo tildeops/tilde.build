@@ -135,11 +135,11 @@ function EmailSwap() {
   return (
     <section
       ref={sectionRef}
-      className="relative mt-20 w-full md:mt-28 lg:mt-32"
+      className="relative w-full"
       style={{ height: `${STEPS.length * 100}vh` }}
     >
       {/* Sticky stage — whole section stays in viewport while user scrolls */}
-      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center px-4 pt-20 pb-6 sm:px-6 md:items-center md:px-10 md:pt-0 md:pb-0 lg:px-16">
+      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center px-4 pt-12 pb-6 sm:px-6 md:items-center md:px-10 md:pt-0 md:pb-0 lg:px-16">
         <div className="grid w-full max-w-[1240px] gap-4 md:grid-cols-12 md:items-center md:gap-12">
           {/* Phone (centerpiece). On mobile this is order-2 so the heading
               renders above; on desktop it moves to order-1 (left column). */}

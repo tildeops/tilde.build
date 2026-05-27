@@ -4,13 +4,14 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
+import { SectionFrame } from "@/components/layout/section-frame";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { faq } from "@/lib/content";
 
@@ -53,13 +54,23 @@ export function FAQ({
     <SectionFrame id={id}>
       <div className="grid gap-12 md:grid-cols-12 md:gap-16 items-start">
         <div className="md:col-span-4 md:sticky md:top-24">
-          <Eyebrow shimmer>~ FAQ</Eyebrow>
+          <FadeUp>
+            <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
+              <span
+                className="size-1.5 rounded-full bg-accent"
+                style={{ boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)" }}
+              />
+              <span className="text-[12px] font-medium text-ink-muted">
+                FAQ
+              </span>
+            </div>
+          </FadeUp>
           <RevealLines
             as="h2"
-            className="mt-5 font-display font-medium leading-[1.05] tracking-[-0.02em] text-[clamp(2rem,4.6vw,3.25rem)]"
+            className="mt-5 font-display font-extrabold leading-[1.0] tracking-[-0.035em] text-ink text-[clamp(2rem,4.6vw,3.25rem)]"
           >
             Questions,{" "}
-            <span className="italic text-ink-muted">answered.</span>
+            <span className="italic">answered.</span>
           </RevealLines>
         </div>
 

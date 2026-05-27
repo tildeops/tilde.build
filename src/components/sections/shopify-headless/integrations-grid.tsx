@@ -7,7 +7,10 @@ import { useGSAP } from "@gsap/react";
 import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
-import { integrations, type Integration } from "@/lib/shopify-headless/integrations";
+import {
+  integrations,
+  type Integration,
+} from "@/lib/shopify-headless/integrations";
 
 /**
  * Pinned horizontal scroll for the integrations grid. The section pins to the
@@ -23,7 +26,12 @@ export function IntegrationsGrid() {
   }
   return (
     <div id="integrations">
-      <PinnedHorizontalScroll />
+      <div className="hidden md:block">
+        <PinnedHorizontalScroll />
+      </div>
+      <div className="md:hidden">
+        <CoverflowWheel />
+      </div>
     </div>
   );
 }
@@ -74,7 +82,7 @@ function PinnedHorizontalScroll() {
       window.addEventListener("resize", onResize);
       return () => window.removeEventListener("resize", onResize);
     },
-    { scope: sectionRef as React.RefObject<HTMLElement>, dependencies: [] }
+    { scope: sectionRef as React.RefObject<HTMLElement>, dependencies: [] },
   );
 
   return (
@@ -91,7 +99,9 @@ function PinnedHorizontalScroll() {
                 <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated/80 backdrop-blur px-3 py-1.5">
                   <span
                     className="size-1.5 rounded-full bg-accent"
-                    style={{ boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)" }}
+                    style={{
+                      boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)",
+                    }}
                   />
                   <span className="text-[12px] font-medium text-ink-muted">
                     Connect everything
@@ -146,6 +156,223 @@ function PinnedHorizontalScroll() {
           </div>
           <p className="mt-4 text-center text-[12px] text-ink-muted md:mt-5 md:text-[13px]">
             + custom integrations on request. yes, even that obscure one.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================ */
+/* Mobile coverflow wheel — vertical 3D rotation through cards   */
+/* ============================================================ */
+
+function CoverflowWheel() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const wheelRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const progressRef = useRef<HTMLDivElement | null>(null);
+
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      // ~60% of viewport-height of scroll per card feels like one firm
+      // thumb-swipe per card.
+      const runwayVh = Math.max(1, integrations.length) * 60;
+
+      // iOS picker / alarm-clock dial geometry. Cards sit on the outside
+      // of a horizontal cylinder; the wheel rotates around its X axis,
+      // so from the front the user sees a stack of cards with the active
+      // one flat in the center and neighbours curving away above and below.
+      //
+      // Geometric constraint: two flat rectangles tilted by STEP_DEG on
+      // the cylinder surface only avoid intersecting if
+      //   half_card_height < RADIUS * tan(STEP_DEG / 2)
+      // Tile is scale(0.6) of a 400-tall native ⇒ 240 visual, h/2 = 120.
+      // STEP=28° → tan(14°)=0.249, so RADIUS must exceed 120/0.249=482.
+      // RADIUS=520 gives ~130 clearance — ~10 px margin over the 120 half,
+      // which lets adjacent cards sit almost flush (only ~4 px visible
+      // gap) for the continuous-wheel-surface feel.
+      const STEP_DEG = 28; // angular spacing between adjacent slots
+      const RADIUS = 520; // cylinder radius in CSS pixels
+      const FADE_DEG = 42; // beyond this, slots fade to ~0
+
+      const updateCards = (active: number) => {
+        cardRefs.current.forEach((card, i) => {
+          if (!card) return;
+          const angleDeg = (i - active) * STEP_DEG;
+          const abs = Math.abs(angleDeg);
+          // Past ~85° we're on the back of the wheel — hide outright.
+          if (abs > 85) {
+            card.style.visibility = "hidden";
+            card.style.opacity = "0";
+            return;
+          }
+          const angleRad = (angleDeg * Math.PI) / 180;
+          const y = RADIUS * Math.sin(angleRad); // px from center (positive = down)
+          const z = RADIUS * Math.cos(angleRad) - RADIUS; // 0 at front, negative receding
+
+          card.style.visibility = "visible";
+          card.style.opacity = String(Math.max(0, 1 - abs / FADE_DEG));
+          // translate centers the card in the wheel and offsets vertically;
+          // translateZ + rotateX places it on the cylinder surface facing out.
+          card.style.transform =
+            `translate(-50%, calc(-50% + ${y.toFixed(2)}px))` +
+            ` translateZ(${z.toFixed(2)}px)` +
+            ` rotateX(${(-angleDeg).toFixed(2)}deg)`;
+          card.style.zIndex = String(1000 - Math.round(abs));
+        });
+      };
+
+      // Initial paint with the first card centered.
+      updateCards(0);
+
+      const st = ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: `+=${runwayVh}vh`,
+        pin: true,
+        scrub: 0.5,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const active = self.progress * Math.max(0, integrations.length - 1);
+          updateCards(active);
+          if (progressRef.current) {
+            progressRef.current.style.transform = `scaleX(${self.progress})`;
+          }
+        },
+      });
+
+      return () => st.kill();
+    },
+    { scope: sectionRef as React.RefObject<HTMLElement>, dependencies: [] },
+  );
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative h-[100svh] w-full overflow-hidden"
+    >
+      <div className="absolute inset-0 flex flex-col">
+        {/* Header band */}
+        <div className="mx-auto w-full max-w-[1240px] px-4 pt-12 sm:px-6">
+          <FadeUp>
+            <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated/80 backdrop-blur px-3 py-1.5">
+              <span
+                className="size-1.5 rounded-full bg-accent"
+                style={{ boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)" }}
+              />
+              <span className="text-[12px] font-medium text-ink-muted">
+                Connect everything
+              </span>
+            </div>
+          </FadeUp>
+          <RevealLines
+            as="h2"
+            className="mt-4 font-display font-extrabold leading-[0.98] tracking-[-0.04em] text-ink text-[clamp(1.75rem,5vw,3.2rem)]"
+          >
+            Plug into everything you already pay for.
+          </RevealLines>
+          <FadeUp delay={0.18}>
+            <p className="mt-3 text-[14px] text-ink-muted leading-relaxed">
+              Attribution, analytics, payments, email, support — wired
+              server-side so the numbers match.
+            </p>
+          </FadeUp>
+        </div>
+
+        {/* Wheel stage. The mask softly fades cards at the top and bottom
+            edges of this band so neighbours don't bleed into the section
+            header above or the scroll-progress rail below. */}
+        <div
+          className="relative flex-1"
+          style={{
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)",
+          }}
+        >
+          <div
+            ref={wheelRef}
+            className="absolute inset-0"
+            style={{
+              // Closer camera makes the top/bottom of the wheel curl
+              // away more dramatically — alarm-clock dial feel.
+              perspective: "600px",
+              perspectiveOrigin: "50% 50%",
+            }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{ transformStyle: "preserve-3d" }}
+            >
+              {integrations.map((item, i) => (
+                <div
+                  key={item.id}
+                  ref={(el) => {
+                    cardRefs.current[i] = el;
+                  }}
+                  className="absolute left-1/2 top-1/2"
+                  style={{
+                    transformOrigin: "50% 50%",
+                    transformStyle: "preserve-3d",
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
+                    willChange: "transform, opacity",
+                    visibility: "hidden",
+                    opacity: 0,
+                  }}
+                >
+                  {/* Inner scale wrapper: tiles render at 60% of native
+                      so the card half-height (84px) stays under the
+                      cylinder's clearance (~97px at R=420, STEP=26°),
+                      preventing adjacent cards from cutting through each
+                      other where their tilted planes would otherwise meet.
+
+                      Width is widened to use the screen ((100vw - 30px) / 0.6
+                      gives a visual width of viewport-minus-30px after the
+                      0.6 scale, capped at 580px native ≈ 348px visual).
+                      Height stays at the tile's native 280 (168 visual). */}
+                  <div
+                    className="[&>*]:!w-full [&>*]:!h-full"
+                    style={{
+                      width: "min(580px, calc((100vw - 30px) / 0.6))",
+                      height: 400,
+                      transform: "scale(0.6)",
+                      transformOrigin: "50% 50%",
+                    }}
+                  >
+                    <IntegrationTile item={item} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer progress rail — mirrors the desktop variant. */}
+        <div className="mx-auto w-full max-w-[1240px] px-4 pb-10 sm:px-6">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+              Scroll
+            </span>
+            <div className="relative h-[2px] flex-1 overflow-hidden rounded-full bg-rule">
+              <div
+                ref={progressRef}
+                className="absolute inset-0 origin-left bg-accent"
+                style={{ transform: "scaleX(0)" }}
+              />
+            </div>
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+              {integrations.length}
+            </span>
+          </div>
+          <p className="mt-4 text-center text-[12px] text-ink-muted">
+            + custom integrations on request.
           </p>
         </div>
       </div>
@@ -299,13 +526,13 @@ export function IntegrationTile({ item }: { item: Integration }) {
           style={{ background: "rgba(255,255,255,0.30)" }}
         />
         <p
-          className="text-[15px] font-semibold leading-tight tracking-[-0.005em]"
+          className="text-[22px] font-semibold leading-tight tracking-[-0.01em]"
           style={{ color: item.fg }}
         >
           {item.name}
         </p>
         <p
-          className="mt-1 font-mono text-[10px] font-medium uppercase tracking-[0.20em]"
+          className="mt-1.5 font-mono text-[12px] font-medium uppercase tracking-[0.20em]"
           style={{ color: item.fg, opacity: 0.7 }}
         >
           {item.category}
@@ -322,7 +549,8 @@ function darken(hex: string, amount: number) {
   const r = parseInt(isShort ? h[0] + h[0] : h.substring(0, 2), 16);
   const g = parseInt(isShort ? h[1] + h[1] : h.substring(2, 4), 16);
   const b = parseInt(isShort ? h[2] + h[2] : h.substring(4, 6), 16);
-  const dim = (c: number) => Math.max(0, Math.min(255, Math.round(c * (1 - amount))));
+  const dim = (c: number) =>
+    Math.max(0, Math.min(255, Math.round(c * (1 - amount))));
   const toHex = (c: number) => c.toString(16).padStart(2, "0");
   return `#${toHex(dim(r))}${toHex(dim(g))}${toHex(dim(b))}`;
 }

@@ -15,6 +15,10 @@ function registerDefaults() {
   CustomEase.create("editorial", "M0,0 C0.22,0.96 0.18,1 1,1");
   CustomEase.create("editorial-in", "M0,0 C0,0 0.82,0.04 1,1");
   gsap.defaults({ ease: "editorial", duration: 0.9 });
+  // Prevent ScrollTrigger from refreshing every time iOS Safari's address bar
+  // shows/hides — the resulting refresh-jump is the main cause of perceived
+  // "glitches" when entering/leaving pinned sections on mobile.
+  ScrollTrigger.config({ ignoreMobileResize: true });
   registered = true;
 }
 

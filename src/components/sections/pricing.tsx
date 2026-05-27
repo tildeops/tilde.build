@@ -5,48 +5,27 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Check, ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
+import { Check, ArrowUpRight, ArrowRight } from "lucide-react";
+import { SectionFrame } from "@/components/layout/section-frame";
+import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { CountUp } from "@/components/motion/count-up";
-import { pricing, addOn } from "@/lib/content";
+import { engagementTiers } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 const INR = new Intl.NumberFormat("en-IN");
 
-function parsePrice(raw: string): {
-  prefix: string;
-  amount: number | null;
-  suffix: string;
-} {
-  // Match the first number with optional thousands separators
-  const match = raw.match(/(₹|US\$|\$|€)?\s*([0-9][0-9,]*)/);
-  if (!match) return { prefix: "", amount: null, suffix: raw };
-  const [full, currency, digits] = match;
-  const idx = raw.indexOf(full);
-  const before = raw.slice(0, idx) + (currency ?? "");
-  const after = raw.slice(idx + full.length);
-  return {
-    prefix: before,
-    amount: Number(digits.replace(/,/g, "")),
-    suffix: after,
-  };
-}
-
 export function Pricing() {
   const gridRef = useRef<HTMLDivElement | null>(null);
-  const addonRef = useRef<HTMLDivElement | null>(null);
 
   useGSAP(
     () => {
       const grid = gridRef.current;
       if (!grid) return;
-      const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-price-card]"));
+      const cards = Array.from(
+        grid.querySelectorAll<HTMLElement>("[data-price-card]"),
+      );
       gsap.set(cards, { opacity: 0, y: 36, scale: 0.97 });
-      cards.forEach((c) => {
-        if (c.dataset.highlight === "true") gsap.set(c, { scale: 0.94 });
-      });
 
       const st = ScrollTrigger.create({
         trigger: grid,
@@ -59,147 +38,133 @@ export function Pricing() {
             scale: 1,
             duration: 0.95,
             ease: "editorial",
-            stagger: 0.14,
-            onComplete: () => {
-              const addon = addonRef.current;
-              if (!addon) return;
-              gsap.fromTo(
-                addon,
-                { opacity: 0, y: 28 },
-                { opacity: 1, y: 0, duration: 0.85, ease: "editorial" }
-              );
-            },
+            stagger: 0.12,
           });
         },
       });
       return () => st.kill();
     },
-    { scope: gridRef as React.RefObject<HTMLElement>, dependencies: [] }
+    { scope: gridRef as React.RefObject<HTMLElement>, dependencies: [] },
   );
 
   return (
     <SectionFrame id="pricing">
       <div className="text-center">
-        <Eyebrow shimmer>~ Transparent pricing</Eyebrow>
+        <FadeUp>
+          <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
+            <span
+              className="size-1.5 rounded-full bg-accent"
+              style={{ boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)" }}
+            />
+            <span className="text-[12px] font-medium text-ink-muted">
+              Three ways to work with us
+            </span>
+          </div>
+        </FadeUp>
         <RevealLines
           as="h2"
-          className="mx-auto mt-5 max-w-3xl font-display font-medium leading-[1.05] tracking-[-0.02em] text-[clamp(2rem,4.6vw,3.5rem)]"
+          className="mx-auto mt-5 max-w-3xl font-display font-extrabold leading-[1.0] tracking-[-0.035em] text-ink text-[clamp(2rem,4.6vw,3.4rem)]"
         >
-          No quote-required{" "}
-          <span className="italic text-ink-muted">nonsense.</span>
+          Pick the engagement that{" "}
+          <span className="italic">fits your project.</span>
         </RevealLines>
-        <p className="mx-auto mt-5 max-w-xl text-base text-ink-muted leading-relaxed">
-          We list our prices because we&apos;re confident in the value. Plug the
-          add-ons you need, skip the ones you don&apos;t.
-        </p>
+        <FadeUp delay={0.15}>
+          <p className="mx-auto mt-5 max-w-xl text-base text-ink-muted leading-relaxed">
+            Most projects start fixed-scope. Some need a team for the month.
+            Some just need an hour of senior eyes. Same engineers, three shapes.
+          </p>
+        </FadeUp>
       </div>
 
       <div ref={gridRef} className="mt-14 grid gap-5 lg:grid-cols-3">
-        {pricing.map((p) => {
-          const parsed = parsePrice(p.price);
-          return (
-            <article
-              key={p.name}
-              data-price-card
-              data-highlight={p.highlight ? "true" : "false"}
-              className={cn(
-                "group/card relative flex flex-col rounded-2xl border bg-bg p-7 md:p-8 transition-shadow duration-500 will-change-transform hover:-translate-y-1",
-                p.highlight
-                  ? "border-accent shadow-[0_30px_80px_-50px_rgb(var(--accent-rgb)/0.5)] hover:shadow-[0_45px_110px_-40px_rgb(var(--accent-rgb)/0.6)]"
-                  : "border-rule hover:shadow-[0_30px_80px_-50px_rgb(var(--accent-rgb)/0.35)]"
-              )}
-            >
-              {p.highlight && (
-                <span className="absolute -top-3 left-7 rounded-full bg-accent px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-on-accent gloss-inset shadow-[0_8px_24px_-8px_rgb(var(--accent-rgb)/0.55)]">
-                  Flagship · Most popular
-                </span>
-              )}
-              <Eyebrow>{p.eyebrow}</Eyebrow>
-              <h3 className="mt-3 font-display text-2xl md:text-3xl">{p.name}</h3>
-              <p className="mt-4 text-sm text-ink-muted leading-relaxed min-h-[3rem]">
-                {p.description}
-              </p>
-              <div className="mt-6 flex items-baseline gap-1">
-                <span className="font-display text-4xl md:text-5xl font-medium tracking-tight">
-                  {parsed.amount != null ? (
-                    <>
-                      {parsed.prefix}
-                      <CountUp to={parsed.amount} format={(n) => INR.format(n)} />
-                    </>
-                  ) : (
-                    p.price
-                  )}
-                </span>
-                {parsed.suffix && (
-                  <span className="font-display text-2xl md:text-3xl font-medium tracking-tight text-ink-muted">
-                    {parsed.suffix}
-                  </span>
-                )}
-              </div>
-              <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
-                {p.cadence}
-              </p>
-
-              <ul className="mt-7 space-y-2.5 flex-1">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-ink">
-                    <Check className="mt-0.5 size-4 text-accent shrink-0" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Button
-                asChild
-                variant={p.highlight ? "primary" : "secondary"}
-                size="md"
-                className="mt-8 w-full"
+        {engagementTiers.map((tier) => (
+          <article
+            key={tier.id}
+            data-price-card
+            className={cn(
+              "group/card relative flex flex-col rounded-2xl border bg-bg p-7 md:p-8 transition-shadow duration-500 will-change-transform hover:-translate-y-1",
+              tier.highlight
+                ? "border-accent shadow-[0_30px_80px_-50px_rgb(var(--accent-rgb)/0.5)] hover:shadow-[0_45px_110px_-40px_rgb(var(--accent-rgb)/0.6)]"
+                : "border-rule hover:shadow-[0_30px_80px_-50px_rgb(var(--accent-rgb)/0.35)]",
+            )}
+          >
+            {tier.highlight && (
+              <span
+                className="absolute -top-3 left-7 rounded-full bg-accent px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-on-accent"
+                style={{
+                  boxShadow:
+                    "0 8px 24px -8px rgb(var(--accent-rgb) / 0.55)",
+                }}
               >
-                <Link href={p.cta.href}>
-                  {p.cta.label} <ArrowUpRight />
-                </Link>
-              </Button>
-            </article>
-          );
-        })}
-      </div>
-
-      {/* Add-on */}
-      <div
-        ref={addonRef}
-        className="group mt-6 rounded-2xl border border-dashed border-rule bg-bg-elevated/40 p-7 md:p-8 transition-all duration-500 hover:-translate-y-1 hover:border-solid hover:border-accent/40 hover:shadow-[0_30px_80px_-50px_rgb(var(--accent-rgb)/0.30)]"
-      >
-        <div className="grid gap-6 md:grid-cols-12 md:items-center">
-          <div className="md:col-span-7">
-            <Eyebrow>~ Optional add-on</Eyebrow>
-            <h3 className="mt-3 font-display text-2xl md:text-3xl leading-tight">
-              {addOn.name}
-            </h3>
-            <p className="mt-3 text-sm md:text-base text-ink-muted leading-relaxed max-w-prose">
-              {addOn.description}
-            </p>
-          </div>
-          <div className="md:col-span-5">
-            <div className="flex items-baseline gap-2">
-              <span className="font-display text-3xl md:text-4xl font-medium tracking-tight">
-                {addOn.price}
+                Most popular
               </span>
+            )}
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+              ~ {tier.eyebrow}
+            </p>
+            <h3 className="mt-3 font-display text-2xl font-extrabold tracking-[-0.02em] text-ink md:text-3xl">
+              {tier.name}
+            </h3>
+            <p className="mt-4 min-h-[3rem] text-sm text-ink-muted leading-relaxed">
+              {tier.description}
+            </p>
+
+            <div className="mt-6 flex items-baseline gap-1">
+              <span className="font-display text-4xl font-extrabold tracking-tight text-ink md:text-5xl">
+                {tier.currency}
+                <CountUp to={tier.amount} format={(n) => INR.format(n)} />
+              </span>
+              {tier.suffix && (
+                <span className="font-display text-2xl font-extrabold tracking-tight text-ink-muted md:text-3xl">
+                  {tier.suffix}
+                </span>
+              )}
             </div>
-            <ul className="mt-4 space-y-2">
-              {addOn.features.map((f) => (
-                <li key={f} className="flex items-start gap-2 text-sm text-ink">
-                  <Check className="mt-0.5 size-4 text-accent shrink-0" />
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+              {tier.cadence}
+            </p>
+
+            <ul className="mt-7 flex-1 space-y-2.5">
+              {tier.features.map((f) => (
+                <li
+                  key={f}
+                  className="flex items-start gap-2 text-sm text-ink"
+                >
+                  <Check className="mt-0.5 size-4 shrink-0 text-accent" />
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
+
+            {tier.flagshipExample && (
+              <Link
+                href={tier.flagshipExample.href}
+                className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-semibold text-accent transition-transform duration-300 hover:translate-x-0.5"
+              >
+                {tier.flagshipExample.label}
+                <ArrowRight className="size-3.5" />
+              </Link>
+            )}
+
+            <Link
+              href={tier.cta.href}
+              className={cn(
+                "mt-8 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-semibold transition-transform duration-300 hover:scale-[1.02]",
+                tier.highlight
+                  ? "bg-ink text-white shadow-[0_10px_30px_-12px_rgba(11,12,14,0.55)]"
+                  : "border border-rule bg-bg-elevated text-ink hover:border-accent/40",
+              )}
+            >
+              {tier.cta.label}
+              <ArrowUpRight className="size-4" />
+            </Link>
+          </article>
+        ))}
       </div>
 
-      <p className="mt-8 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
-        All prices in INR, excluding GST · Hosting, domain, third-party SaaS
-        billed separately at cost
+      <p className="mt-8 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+        All prices in INR, excluding GST · International invoicing in USD / EUR
+        on request
       </p>
     </SectionFrame>
   );

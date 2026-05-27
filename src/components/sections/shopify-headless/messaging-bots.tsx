@@ -11,7 +11,26 @@ export function MessagingBots() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const phoneScreenRef = useRef<HTMLDivElement | null>(null);
   const progressRailRef = useRef<HTMLDivElement | null>(null);
+  const mobileProgressRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
+  // Pin runway length is responsive: a desktop user reads the side list as
+  // independent clicks (5x100vh), but a touch user expects each step to
+  // arrive in roughly one swipe (4x75vh).
+  const [sectionHeightVh, setSectionHeightVh] = useState(
+    (botScripts.length + 1) * 100,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767.98px)");
+    const apply = () => {
+      setSectionHeightVh(
+        mq.matches ? botScripts.length * 75 : (botScripts.length + 1) * 100,
+      );
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   // Sticky-pinned section: outer wrapper is N*100vh tall, inner sticks at top.
   // Native scroll listener drives active step + progress rail.
@@ -33,6 +52,9 @@ export function MessagingBots() {
       setActive((prev) => (prev !== idx ? idx : prev));
       if (progressRailRef.current) {
         progressRailRef.current.style.transform = `scaleY(${progress})`;
+      }
+      if (mobileProgressRef.current) {
+        mobileProgressRef.current.style.transform = `scaleX(${progress})`;
       }
     };
 
@@ -83,11 +105,11 @@ export function MessagingBots() {
     <section
       ref={sectionRef}
       id="messaging-bots"
-      className="relative mt-20 w-full md:mt-28 lg:mt-32"
-      style={{ height: `${(botScripts.length + 1) * 100}vh` }}
+      className="relative w-full"
+      style={{ height: `${sectionHeightVh}vh` }}
     >
       {/* Sticky stage — whole section stays in viewport while user scrolls through capabilities */}
-      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center px-4 pt-20 pb-6 sm:px-6 md:items-center md:px-10 md:pt-0 md:pb-0 lg:px-16">
+      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center px-4 pt-12 pb-6 sm:px-6 md:items-center md:px-10 md:pt-0 md:pb-0 lg:px-16">
         <div className="grid w-full max-w-[1240px] gap-4 md:grid-cols-12 md:items-center md:gap-12">
           {/* Copy column. Order-1 on mobile (above phone), col-span-7 on
               desktop. On mobile we show only the active step's name + blurb;
@@ -138,21 +160,14 @@ export function MessagingBots() {
               >
                 {script.blurb}
               </p>
-              {/* Dot indicator — clickable jump targets */}
-              <div className="mt-4 flex items-center gap-1.5">
-                {botScripts.map((s, i) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => handleStepClick(i)}
-                    aria-label={`Jump to ${s.label}`}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i === active
-                        ? "w-8 bg-accent"
-                        : "w-1.5 bg-rule hover:bg-ink-muted/40"
-                    }`}
-                  />
-                ))}
+              {/* Thin horizontal progress bar — shows how far the user has
+                  scrolled through the steps. Replaces the 4-dot indicator. */}
+              <div className="mt-5 h-[3px] w-full overflow-hidden rounded-full bg-rule">
+                <div
+                  ref={mobileProgressRef}
+                  className="h-full origin-left bg-accent"
+                  style={{ transform: "scaleX(0)" }}
+                />
               </div>
             </div>
 

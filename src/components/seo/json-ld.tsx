@@ -23,10 +23,18 @@ export function ServiceLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "Service",
-    serviceType: "Headless Shopify development",
+    serviceType: "Custom software development",
     provider: { "@type": "Organization", name: site.name, url: site.url },
     areaServed: "Worldwide",
     offers: [
+      {
+        "@type": "Offer",
+        name: "Custom web software",
+      },
+      {
+        "@type": "Offer",
+        name: "Custom ecommerce storefronts",
+      },
       {
         "@type": "Offer",
         name: "Headless Shopify storefront",
@@ -35,19 +43,20 @@ export function ServiceLd() {
       },
       {
         "@type": "Offer",
-        name: "Custom e-commerce",
-        priceSpecification: {
-          "@type": "PriceSpecification",
-          minPrice: "20000",
-          maxPrice: "40000",
-          priceCurrency: "INR",
-        },
+        name: "Mobile apps (iOS, Android, React Native)",
       },
       {
         "@type": "Offer",
-        name: "WhatsApp sales channel",
-        price: "10000",
-        priceCurrency: "INR",
+        name: "WhatsApp and Telegram bots",
+      },
+      {
+        "@type": "Offer",
+        name: "Monthly engineering retainer",
+        priceSpecification: {
+          "@type": "PriceSpecification",
+          minPrice: "60000",
+          priceCurrency: "INR",
+        },
       },
     ],
   };

@@ -16,13 +16,25 @@ export const metadata: Metadata = {
     "Tilde rebuilds your Shopify store as a custom Next.js storefront. Faster, fully on-brand, with attribution that adds up — and add-ons for WhatsApp bots, custom emails, and a unified dashboard.",
 };
 
+// Uniform inter-section spacer. Pinned + sticky sections end flush with the
+// next one, so we inject this between them to keep vertical rhythm consistent
+// with the SectionFrame-based sections lower on the page. Mobile gets a much
+// shorter spacer so the empty interval between a pinned section unpinning
+// and the next section repinning doesn't read as a "dead zone".
+const Gap = () => (
+  <div aria-hidden className="h-8 w-full md:h-28 lg:h-32" />
+);
+
 export default function ShopifyHeadlessPage() {
   return (
     <>
       <HeroBento />
       <MacbookReveal />
+      <Gap />
       <IntegrationsGrid />
+      <Gap />
       <MessagingBots />
+      <Gap />
       <EmailTemplateSwap />
       <AttributionDashboard />
       <PricingHeadless />

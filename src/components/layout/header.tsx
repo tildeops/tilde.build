@@ -11,7 +11,10 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const pathname = usePathname();
-  const useNotchInstead = pathname?.startsWith("/shopify-headless");
+  // The landing (/) and /shopify-headless both use the NotchNav, which travels
+  // with the expanding liquid hero band. Other routes keep the global pill header.
+  const useNotchInstead =
+    pathname === "/" || pathname?.startsWith("/shopify-headless");
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -97,9 +100,8 @@ export function Header() {
         scrolled
           ? "top-6 px-6 md:px-4 lg:px-6"
           : "top-6 px-6 md:top-14 md:px-5 lg:top-16 lg:px-6",
-        // On /shopify-headless, the notch nav takes over from md+ — keep
-        // the regular pill on mobile only.
-        useNotchInstead && "md:hidden",
+        // On /shopify-headless, the notch nav takes over on every viewport.
+        useNotchInstead && "hidden",
       )}
     >
       <div

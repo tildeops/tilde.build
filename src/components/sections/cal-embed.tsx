@@ -20,6 +20,10 @@ export function CalEmbed() {
 
   return (
     <div
+      // data-lenis-prevent: Lenis stops intercepting wheel events when the
+      // cursor is inside this element, so the iframe handles scroll natively
+      // instead of stuttering against Lenis's smooth-scroll loop.
+      data-lenis-prevent
       className="overflow-hidden rounded-2xl border border-rule bg-bg"
       style={{ height: 680, minHeight: 640 }}
     >

@@ -197,9 +197,6 @@ export default function LiquidCanvas({
     style.width = "100%";
     style.height = "100%";
     style.display = "block";
-    // Promote the canvas to its own compositor layer so the browser doesn't
-    // re-composite the entire page on each shader paint during scroll.
-    style.willChange = "transform";
     onCanvasReady?.(renderer.domElement);
 
     const resize = () => {

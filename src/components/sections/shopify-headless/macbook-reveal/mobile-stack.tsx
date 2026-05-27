@@ -43,15 +43,14 @@ export function MobileStack() {
 
       const pct = p * 100;
       if (tildeClipRef.current) {
-        // Default stays on the LEFT, Tilde reveals from the RIGHT side as
-        // the separator sweeps right→left. Inset clips Tilde from the left
-        // by (100-pct)% so only the right portion (to the right of the
-        // separator) shows the Tilde version.
-        tildeClipRef.current.style.clipPath = `inset(0 0 0 ${100 - pct}%)`;
+        // Tilde reveals from the TOP downward. Clip Tilde from the bottom
+        // by (100-pct)% so only the portion above the separator shows
+        // Tilde; Default keeps showing in the un-revealed lower portion.
+        tildeClipRef.current.style.clipPath = `inset(0 0 ${100 - pct}% 0)`;
       }
       if (separatorRef.current) {
         const edgeFade = p < 0.02 || p > 0.98 ? 0 : 1;
-        separatorRef.current.style.left = `${100 - pct}%`;
+        separatorRef.current.style.top = `${pct}%`;
         separatorRef.current.style.opacity = String(edgeFade);
       }
     };
@@ -77,10 +76,10 @@ export function MobileStack() {
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
-      className="relative mt-20 w-full md:mt-28 lg:mt-32"
+      className="relative w-full"
       style={{ height: "200vh" }}
     >
-      <div className="sticky top-0 flex h-[100svh] w-full flex-col items-center px-4 pt-20 pb-6 sm:px-6">
+      <div className="sticky top-0 flex h-[100svh] w-full flex-col items-center px-4 pt-12 pb-6 sm:px-6">
         <div className="mx-auto flex w-full max-w-[480px] flex-col items-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
             <span
@@ -153,8 +152,8 @@ export function MobileStack() {
                   ref={tildeClipRef}
                   className="absolute inset-0 overflow-hidden bg-white"
                   style={{
-                    clipPath: "inset(0 0 0 100%)",
-                    WebkitClipPath: "inset(0 0 0 100%)",
+                    clipPath: "inset(0 0 100% 0)",
+                    WebkitClipPath: "inset(0 0 100% 0)",
                     willChange: "clip-path",
                   }}
                 >
@@ -163,20 +162,20 @@ export function MobileStack() {
                   </ScaledStorefront>
                 </div>
 
-                {/* Vertical wipe line + small handle indicator */}
+                {/* Horizontal wipe line + small handle indicator */}
                 <div
                   ref={separatorRef}
                   aria-hidden
-                  className="pointer-events-none absolute inset-y-0 z-20"
+                  className="pointer-events-none absolute inset-x-0 z-20"
                   style={{
-                    left: "0%",
-                    width: "2px",
+                    top: "0%",
+                    height: "2px",
                     backgroundColor: "var(--color-accent)",
-                    transform: "translateX(-1px)",
+                    transform: "translateY(-1px)",
                     boxShadow:
                       "0 0 0 1px rgba(255,255,255,0.2), 0 0 24px rgb(var(--accent-rgb) / 0.45)",
                     opacity: 0,
-                    willChange: "left, opacity",
+                    willChange: "top, opacity",
                   }}
                 >
                   <div
@@ -195,6 +194,7 @@ export function MobileStack() {
                       stroke="currentColor"
                       strokeWidth="1.5"
                       aria-hidden
+                      style={{ transform: "rotate(90deg)" }}
                     >
                       <path d="M5 4 L1 8 L5 12 M11 4 L15 8 L11 12 M1 8 H15" />
                     </svg>

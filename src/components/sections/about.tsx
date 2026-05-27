@@ -4,7 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
+import { SectionFrame } from "@/components/layout/section-frame";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { FadeUp } from "@/components/motion/fade-up";
 import { CountUp } from "@/components/motion/count-up";
@@ -42,13 +42,23 @@ export function About() {
     <SectionFrame id="about">
       <div className="grid gap-10 md:grid-cols-12 md:gap-16 items-start">
         <div className="md:col-span-5">
-          <Eyebrow shimmer>~ About tilde</Eyebrow>
+          <FadeUp>
+            <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
+              <span
+                className="size-1.5 rounded-full bg-accent"
+                style={{ boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)" }}
+              />
+              <span className="text-[12px] font-medium text-ink-muted">
+                About tilde
+              </span>
+            </div>
+          </FadeUp>
           <RevealLines
             as="h2"
-            className="mt-5 font-display font-medium leading-[1.05] tracking-[-0.02em] text-[clamp(2rem,4.6vw,3.5rem)]"
+            className="mt-5 font-display font-extrabold leading-[1.0] tracking-[-0.035em] text-ink text-[clamp(2rem,4.6vw,3.4rem)]"
           >
             A small team{" "}
-            <span className="italic text-ink-muted">that ships.</span>
+            <span className="italic">that ships.</span>
           </RevealLines>
         </div>
 
@@ -64,9 +74,9 @@ export function About() {
             className="mt-5 text-base text-ink-muted leading-relaxed"
           >
             Small enough to move fast, experienced enough not to break things.
-            We&apos;ve spent years inside Shopify, Next.js, and ad-platform
-            internals — so when something inevitably gets weird, we know where
-            to look.
+            We&apos;ve spent years deep inside Shopify, Next.js, native mobile,
+            and the WhatsApp + Telegram Business APIs — so when something
+            inevitably gets weird, we know where to look.
           </FadeUp>
 
           <div

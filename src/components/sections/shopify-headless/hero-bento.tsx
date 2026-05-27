@@ -38,26 +38,49 @@ export function HeroBento() {
       if (!section || !frame || !band) return;
 
       const ctx = gsap.context(() => {
-        const tl = gsap.timeline({
-          defaults: { ease: "none" },
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            // Expand fully over ~70% of the viewport of scroll
-            end: "+=70%",
-            scrub: 0.4,
-            pin: true,
-            pinSpacing: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
+        const mm = gsap.matchMedia();
+        mm.add(
+          {
+            // Desktop/tablet: keep the long, eased pin that reads as
+            // editorial on a mouse wheel.
+            isDesktop: "(min-width: 768px)",
+            // Mobile: tighten the pin distance and the scrub lag so a
+            // single firm thumb-swipe completes the expansion. Touch
+            // scrollers fight long scrubs much harder than a wheel does.
+            isMobile: "(max-width: 767.98px)",
           },
-        });
+          (ctx2) => {
+            const { isMobile } = ctx2.conditions as {
+              isDesktop: boolean;
+              isMobile: boolean;
+            };
 
-        tl.to(
-          frame,
-          { paddingTop: 0, paddingRight: 0, paddingBottom: 0, paddingLeft: 0 },
-          0
-        ).to(band, { borderRadius: 0 }, 0);
+            const tl = gsap.timeline({
+              defaults: { ease: "none" },
+              scrollTrigger: {
+                trigger: section,
+                start: "top top",
+                end: isMobile ? "+=40%" : "+=70%",
+                scrub: isMobile ? 0.25 : 0.4,
+                pin: true,
+                pinSpacing: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+              },
+            });
+
+            tl.to(
+              frame,
+              {
+                paddingTop: 0,
+                paddingRight: 0,
+                paddingBottom: 0,
+                paddingLeft: 0,
+              },
+              0
+            ).to(band, { borderRadius: 0 }, 0);
+          }
+        );
       }, section);
 
       return () => ctx.revert();
@@ -82,6 +105,12 @@ export function HeroBento() {
         >
           <div
             ref={bandRef}
+            // `translateZ(0)` + isolation forces this element into its own
+            // compositor layer, which contains the WebGL canvas inside its
+            // rounded `overflow:hidden` clip on iOS Safari. Without this,
+            // a child with its own compositor layer (the WebGL canvas) can
+            // bleed past the parent's rounded corners.
+            style={{ transform: "translateZ(0)" }}
             className="relative isolate flex h-full w-full items-center justify-center overflow-hidden rounded-[28px] bg-accent text-on-accent sm:rounded-[32px] md:rounded-[40px]"
           >
             <LiquidBackground

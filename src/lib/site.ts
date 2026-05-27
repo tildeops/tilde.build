@@ -1,8 +1,8 @@
 export const site = {
   name: "tilde",
-  tagline: "Headless Shopify, custom commerce, WhatsApp sales.",
+  tagline: "One studio. Whole stack.",
   description:
-    "We rebuild Shopify stores as fully custom, lightning-fast Next.js storefronts. Headless commerce for brands that have outgrown themes.",
+    "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots — built by a small team of senior engineers.",
   url: "https://tilde.dev",
   contactEmail: "hello@tilde.build",
   calcomUrl: "tilde/discovery-call",
@@ -15,8 +15,8 @@ export const site = {
 };
 
 export const navItems = [
-  { label: "Offerings", href: "/#offerings" },
-  { label: "Pricing", href: "/pricing" },
+  { label: "Services", href: "/#services" },
+  { label: "Pricing", href: "/#pricing" },
   { label: "Process", href: "/#process" },
   { label: "About", href: "/#about" },
 ];

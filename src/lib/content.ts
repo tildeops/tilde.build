@@ -1,187 +1,307 @@
+// Landing-page content. Service-agnostic copy for the end-to-end studio
+// positioning. Used by the section components in src/components/sections/*.
+
 export const painPoints = [
   {
     icon: "Box",
-    title: "Your storefront looks like every other Shopify store.",
-    body: "Off-the-shelf themes can't render the brand you have in your head. You bought Shopify for the backend — but you're stuck with someone else's frontend.",
+    title: "Templates that look like every other site in your category.",
+    body: "Off-the-shelf themes can't render the brand you have in your head. You bought the platform for the backend — but you're stuck with someone else's frontend.",
   },
   {
     icon: "Lock",
-    title: "You've hit the ceiling of what Liquid + a theme can do.",
-    body: "Custom interactions, animations, layouts — they all fight the platform. Every new feature feels like a workaround.",
+    title: "Your tools stopped scaling six months ago.",
+    body: "Custom flows, layouts, integrations — they all fight the platform you're on. Every new feature feels like a workaround stacked on a workaround.",
   },
   {
     icon: "Gauge",
-    title: "Page-speed is killing your ad ROAS.",
-    body: "Theme bloat and a dozen third-party apps tank Core Web Vitals. Your Meta ads spend gets less efficient by the quarter.",
+    title: "Your team can't ship without a developer for every change.",
+    body: "Copy edits behind a Jira ticket. New pages take a week. The marketing team is bottlenecked on engineering for things that should take ten minutes.",
   },
   {
     icon: "CreditCard",
-    title: "You want flexibility on checkout, not a rebuild.",
-    body: "Razorpay for India, Shopify Payments elsewhere. One stack that handles both — without two parallel codebases.",
+    title: "Five SaaS products, still missing the one feature you need.",
+    body: "Stitched-together tools, monthly bills climbing, and the workflow your business actually runs on lives in a spreadsheet. Custom software pays for itself fast.",
   },
 ] as const;
 
-export const offerings = [
+// Service beats for the pinned ServicesShowcase. One entry = one scrolled
+// beat. The `device` field selects which device frame the showcase renders.
+export type ServiceBeat = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  body: string;
+  bullets: readonly string[];
+  device: "laptop" | "phone";
+  /** Visual variant rendered inside the device frame */
+  visual:
+    | "custom-dashboard"
+    | "ecommerce-sweep"
+    | "shopify-store"
+    | "mobile-app"
+    | "chat-bot";
+  cta?: { label: string; href: string };
+};
+
+export const serviceBeats: readonly ServiceBeat[] = [
   {
-    eyebrow: "FLAGSHIP",
-    title: "Headless Shopify storefront",
-    blurb:
-      "A fully custom Next.js storefront wired to your existing Shopify backend. Keep your catalogue, checkout, and tooling — replace only the part that matters: the frontend.",
+    id: "custom",
+    eyebrow: "~ 01 / Custom software",
+    title: "Internal tools that fit how your team actually works.",
+    body: "Dashboards, admin panels, ops tools, marketplace backends — built around your data and your workflow, not a SaaS template's.",
     bullets: [
-      "Figma design (yours or ours)",
+      "Next.js + your choice of Postgres/Mongo/Redis",
+      "Auth, role-based access, audit trails done right",
+      "Connected to whatever you already use",
+    ],
+    device: "laptop",
+    visual: "custom-dashboard",
+  },
+  {
+    id: "ecommerce",
+    eyebrow: "~ 02 / Custom ecommerce",
+    title: "Storefronts that don't look like everyone else's.",
+    body: "When the platform you're on can't render the brand you have in your head, we build the storefront from scratch — and wire it to whatever backend you need.",
+    bullets: [
+      "Bespoke design, custom checkout, headless or full custom",
+      "Subscriptions, B2B, marketplaces — past the template ceiling",
+      "Built to load fast and convert better",
+    ],
+    device: "laptop",
+    visual: "ecommerce-sweep",
+  },
+  {
+    id: "shopify",
+    eyebrow: "~ 03 / Headless Shopify",
+    title: "Your Shopify, without the Shopify look.",
+    body: "Keep the backend you know. Replace only the part that matters — the storefront. ₹40,000 fixed, 3–4 weeks, full code handover.",
+    bullets: [
+      "Fully custom Next.js frontend on your Shopify backend",
       "Razorpay or Shopify-native checkout",
-      "Meta CAPI, GA4, MS Clarity, Shopify native analytics",
-      "Product setup + email marketing setup",
-      "Full code handover · 30-day post-launch support",
+      "Unified attribution that actually adds up",
     ],
-    href: "/shopify-headless",
-    cta: "See full breakdown",
+    device: "laptop",
+    visual: "shopify-store",
+    cta: { label: "See the flagship breakdown →", href: "/shopify-headless" },
   },
   {
-    eyebrow: "WHEN SHOPIFY ISN'T ENOUGH",
-    title: "Custom e-commerce",
-    blurb:
-      "A bespoke backend and storefront, built around what your business actually needs. Subscriptions, marketplaces, B2B workflows, anything that breaks the Shopify mold.",
+    id: "mobile",
+    eyebrow: "~ 04 / Mobile apps",
+    title: "Apps that don't feel like a website in a wrapper.",
+    body: "Native iOS, native Android, React Native when it's the right call. Auth, push, offline, in-app purchase — all the boring infrastructure done right.",
     bullets: [
-      "Custom backend (Node/Postgres/Mongo)",
-      "Storefront in Next.js or your framework of choice",
-      "Custom checkout & payment integrations",
-      "Hourly billing — scoped per project",
-      "Everything in the Shopify plan, plus what you need",
+      "Native (Swift / Kotlin) or React Native + Expo",
+      "Push, deep links, biometric auth, in-app purchase",
+      "App Store and Play Store submission included",
     ],
-    href: "/#contact",
-    cta: "Talk to us",
+    device: "phone",
+    visual: "mobile-app",
   },
   {
-    eyebrow: "EXTRA SALES CHANNEL",
-    title: "WhatsApp sales channel",
-    blurb:
-      "A custom WhatsApp bot built around your Shopify catalogue. Customers browse, order, and track delivery — all from the most-used app on their phone.",
+    id: "bots",
+    eyebrow: "~ 05 / WhatsApp + Telegram bots",
+    title: "Meet customers where their thumbs already live.",
+    body: "Order placement, support, broadcasts, abandoned-cart recovery — all inside one chat thread. Built on the official Business APIs, not flaky third-party stitching.",
     bullets: [
-      "Custom bot built for your products",
-      "Shopify catalogue integration",
-      "Order placement directly in WhatsApp",
-      "Delivery updates pushed back to customer",
-      "Opt-in flows for abandoned carts & broadcasts",
+      "Official WhatsApp Business API + Telegram Bot API",
+      "Catalogue browse → pay → track, all in-chat",
+      "Templates, broadcasts, opt-in flows, agent handoff",
     ],
-    href: "/#contact",
-    cta: "Add to my Shopify",
+    device: "phone",
+    visual: "chat-bot",
   },
-] as const;
+];
 
-export const pricing = [
+// Engagement-type pricing. Replaces the previous per-service pricing.
+// Three cards: fixed-scope, retainer, hourly.
+export type EngagementTier = {
+  id: "fixed" | "retainer" | "hourly";
+  eyebrow: string;
+  name: string;
+  description: string;
+  /** Display number used by CountUp. */
+  amount: number;
+  /** Currency prefix shown before the amount. */
+  currency: string;
+  /** What sits to the right of the number (e.g. "+", "/mo", "/hr"). */
+  suffix?: string;
+  /** Short caption below the price. */
+  cadence: string;
+  features: readonly string[];
+  cta: { label: string; href: string };
+  /** Highlight the flagship card. */
+  highlight?: boolean;
+  /** When set, an inline "flagship example" badge linking to a deeper page. */
+  flagshipExample?: { label: string; href: string };
+};
+
+export const engagementTiers: readonly EngagementTier[] = [
   {
-    name: "Headless Shopify",
-    eyebrow: "FLAGSHIP — MOST POPULAR",
-    price: "₹40,000",
-    cadence: "fixed, one-time",
+    id: "fixed",
+    eyebrow: "Most projects start here",
+    name: "Fixed-scope project",
     description:
-      "Everything you need to replace your Shopify theme with a custom Next.js storefront.",
+      "A defined deliverable, a fixed price, a known timeline. Best for storefronts, bots, landing-page sprints — anything we can scope on the discovery call.",
+    amount: 40000,
+    currency: "₹",
+    suffix: "+",
+    cadence: "fixed, one-time · starts from",
     features: [
-      "Design (Figma) + full storefront build",
-      "Razorpay or Shopify-native checkout",
-      "Meta, GA4, MS Clarity, Shopify analytics setup",
-      "Product setup & email marketing setup",
-      "30-day post-launch support",
-      "Full code handover",
+      "Headless Shopify storefront — ₹40,000",
+      "WhatsApp / Telegram bot — from ₹25,000",
+      "Landing page or microsite — from ₹15,000",
+      "Two revision rounds, no surprise invoices",
+      "Full code handover · 30-day support",
     ],
     cta: { label: "Book a discovery call", href: "/contact" },
     highlight: true,
+    flagshipExample: {
+      label: "See the Shopify flagship",
+      href: "/shopify-headless",
+    },
   },
   {
-    name: "Custom e-commerce",
-    eyebrow: "VARIABLE",
-    price: "₹20,000 – ₹40,000",
-    cadence: "billed at ₹2,000 / hour",
+    id: "retainer",
+    eyebrow: "When you need a team, not a project",
+    name: "Monthly retainer",
     description:
-      "Bespoke backend + storefront when Shopify doesn't fit. Scoped per project.",
+      "Embedded engineering. We become part of your team for the month, shipping features against a rolling backlog. Capped hours, predictable bill.",
+    amount: 60000,
+    currency: "₹",
+    suffix: "/mo",
+    cadence: "from · 40 hrs / month",
     features: [
-      "Custom backend, schema, APIs",
-      "Storefront in Next.js or your stack",
-      "Custom checkout & payment integrations",
-      "Everything in the Shopify plan, plus what you need",
-      "Hourly billing, no surprises",
+      "Embedded engineer + design support",
+      "Rolling backlog, weekly demo, monthly review",
+      "Cancel or pause anytime",
+      "Priority on hotfixes & infra",
+      "Scales up with another seat when you need it",
     ],
-    cta: { label: "Get a quote", href: "/contact" },
-    highlight: false,
+    cta: { label: "Start a retainer", href: "/contact" },
   },
   {
-    name: "WhatsApp sales channel",
-    eyebrow: "ADD-ON",
-    price: "₹10,000",
-    cadence: "fixed, one-time",
+    id: "hourly",
+    eyebrow: "For specialist help",
+    name: "Hourly engineering",
     description:
-      "A second sales channel that lives where your customers already are.",
+      "Got a specific problem? Pay for the hours it takes to solve. Useful for audits, performance work, integrations, or unsticking your in-house team.",
+    amount: 2000,
+    currency: "₹",
+    suffix: "/hr",
+    cadence: "min. 10 hours · billed weekly",
     features: [
-      "Bot build & conversation design",
-      "Shopify catalogue integration",
-      "Order placement inside WhatsApp",
-      "Delivery & shipping updates",
-      "Opt-in flows for abandoned cart / broadcasts",
+      "Architecture & code audits",
+      "Performance & Core Web Vitals work",
+      "Tricky third-party integrations",
+      "Pair-programming with your team",
+      "No retainer commitment",
     ],
-    cta: { label: "Add to my project", href: "/contact" },
-    highlight: false,
+    cta: { label: "Tell us what's broken", href: "/contact" },
   },
-] as const;
+];
 
-export const addOn = {
-  name: "Meta Ads dashboard + initial campaign setup",
-  price: "₹5,000 – ₹10,000",
-  description:
-    "We set up your Meta Business account, sanity-check Pixel + CAPI, and launch your first 2–3 campaigns so you have a working baseline.",
-  features: [
-    "Meta Business Manager setup",
-    "Pixel + Conversions API health check",
-    "First 2–3 campaign launches",
-    "Dashboard for ongoing reporting",
-  ],
-};
-
+// Process steps — service-agnostic. Range extended to cover larger builds.
 export const processSteps = [
   {
     n: "01",
     eyebrow: "DISCOVERY",
     title: "Brief",
-    body: "30-min call. We understand your brand, current setup, and goals. You leave with a written scope.",
+    body: "30-min call. We understand your business, current setup, and the shape of what you need. You leave with a written scope and a fixed quote.",
   },
   {
     n: "02",
     eyebrow: "VISUAL",
     title: "Design",
-    body: "Figma mockups for every page. Two revision rounds included. Already have a design? We implement it.",
+    body: "Figma mockups for every screen. Two revision rounds included. Already have a design? We build to spec.",
   },
   {
     n: "03",
     eyebrow: "ENGINEERING",
     title: "Build",
-    body: "Next.js storefront wired to your Shopify backend. Daily progress on a shared preview URL.",
+    body: "Daily progress on a shared preview URL. Whether it's a storefront, an app, or a bot — same cadence, same transparency.",
   },
   {
     n: "04",
     eyebrow: "WIRING",
     title: "Integrate",
-    body: "Analytics, payments, catalogues, email marketing — all configured and tested end-to-end.",
+    body: "Analytics, payments, third-party APIs, deployment pipelines — all configured and tested end-to-end before launch.",
   },
   {
     n: "05",
     eyebrow: "GO-LIVE",
     title: "Launch & handover",
-    body: "Deploy to your domain, walk you through everything, hand over full code ownership.",
+    body: "Ship to production, walk you through everything, hand over full code ownership. 30 days of post-launch support included.",
   },
 ] as const;
 
-export const techStack = [
-  { name: "Next.js", initials: "N" },
-  { name: "Shopify", initials: "S" },
-  { name: "Shopify Merchant", initials: "SM" },
-  { name: "Razorpay", initials: "₹" },
-  { name: "Meta", initials: "M" },
-  { name: "Google Analytics", initials: "GA" },
-  { name: "Search Console", initials: "GSC" },
-  { name: "MS Clarity", initials: "C" },
-  { name: "WhatsApp Business", initials: "Wa" },
-  { name: "Vercel", initials: "▲" },
-] as const;
+// Tech stack grouped by surface. Each group is a row in the section.
+export type TechGroup = {
+  label: string;
+  eyebrow: string;
+  items: readonly { name: string; initials: string }[];
+};
+
+export const techGroups: readonly TechGroup[] = [
+  {
+    label: "Web",
+    eyebrow: "FRONTEND · WEB",
+    items: [
+      { name: "Next.js", initials: "N" },
+      { name: "React", initials: "R" },
+      { name: "TypeScript", initials: "TS" },
+      { name: "Tailwind", initials: "Tw" },
+      { name: "GSAP", initials: "Gs" },
+    ],
+  },
+  {
+    label: "Mobile",
+    eyebrow: "NATIVE & CROSS-PLATFORM",
+    items: [
+      { name: "Swift", initials: "Sw" },
+      { name: "Kotlin", initials: "Kt" },
+      { name: "React Native", initials: "RN" },
+      { name: "Expo", initials: "Ex" },
+    ],
+  },
+  {
+    label: "Commerce",
+    eyebrow: "ECOMM · PAYMENTS",
+    items: [
+      { name: "Shopify", initials: "S" },
+      { name: "Stripe", initials: "St" },
+      { name: "Razorpay", initials: "₹" },
+    ],
+  },
+  {
+    label: "Backend",
+    eyebrow: "SERVERS · DATA",
+    items: [
+      { name: "Node", initials: "Nd" },
+      { name: "Postgres", initials: "Pg" },
+      { name: "MongoDB", initials: "Mg" },
+      { name: "Redis", initials: "Rd" },
+      { name: "AWS", initials: "Aw" },
+    ],
+  },
+  {
+    label: "Messaging",
+    eyebrow: "BOTS · CHAT APIS",
+    items: [
+      { name: "WhatsApp Business API", initials: "Wa" },
+      { name: "Telegram Bot API", initials: "Tg" },
+    ],
+  },
+  {
+    label: "AI & Infra",
+    eyebrow: "MODELS · HOSTING",
+    items: [
+      { name: "OpenAI", initials: "Oa" },
+      { name: "Anthropic", initials: "An" },
+      { name: "Vercel", initials: "▲" },
+      { name: "Cloudflare", initials: "Cf" },
+    ],
+  },
+];
 
 export const testimonials = [
   {
@@ -198,39 +318,46 @@ export const testimonials = [
     role: "F&B startup",
     company: "—",
   },
+  {
+    quote:
+      "We needed a WhatsApp bot wired to our existing order system, not a generic chatbot. Three weeks later it was live and handling sixty percent of our support load.",
+    name: "Operations lead",
+    role: "Personal-care brand",
+    company: "—",
+  },
 ] as const;
 
 export const faq = [
   {
-    q: "How long does a headless Shopify rebuild take?",
-    a: "Typically 3–4 weeks from kickoff to launch, assuming we have your Shopify backend access and product data on day one. Design adds a week if you don't have Figma files already.",
+    q: "What kinds of projects do you actually take on?",
+    a: "Custom web apps, ecommerce (Shopify and bespoke), mobile apps (native + React Native), and WhatsApp/Telegram bots. If it ships software, we probably do it. If it doesn't fit, we'll say so on the discovery call.",
   },
   {
-    q: "Do I need to be on Shopify Plus?",
-    a: "No. The standard Shopify plan exposes the Storefront API we need. Plus only matters if you want Shopify Functions or B2B features.",
+    q: "How long does a typical project take?",
+    a: "A headless Shopify rebuild is 3–4 weeks. A bot is 2–3 weeks. A mobile app is 6–10 weeks depending on scope. Internal tools and custom ecommerce vary — we'll quote a fixed range on the discovery call.",
+  },
+  {
+    q: "Fixed-scope, retainer, or hourly — which one should I pick?",
+    a: "Fixed-scope when the deliverable is clear (storefront, bot, landing page). Retainer when you need a team, not a project. Hourly for audits, performance fixes, or specialist help. We'll suggest the right shape on the call.",
+  },
+  {
+    q: "Who actually writes the code?",
+    a: "We do. tilde is two senior engineers, one designer, and a few sharp interns. No outsourcing, no offshore handoffs, no account managers — you talk directly to the people building your product.",
+  },
+  {
+    q: "Do you work with clients outside India?",
+    a: "Yes. About half our work is international. We invoice in USD or EUR, async-first, with a few overlap hours per week for live calls.",
   },
   {
     q: "Who owns the code after launch?",
-    a: "You do. The entire codebase is pushed to a GitHub repo you own. There's no per-seat licence, no recurring fee, no vendor lock-in beyond what your hosting provider charges.",
+    a: "You do. Code lives in a GitHub repo you own. No per-seat licence, no recurring fee, no vendor lock-in. The whole codebase is yours from day one.",
   },
   {
-    q: "Can I keep my existing Shopify checkout?",
-    a: "Yes. We support both Shopify-native checkout and Razorpay — chosen per deployment by a single environment variable. Switching later is one config change.",
-  },
-  {
-    q: "What about post-launch support?",
-    a: "30 days of bug fixes and small tweaks are included. After that we offer monthly retainers, or you can take it in-house — we hand over a fully documented codebase.",
-  },
-  {
-    q: "Can you migrate my existing theme's content?",
-    a: "Yes. Products, collections, pages, blog posts, customer accounts — anything stored in Shopify stays in Shopify. We just replace the rendering layer.",
+    q: "What about ongoing support and maintenance?",
+    a: "30 days of post-launch support is included on every fixed-scope project. After that we offer monthly retainers from ₹60,000/mo, or you can take it in-house — we hand over a fully documented codebase.",
   },
   {
     q: "What if my requirements change mid-project?",
-    a: "Scope changes happen. We re-quote the delta, you approve, we proceed. No surprise invoices.",
-  },
-  {
-    q: "Do you take equity or discount for early-stage brands?",
-    a: "We're open to it case-by-case for brands we believe in. Reach out and tell us your story.",
+    a: "Scope changes happen. We re-quote the delta, you approve, we proceed. No surprise invoices, no scope creep snuck into the timeline.",
   },
 ] as const;

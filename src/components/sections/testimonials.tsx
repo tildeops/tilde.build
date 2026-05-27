@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
+import { SectionFrame } from "@/components/layout/section-frame";
+import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { testimonials } from "@/lib/content";
 import { cn } from "@/lib/utils";
@@ -74,7 +75,17 @@ export function Testimonials() {
   return (
     <SectionFrame>
       <div className="text-center">
-        <Eyebrow shimmer>~ What people say</Eyebrow>
+        <FadeUp>
+          <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
+            <span
+              className="size-1.5 rounded-full bg-accent"
+              style={{ boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)" }}
+            />
+            <span className="text-[12px] font-medium text-ink-muted">
+              What people say
+            </span>
+          </div>
+        </FadeUp>
       </div>
 
       <figure
@@ -88,7 +99,7 @@ export function Testimonials() {
           duration={0.9}
           stagger={0.08}
           start="top 95%"
-          className="font-display text-2xl md:text-4xl leading-snug tracking-[-0.01em] text-center text-ink"
+          className="font-display text-2xl md:text-4xl font-extrabold leading-[1.05] tracking-[-0.025em] text-center text-ink"
         >
           <span className="text-accent" aria-hidden>
             &ldquo;

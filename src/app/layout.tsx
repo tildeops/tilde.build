@@ -34,24 +34,24 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://tilde.dev"),
   title: {
-    default: "tilde — Headless Shopify, custom commerce, WhatsApp sales",
+    default: "tilde — One studio. Whole stack.",
     template: "%s · tilde",
   },
   description:
-    "We rebuild Shopify stores as fully custom, lightning-fast Next.js storefronts. Headless commerce for brands that have outgrown themes.",
+    "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots. Built by a small team of senior engineers — no project managers, no handoffs.",
   openGraph: {
-    title: "tilde — Headless Shopify, custom commerce, WhatsApp sales",
+    title: "tilde — One studio. Whole stack.",
     description:
-      "We rebuild Shopify stores as fully custom, lightning-fast Next.js storefronts.",
+      "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots. Built by a small team of senior engineers.",
     type: "website",
     url: "https://tilde.dev",
     siteName: "tilde",
   },
   twitter: {
     card: "summary_large_image",
-    title: "tilde — Headless Shopify, custom commerce, WhatsApp sales",
+    title: "tilde — One studio. Whole stack.",
     description:
-      "We rebuild Shopify stores as fully custom, lightning-fast Next.js storefronts.",
+      "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots.",
   },
 };
 
@@ -70,7 +70,10 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeModeInitScript }} />
       </head>
-      <body className="min-h-screen bg-bg text-ink">
+      <body
+        className="min-h-screen bg-bg text-ink"
+        suppressHydrationWarning
+      >
         <ThemeModeProvider>
           <LenisProvider>
             <GSAPProvider>
