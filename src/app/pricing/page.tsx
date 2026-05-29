@@ -37,7 +37,7 @@ const CATEGORIES: { id: "build" | "migration" | "handover"; label: string; blurb
 
 export default function PricingPage() {
   return (
-    <>
+    <div data-page-theme="bridge">
       <BreadcrumbLd
         items={[
           { name: "Home", path: "/" },
@@ -326,6 +326,6 @@ export default function PricingPage() {
           </div>
         </div>
       </SectionFrame>
-    </>
+    </div>
   );
 }

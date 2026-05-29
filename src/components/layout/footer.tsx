@@ -29,8 +29,7 @@ export function Footer() {
               tilde
             </span>
             <p className="mt-4 max-w-sm text-sm text-ink-muted leading-relaxed">
-              Headless Shopify and custom commerce, built by a small senior team
-              that ships.
+              {site.description}
             </p>
             <a
               href={`mailto:${site.contactEmail}`}
@@ -58,9 +57,12 @@ export function Footer() {
               <li>
                 <Link
                   href="/shopify-headless"
-                  className="text-sm text-ink hover:text-accent"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:opacity-80"
                 >
-                  Shopify headless
+                  Headless Shopify
+                  <span className="rounded-full border border-accent/30 bg-accent/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-accent">
+                    Flagship
+                  </span>
                 </Link>
               </li>
               <li>
@@ -139,8 +141,11 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Copyright strip — in normal flow so it can't overlap link columns. */}
-        <div className="mt-10 mb-24 border-t border-rule pt-6 md:mt-16">
+        {/* Copyright strip — in normal flow so it can't overlap link columns.
+            The deep bottom margin pushes the footer's base (and the giant tilde
+            watermark anchored to it) well below this line, so the wordmark
+            reads as a separate flourish rather than crowding the copyright. */}
+        <div className="mt-10 mb-44 border-t border-rule pt-6 md:mt-16 md:mb-60">
           <div className="flex flex-col gap-3 text-sm text-ink-muted md:flex-row md:items-center md:justify-between">
             <p>
               © {new Date().getFullYear()} {site.name}. All rights reserved.

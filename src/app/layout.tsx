@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/header";
+import { NotchNav } from "@/components/sections/shopify-headless/notch-nav";
 import { Footer } from "@/components/layout/footer";
 import { LenisProvider } from "@/components/providers/lenis-provider";
 import { GSAPProvider } from "@/components/providers/gsap-provider";
@@ -38,7 +38,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const title = `tilde · ${site.tagline}`;
-const description = "We build everything your business actually needs.";
+const description = site.description;
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -70,6 +70,15 @@ export const metadata: Metadata = {
     url: site.url,
     siteName: site.name,
     locale: "en_US",
+    images: [
+      {
+        url: "/og.jpg",
+        width: 1200,
+        height: 630,
+        type: "image/jpeg",
+        alt: `${site.name} — ${site.tagline}`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -77,6 +86,7 @@ export const metadata: Metadata = {
     description,
     site: site.twitterHandle,
     creator: site.twitterHandle,
+    images: ["/og.jpg"],
   },
   robots: {
     index: true,
@@ -120,23 +130,37 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeModeInitScript }} />
       </head>
       <body
-        className="min-h-screen bg-bg text-ink"
+        className={`bg-bg text-ink ${
+          site.maintenance ? "h-[100svh] overflow-hidden" : "min-h-screen"
+        }`}
         suppressHydrationWarning
       >
         <OrganizationLd />
         <WebSiteLd />
         <ThemeModeProvider>
-          <LenisProvider>
+          {site.maintenance ? (
+            // Maintenance mode: no nav, no footer, no smooth-scroll hijack —
+            // just the single, sealed-off hero screen.
             <GSAPProvider>
-              <div className="relative flex min-h-screen w-full flex-col">
-                <Header />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
+              <main className="h-[100svh] w-full overflow-hidden">
+                {children}
+              </main>
             </GSAPProvider>
-          </LenisProvider>
+          ) : (
+            <LenisProvider>
+              <GSAPProvider>
+                <div className="relative flex min-h-screen w-full flex-col">
+                  <NotchNav />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+              </GSAPProvider>
+            </LenisProvider>
+          )}
         </ThemeModeProvider>
-        <CookieConsent />
+        {/* No cookie banner on the maintenance splash — it would be the only
+            navigable link left on an otherwise sealed-off screen. */}
+        {!site.maintenance && <CookieConsent />}
         <CalProvider />
         <TrackClicks />
         <Analytics />

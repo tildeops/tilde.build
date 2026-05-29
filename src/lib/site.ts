@@ -3,7 +3,7 @@ export const site = {
   legalName: "Tilde Infotech Solutions Pvt. Ltd.",
   tagline: "One studio. Whole stack.",
   description:
-    "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots — built by a small team of senior engineers.",
+    "From Shopify storefronts to internal tools and AI bots, we build software tailored to your business. Just experienced engineers shipping quickly and working closely with your team.",
   url: "https://tilde.build",
   contactEmail: "hello@tilde.build",
   /** GST registration number (GSTIN). */
@@ -16,12 +16,12 @@ export const site = {
   cal: { namespace: "30min", link: "tildeops/30min" },
   city: "India",
   social: {
-    x: "https://x.com/tilde",
+    x: "https://x.com/tildeops",
     github: "https://github.com/tilde",
     linkedin: "https://linkedin.com/company/tilde",
   },
   /** X/Twitter handle for the `twitter:site` / `twitter:creator` tags. */
-  twitterHandle: "@tilde",
+  twitterHandle: "@tildeops",
   /**
    * Third-party analytics. IDs are read from env so they can vary per
    * environment; the defaults are the production values.
@@ -39,10 +39,12 @@ export const site = {
     process.env.GSC_VERIFICATION ??
     "WTK7VAZN8YhwMBHqSsXu1gEqYBOciG08ES35Ywh6y5M",
   /**
-   * "Build in progress" hero overlay. On by default while the site is being
-   * built; set NEXT_PUBLIC_BUILD_IN_PROGRESS=false to hide it (e.g. at launch).
+   * Maintenance mode. On by default while the site is being finished: the
+   * whole site collapses to a single, non-scrollable hero screen with no
+   * working navigation. Set NEXT_PUBLIC_MAINTENANCE=false to take the full
+   * site live (e.g. at launch).
    */
-  buildInProgress: process.env.NEXT_PUBLIC_BUILD_IN_PROGRESS !== "false",
+  maintenance: process.env.NEXT_PUBLIC_MAINTENANCE !== "false",
 };
 
 export const navItems = [

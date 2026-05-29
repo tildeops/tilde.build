@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import gsap from "gsap";
@@ -38,10 +39,19 @@ const RADIUS_EXPANDED_MOBILE = 22;
 const MOBILE_GUTTER_PX = 12; // breathing room on each side of the drawer
 
 export function NotchNav() {
+  // The landing (/) and /shopify-headless host the liquid hero band: the notch
+  // tucks into the band's top edge and travels up as the band expands. Every
+  // other route is a plain page with no hero — the notch hangs flush from the
+  // viewport top instead, expanded by default and collapsing on scroll.
+  const pathname = usePathname();
+  const heroMode =
+    pathname === "/" || (pathname?.startsWith("/shopify-headless") ?? false);
+
   // Hover/focus intent (desktop), tap intent (mobile), and scroll-derived
-  // "past hero" state. Effective `expanded` derives from all three.
+  // "collapsed" state. Effective `expanded` derives from all three.
   const [hovered, setHovered] = useState(false);
   const [tapped, setTapped] = useState(false);
+  // `pastHero` doubles as the generic-page "scrolled past the top" flag.
   const [pastHero, setPastHero] = useState(false);
   // Subscribe to viewport via the React 19 external-store hook. SSR snapshot
   // is `false` (desktop) to match server-rendered HTML; the post-hydration
@@ -57,6 +67,10 @@ export function NotchNav() {
   const expanded = isMobile
     ? tapped
     : !pastHero || hovered || tapped;
+
+  // Over the dark hero band the glass can be near-transparent; on generic
+  // (light) pages it must stay a solid dark pill so the white text reads.
+  const darkSurface = !heroMode || pastHero;
 
   const travelRef = useRef<HTMLDivElement | null>(null);
   const notchRef = useRef<HTMLDivElement | null>(null);
@@ -81,16 +95,33 @@ export function NotchNav() {
       document.removeEventListener("pointerdown", onPointerDown, true);
   }, [tapped]);
 
-  // Scroll-driven travel: starts tucked into the rounded hero band's top
-  // edge (matching the band's responsive inset), then animates up to the
-  // viewport top as the hero band expands to full-bleed. Also flips the
-  // `pastHero` flag once the pinned hero releases.
+  // Two scroll regimes, keyed off the route so a client-side navigation tears
+  // down the old setup and wires up the right one (this component lives in the
+  // root layout and never unmounts).
+  //
+  // • heroMode — the notch starts tucked into the rounded hero band's top edge
+  //   (matching the band's responsive inset), then travels up to the viewport
+  //   top as the band expands to full-bleed. `pastHero` flips once the pinned
+  //   hero releases.
+  // • generic — no hero. The notch hangs flush from the viewport top (top:0)
+  //   and `pastHero` is driven by a plain scroll threshold so it collapses to
+  //   the compact pill the moment the page is scrolled.
   useGSAP(() => {
     const travel = travelRef.current;
     if (!travel) return;
 
+    if (!heroMode) {
+      gsap.set(travel, { top: 0 });
+      const onScroll = () => setPastHero(window.scrollY > 24);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+    }
+
     const hero = document.getElementById("hero");
     if (!hero) return;
+
+    setPastHero(false);
 
     const mm = gsap.matchMedia();
     mm.add(
@@ -142,7 +173,7 @@ export function NotchNav() {
       mm.revert();
       st.kill();
     };
-  }, []);
+  }, [heroMode]);
 
   // Animate the expand/collapse morph. First run sets the size instantly so
   // the initial expanded-in-hero state doesn't flash through compact on mount.
@@ -277,7 +308,7 @@ export function NotchNav() {
             "text-white backdrop-blur-xl",
             "transition-[background-color,border-color] duration-300 ease-out",
             "shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]",
-            pastHero
+            darkSurface
               ? "bg-black/75 border-white/10"
               : "bg-white/10 border-white/25",
           )}

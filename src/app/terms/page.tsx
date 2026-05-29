@@ -14,13 +14,14 @@ const LAST_UPDATED = "29 May 2026";
 
 export default function TermsPage() {
   return (
-    <SectionFrame className="pt-6 md:pt-10">
-      <BreadcrumbLd
-        items={[
-          { name: "Home", path: "/" },
-          { name: "Terms of Service", path: "/terms" },
-        ]}
-      />
+    <div data-page-theme="bridge">
+      <SectionFrame className="pt-6 md:pt-10">
+        <BreadcrumbLd
+          items={[
+            { name: "Home", path: "/" },
+            { name: "Terms of Service", path: "/terms" },
+          ]}
+        />
       <div className="mx-auto max-w-3xl">
         <Eyebrow>~ Legal</Eyebrow>
         <h1 className="mt-5 font-display leading-[1.05] tracking-[-0.02em] text-[clamp(2.25rem,5vw,3.5rem)]">
@@ -32,132 +33,150 @@ export default function TermsPage() {
 
         <div className="prose prose-neutral mt-10 max-w-none text-ink [&_h2]:font-display [&_h2]:text-2xl [&_h2]:mt-12 [&_h2]:mb-4 [&_p]:text-ink-muted [&_p]:leading-relaxed [&_ul]:text-ink-muted [&_li]:leading-relaxed [&_a]:text-accent [&_strong]:text-ink">
           <p>
-            These Terms of Service (&ldquo;Terms&rdquo;) govern your use of{" "}
-            <a href={site.url}>tilde.build</a> (the &ldquo;site&rdquo;),
-            operated by <strong>{site.legalName}</strong> (&ldquo;tilde&rdquo;,
-            &ldquo;we&rdquo;, &ldquo;us&rdquo;). By using the site you agree to
-            these Terms. If you don&apos;t agree, please don&apos;t use the site.
+            These Terms of Service (“Terms”) govern your use of{" "}
+            <a href={site.url}>tilde.build</a> (the “Site”), operated by{" "}
+            <strong>{site.legalName}</strong> (“tilde”, “we”, “us”). By using
+            this Site, you agree to these Terms. If you do not agree, please do
+            not use the Site.
           </p>
 
           <h2>1. About tilde &amp; scope of these Terms</h2>
           <p>
-            tilde is a software studio that builds custom web and mobile
-            software, headless Shopify storefronts, custom e-commerce, Meta Ads
-            setups, and WhatsApp/Telegram sales channels. These Terms cover this
-            marketing website only. Any paid engagement is governed by a
-            separate written agreement — a Statement of Work (&ldquo;SoW&rdquo;)
-            or proposal — which prevails over these Terms for that engagement.
+            tilde is a software studio that builds custom software and digital
+            experiences for businesses. These Terms apply only to this website.
+          </p>
+          <p>
+            Any client engagement is governed separately through a written
+            proposal, agreement, or Statement of Work (“SoW”), which takes
+            precedence over these Terms where applicable.
           </p>
 
           <h2>2. Engagements &amp; Statements of Work</h2>
           <p>
-            Nothing on this site is an offer or a binding commitment to provide
-            services. A client engagement begins only when both parties sign or
-            confirm a SoW that sets out the scope, deliverables, timeline,
-            fees, and payment terms. Deliverables, ownership of work product,
-            and project-level warranties are defined in that SoW.
+            Nothing on this Site constitutes a binding offer to provide
+            services. A client engagement begins only after both parties agree
+            in writing to a proposal or Statement of Work defining scope,
+            deliverables, timelines, pricing, and payment terms.
+          </p>
+          <p>
+            Ownership of deliverables, warranties, support, and
+            project-specific obligations are governed exclusively by the
+            applicable agreement.
           </p>
 
-          <h2>3. Quotes &amp; pricing</h2>
+          <h2>3. Pricing &amp; quotes</h2>
           <p>
-            Prices shown on this site (including the headless Shopify rebuild
-            price and any retainer figures) are indicative for a typical scope
-            and may change. The final price for any engagement is the one set in
-            writing in the SoW. Unless stated otherwise, prices are in Indian
-            Rupees (INR) and exclusive of applicable taxes (including GST).
-            GSTIN: {site.gst}.
+            Any pricing shown on the Site is indicative and may vary depending
+            on project scope and requirements. Final pricing is confirmed only
+            through a written proposal or Statement of Work.
+          </p>
+          <p>
+            Prices may be displayed in INR or USD depending on the client’s
+            region and are exclusive of applicable taxes unless stated
+            otherwise.
           </p>
 
-          <h2>4. Discovery calls &amp; bookings</h2>
+          <h2>4. Discovery calls &amp; enquiries</h2>
           <p>
-            Booking a discovery call lets us understand your project; it
-            doesn&apos;t commit either party to anything beyond the call itself.
-            Scheduling is handled by a third-party tool (Cal.com).
+            Booking a discovery call or contacting us does not create a client
+            relationship or obligation for either party. Scheduling may be
+            handled through third-party providers such as Cal.com.
           </p>
 
           <h2>5. Acceptable use</h2>
           <p>You agree not to:</p>
           <ul>
             <li>
-              scrape, crawl at volume, or copy the site&apos;s content except as
-              permitted by law;
+              misuse, disrupt, or interfere with the Site or its
+              infrastructure;
             </li>
+            <li>attempt unauthorised access to systems or data;</li>
+            <li>use the Site for unlawful, deceptive, or abusive purposes;</li>
             <li>
-              attempt to probe, disrupt, or gain unauthorised access to the site
-              or its infrastructure;
+              scrape, copy, or reproduce Site content except where permitted by
+              law.
             </li>
-            <li>
-              submit unlawful, infringing, or deceptive content, or spam the
-              contact form;
-            </li>
-            <li>use the site in any way that breaks applicable law.</li>
           </ul>
 
           <h2>6. Intellectual property</h2>
           <p>
-            The site and its content — text, design, graphics, code, and the
-            tilde name and marks — are owned by tilde or its licensors and are
-            protected by intellectual-property laws. We grant you a limited,
-            personal, non-exclusive licence to view the site for evaluating our
-            services. Ownership of any deliverables we create for a client is
-            assigned and governed by the relevant SoW, not these Terms.
+            The Site and its contents — including text, branding, design,
+            graphics, and code — are owned by tilde or its licensors and
+            protected under applicable intellectual-property laws.
+          </p>
+          <p>
+            We grant you a limited, non-exclusive right to access and use the
+            Site for informational purposes only.
+          </p>
+          <p>
+            Ownership and usage rights for client deliverables are governed
+            separately by the applicable client agreement or Statement of Work.
           </p>
 
-          <h2>7. Third-party services &amp; links</h2>
+          <h2>7. Third-party services</h2>
           <p>
-            The site uses and may link to third-party services (for example
-            Cal.com for scheduling, and analytics providers). We don&apos;t
-            control those services and aren&apos;t responsible for their content
-            or practices; your use of them is subject to their own terms.
+            The Site may use or link to third-party services and providers,
+            including scheduling, hosting, and analytics platforms. We are not
+            responsible for the content, availability, or practices of those
+            third parties, and your use of them is subject to their own terms
+            and policies.
           </p>
 
-          <h2>8. Disclaimers</h2>
+          <h2>8. Disclaimer</h2>
           <p>
-            The site is provided &ldquo;as is&rdquo; and &ldquo;as
-            available&rdquo;, without warranties of any kind, whether express or
-            implied, including fitness for a particular purpose and
-            non-infringement. We don&apos;t warrant that the site will be
-            uninterrupted, error-free, or secure, and content may contain
-            inaccuracies or be changed at any time.
+            The Site is provided “as is” and “as available” without warranties
+            of any kind, whether express or implied, including warranties of
+            availability, accuracy, fitness for a particular purpose, or
+            non-infringement.
+          </p>
+          <p>
+            We do not guarantee that the Site will be uninterrupted, secure, or
+            error-free.
           </p>
 
           <h2>9. Limitation of liability</h2>
           <p>
-            To the fullest extent permitted by law, tilde will not be liable for
-            any indirect, incidental, special, consequential, or punitive
-            damages, or any loss of profits, revenue, or data, arising from your
-            use of (or inability to use) this site. Liability arising from a
-            client engagement is governed exclusively by the applicable SoW.
+            To the fullest extent permitted by law, tilde will not be liable
+            for any indirect, incidental, special, consequential, or punitive
+            damages, including loss of profits, revenue, data, or business
+            opportunity arising from your use of the Site.
+          </p>
+          <p>
+            Any liability relating to client work or services is governed
+            exclusively by the applicable client agreement or Statement of
+            Work.
           </p>
 
           <h2>10. Indemnity</h2>
           <p>
-            You agree to indemnify and hold tilde harmless from any claims,
-            losses, or expenses arising out of your misuse of the site or breach
-            of these Terms.
+            You agree to indemnify and hold harmless tilde and its team from
+            any claims, damages, liabilities, or expenses arising from your
+            misuse of the Site or breach of these Terms.
           </p>
 
           <h2>11. Governing law</h2>
           <p>
-            These Terms are governed by the laws of India, and any disputes
-            relating to them are subject to the jurisdiction of the competent
-            courts in India.
+            These Terms are governed by the laws of India. Any disputes
+            relating to these Terms are subject to the jurisdiction of the
+            courts located in Chennai, Tamil Nadu.
           </p>
 
           <h2>12. Changes to these Terms</h2>
           <p>
-            We may update these Terms from time to time. Changes take effect when
-            posted, and we&apos;ll update the &ldquo;Last updated&rdquo; date
-            above. Continuing to use the site means you accept the updated Terms.
+            We may update these Terms from time to time. Updated versions
+            become effective when posted on the Site. Continued use of the Site
+            after changes are posted constitutes acceptance of the updated
+            Terms.
           </p>
 
           <h2>13. Contact</h2>
           <p>
-            Questions about these Terms? Email{" "}
+            For questions regarding these Terms, contact us at{" "}
             <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.
           </p>
         </div>
       </div>
-    </SectionFrame>
+      </SectionFrame>
+    </div>
   );
 }

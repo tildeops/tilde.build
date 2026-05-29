@@ -11,7 +11,7 @@ export function OrganizationLd() {
     taxID: site.gst,
     url: site.url,
     logo: `${site.url}/icon.svg`,
-    image: `${site.url}/opengraph-image`,
+    image: `${site.url}/og.jpg`,
     email: site.contactEmail,
     description: site.description,
     areaServed: "Worldwide",

@@ -14,7 +14,7 @@ export const metadata = pageMetadata({
 
 export default function ContactPage() {
   return (
-    <>
+    <div data-page-theme="bridge">
       <BreadcrumbLd
         items={[
           { name: "Home", path: "/" },
@@ -96,6 +96,6 @@ export default function ContactPage() {
           </div>
         </div>
       </SectionFrame>
-    </>
+    </div>
   );
 }
