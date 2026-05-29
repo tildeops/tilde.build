@@ -1006,30 +1006,48 @@ function MobileVisual() {
           <stop offset="100%" stopColor="#312e81" />
         </linearGradient>
         <clipPath id="screen-mb-clip">
-          <rect x="98" y="28" width="44" height="108" rx="5" />
+          <rect x="96" y="28" width="48" height="108" rx="8" />
         </clipPath>
       </defs>
 
       <rect width="240" height="160" fill="url(#grad-soft-mb)" />
 
       <g data-phone>
-        {/* Phone frame */}
+        {/* Side buttons — mute + volume on the left, power on the right */}
+        <rect x="91.8" y="40" width="1.4" height="4" rx="0.7" fill="#23232b" />
+        <rect x="91.8" y="48" width="1.4" height="8" rx="0.7" fill="#23232b" />
+        <rect x="91.8" y="59" width="1.4" height="8" rx="0.7" fill="#23232b" />
+        <rect x="146.8" y="52" width="1.4" height="12" rx="0.7" fill="#23232b" />
+
+        {/* Phone frame — iPhone proportions + rounded (squircle-ish) corners */}
         <rect
-          x="95"
-          y="18"
-          width="50"
-          height="124"
-          rx="10"
+          x="93"
+          y="22"
+          width="54"
+          height="118"
+          rx="13"
           fill="#0b0c0e"
           stroke="rgb(var(--accent-rgb))"
           strokeOpacity="0.4"
           strokeWidth="1"
         />
-        {/* Notch / dynamic island */}
-        <rect x="113" y="20" width="14" height="3" rx="1.5" fill="#000" />
+        {/* titanium rim highlight */}
+        <rect
+          x="94"
+          y="23"
+          width="52"
+          height="116"
+          rx="12"
+          fill="none"
+          stroke="white"
+          strokeOpacity="0.08"
+          strokeWidth="0.6"
+        />
 
         {/* Screen contents (clipped to screen rect) */}
         <g clipPath="url(#screen-mb-clip)">
+          {/* widen the existing content to fill the roomier iPhone display */}
+          <g transform="translate(120 0) scale(1.0909 1) translate(-120 0)">
           {/* === HOME === */}
           <g data-home>
             <rect x="98" y="28" width="44" height="108" fill="url(#grad-home-bg)" />
@@ -1376,6 +1394,13 @@ function MobileVisual() {
 
             {/* Home indicator */}
             <rect x="113" y="131" width="14" height="1" rx="0.5" fill="#0b0c0e" fillOpacity="0.3" />
+          </g>
+          </g>
+          {/* Dynamic Island — undistorted, sits on top of every screen */}
+          <g>
+            <rect x="113.5" y="29" width="13" height="3.4" rx="1.7" fill="#000" />
+            <circle cx="124.4" cy="30.7" r="0.85" fill="#15203a" />
+            <circle cx="124.4" cy="30.7" r="0.38" fill="#2b3a5e" />
           </g>
         </g>
       </g>
