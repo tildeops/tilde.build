@@ -43,3 +43,6 @@ genxell.webflow.io/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Playwright MCP captures
+.playwright-mcp/
