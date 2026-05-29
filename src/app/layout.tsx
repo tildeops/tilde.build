@@ -14,6 +14,8 @@ import { site } from "@/lib/site";
 import { OrganizationLd, WebSiteLd } from "@/components/seo/json-ld";
 import { Analytics } from "@/components/analytics/analytics";
 import { CookieConsent } from "@/components/analytics/cookie-consent";
+import { TrackClicks } from "@/components/analytics/track-clicks";
+import { CalProvider } from "@/components/providers/cal-provider";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -135,6 +137,8 @@ export default function RootLayout({
           </LenisProvider>
         </ThemeModeProvider>
         <CookieConsent />
+        <CalProvider />
+        <TrackClicks />
         <Analytics />
       </body>
     </html>

@@ -10,6 +10,7 @@ import { SectionFrame } from "@/components/layout/section-frame";
 import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { CountUp } from "@/components/motion/count-up";
+import { calTrigger } from "@/lib/cal";
 import { engagementTiers } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
@@ -148,6 +149,9 @@ export function Pricing() {
 
             <Link
               href={tier.cta.href}
+              {...(tier.cta.href === "/contact"
+                ? calTrigger(`pricing_tier_${tier.id}`)
+                : {})}
               className={cn(
                 "mt-8 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-semibold transition-transform duration-300 hover:scale-[1.02]",
                 tier.highlight

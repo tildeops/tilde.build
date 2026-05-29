@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { LiquidBackground } from "@/components/effects/liquid-background";
 import { site } from "@/lib/site";
+import { calTrigger } from "@/lib/cal";
 
 export function FinalCTA() {
   const blockRef = useRef<HTMLDivElement | null>(null);
@@ -85,7 +86,7 @@ export function FinalCTA() {
               </p>
               <div className="mt-9 flex flex-col sm:flex-row gap-3">
                 <Button asChild size="lg" variant="invert" className="gloss-inset group/cta">
-                  <Link href="/contact">
+                  <Link href="/contact" {...calTrigger("final_cta")}>
                     Book a discovery call{" "}
                     <ArrowUpRight className="transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5" />
                   </Link>

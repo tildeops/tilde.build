@@ -2,11 +2,12 @@
 
 import { useEffect } from "react";
 import Cal, { getCalApi } from "@calcom/embed-react";
+import { site } from "@/lib/site";
 
 export function CalEmbed() {
   useEffect(() => {
     (async function () {
-      const cal = await getCalApi({ namespace: "30min" });
+      const cal = await getCalApi({ namespace: site.cal.namespace });
       cal("ui", {
         cssVarsPerTheme: {
           light: { "cal-brand": "#ffffff" },
@@ -28,8 +29,8 @@ export function CalEmbed() {
       style={{ height: 680, minHeight: 640 }}
     >
       <Cal
-        namespace="30min"
-        calLink="tildeops/30min"
+        namespace={site.cal.namespace}
+        calLink={site.cal.link}
         style={{ width: "100%", height: "100%", overflow: "scroll" }}
         config={{ layout: "month_view", useSlotsViewOnSmallScreen: "true" }}
       />

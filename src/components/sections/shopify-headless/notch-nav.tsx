@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { navItems } from "@/lib/site";
+import { calTrigger } from "@/lib/cal";
 import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -358,6 +359,7 @@ function NavInner() {
       </nav>
       <Link
         href="/contact"
+        {...calTrigger("notch_nav")}
         className="ml-2 inline-flex h-8 items-center gap-1 rounded-full bg-white px-3 text-[12px] font-semibold text-black shadow-[0_6px_18px_-6px_rgba(255,255,255,0.45)] hover:scale-[1.02] transition-transform"
       >
         Book a call
@@ -417,6 +419,7 @@ function MobileDrawer({
       <Link
         href="/contact"
         onClick={onLinkTap}
+        {...calTrigger("notch_nav_mobile")}
         className="mt-2 inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-white px-4 text-[13px] font-semibold text-black shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]"
       >
         Book a call

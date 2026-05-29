@@ -65,6 +65,7 @@ export default function TermsPage() {
             and may change. The final price for any engagement is the one set in
             writing in the SoW. Unless stated otherwise, prices are in Indian
             Rupees (INR) and exclusive of applicable taxes (including GST).
+            GSTIN: {site.gst}.
           </p>
 
           <h2>4. Discovery calls &amp; bookings</h2>

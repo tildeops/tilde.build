@@ -8,6 +8,7 @@ import { RevealLines } from "@/components/motion/reveal-lines";
 import { StaggerChildren } from "@/components/motion/stagger-children";
 import { CountUp } from "@/components/motion/count-up";
 import { flagship, addons } from "@/lib/shopify-headless/pricing";
+import { calTrigger } from "@/lib/cal";
 
 export function PricingHeadless() {
   return (
@@ -226,6 +227,7 @@ export function PricingHeadless() {
               {/* CTA */}
               <Link
                 href={flagship.cta.href}
+                {...calTrigger("pricing_headless")}
                 className="group mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-ink px-6 text-[15px] font-semibold text-white shadow-[0_10px_30px_-12px_rgba(11,12,14,0.55)] transition-all duration-300 hover:bg-[#0a1126] hover:shadow-[0_16px_38px_-12px_rgba(11,12,14,0.7)] md:mt-auto"
               >
                 {flagship.cta.label}

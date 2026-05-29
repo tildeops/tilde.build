@@ -4,6 +4,7 @@ import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
 import { FAQ } from "@/components/sections/faq";
 import { IntegrationTile } from "@/components/sections/shopify-headless/integrations-grid";
 import { BreadcrumbLd } from "@/components/seo/json-ld";
+import { calTrigger } from "@/lib/cal";
 import { pageMetadata } from "@/lib/seo";
 import { flagship, addons, excluded } from "@/lib/shopify-headless/pricing";
 import { integrations } from "@/lib/shopify-headless/integrations";
@@ -69,6 +70,7 @@ export default function PricingPage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href={flagship.cta.href}
+                {...calTrigger("pricing_hero")}
                 className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-accent px-6 text-[15px] font-semibold text-on-accent shadow-[0_10px_30px_-12px_rgb(var(--accent-rgb)/0.55)] transition-all duration-300 hover:scale-[1.02]"
               >
                 {flagship.cta.label}
@@ -315,6 +317,7 @@ export default function PricingPage() {
             </div>
             <Link
               href={flagship.cta.href}
+              {...calTrigger("pricing_footer")}
               className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-on-accent px-6 text-[15px] font-semibold text-accent shadow-[0_10px_30px_-12px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:scale-[1.02]"
             >
               {flagship.cta.label}

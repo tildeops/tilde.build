@@ -6,7 +6,14 @@ export const site = {
     "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots — built by a small team of senior engineers.",
   url: "https://tilde.build",
   contactEmail: "hello@tilde.build",
-  calcomUrl: "tilde/discovery-call",
+  /** GST registration number (GSTIN). */
+  gst: "33AALCT4253A1ZO",
+  /**
+   * Cal.com scheduling. `link` is the booking calLink and `namespace` the
+   * embed namespace — single source of truth for the inline embeds and the
+   * popup CTAs.
+   */
+  cal: { namespace: "30min", link: "tildeops/30min" },
   city: "India",
   social: {
     x: "https://x.com/tilde",
@@ -28,7 +35,9 @@ export const site = {
    * "HTML tag" verification method, or set GSC_VERIFICATION in the env.
    * Empty string → the verification meta tag is omitted.
    */
-  googleSiteVerification: process.env.GSC_VERIFICATION ?? "",
+  googleSiteVerification:
+    process.env.GSC_VERIFICATION ??
+    "WTK7VAZN8YhwMBHqSsXu1gEqYBOciG08ES35Ywh6y5M",
   /**
    * "Build in progress" hero overlay. On by default while the site is being
    * built; set NEXT_PUBLIC_BUILD_IN_PROGRESS=false to hide it (e.g. at launch).

@@ -15,8 +15,13 @@ export function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // localStorage is client-only, so we must read it post-mount and reveal
+    // then — intentional setState-in-effect (avoids an SSR hydration mismatch).
     try {
-      if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
+      if (!localStorage.getItem(STORAGE_KEY)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setVisible(true);
+      }
     } catch {
       // localStorage unavailable (private mode / SSR) — stay hidden.
     }

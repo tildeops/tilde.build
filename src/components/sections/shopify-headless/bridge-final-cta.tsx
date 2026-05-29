@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
+import { site } from "@/lib/site";
 
 const CAL_ELEMENT_ID = "my-cal-inline-30min";
 
@@ -46,14 +47,15 @@ export function BridgeFinalCTA() {
         };
     })(window, "https://app.cal.com/embed/embed.js", "init");
 
+    const ns = site.cal.namespace;
     const Cal = (window as any).Cal;
-    Cal("init", "30min", { origin: "https://app.cal.com" });
-    Cal.ns["30min"]("inline", {
+    Cal("init", ns, { origin: "https://app.cal.com" });
+    Cal.ns[ns]("inline", {
       elementOrSelector: `#${CAL_ELEMENT_ID}`,
       config: { layout: "month_view", useSlotsViewOnSmallScreen: "true" },
-      calLink: "tildeops/30min",
+      calLink: site.cal.link,
     });
-    Cal.ns["30min"]("ui", {
+    Cal.ns[ns]("ui", {
       cssVarsPerTheme: {
         light: { "cal-brand": "#ffffff" },
         dark: { "cal-brand": "#ffffff" },

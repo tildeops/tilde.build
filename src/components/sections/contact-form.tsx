@@ -6,6 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { ArrowUpRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/lib/analytics";
 
 export function ContactForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
@@ -39,6 +40,11 @@ export function ContactForm() {
         throw new Error(data.error ?? "Failed to send");
       }
       setStatus("sent");
+      // Lead conversion — no PII (only the project-type bucket).
+      trackEvent("generate_lead", {
+        form_type: "contact",
+        project_type: payload.projectType || "unspecified",
+      });
       (e.target as HTMLFormElement).reset();
     } catch (err) {
       setStatus("error");

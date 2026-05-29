@@ -1,4 +1,5 @@
 import { ServiceLd, FAQLd } from "@/components/seo/json-ld";
+import { TrackSection } from "@/components/analytics/track-section";
 import { NotchNav } from "@/components/sections/shopify-headless/notch-nav";
 import { Hero } from "@/components/sections/hero";
 import { PainPoints } from "@/components/sections/pain-points";
@@ -20,18 +21,38 @@ export default function Home() {
       <ServiceLd />
       <FAQLd />
       <NotchNav />
-      <Hero />
-      <PainPoints />
+      <TrackSection name="hero">
+        <Hero />
+      </TrackSection>
+      <TrackSection name="pain-points">
+        <PainPoints />
+      </TrackSection>
       <Gap />
-      <ServicesShowcase />
+      <TrackSection name="services">
+        <ServicesShowcase />
+      </TrackSection>
       <Gap />
-      <Process />
-      <Pricing />
-      <TechStack />
-      <Testimonials />
-      <About />
-      <FAQ />
-      <FinalCTA />
+      <TrackSection name="process">
+        <Process />
+      </TrackSection>
+      <TrackSection name="pricing">
+        <Pricing />
+      </TrackSection>
+      <TrackSection name="tech-stack">
+        <TechStack />
+      </TrackSection>
+      <TrackSection name="testimonials">
+        <Testimonials />
+      </TrackSection>
+      <TrackSection name="about">
+        <About />
+      </TrackSection>
+      <TrackSection name="faq">
+        <FAQ />
+      </TrackSection>
+      <TrackSection name="final-cta">
+        <FinalCTA />
+      </TrackSection>
     </div>
   );
 }

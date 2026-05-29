@@ -8,6 +8,7 @@ export function OrganizationLd() {
     "@id": `${site.url}/#organization`,
     name: site.name,
     legalName: site.legalName,
+    taxID: site.gst,
     url: site.url,
     logo: `${site.url}/icon.svg`,
     image: `${site.url}/opengraph-image`,

@@ -7,6 +7,7 @@ import { Menu, X, ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { Button } from "@/components/ui/button";
 import { navItems, site } from "@/lib/site";
+import { calTrigger } from "@/lib/cal";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -191,7 +192,7 @@ export function Header() {
               variant={scrolled ? "invert" : "invert"}
               className={cn(scrolled && "h-7 px-3 text-[11px] [&_svg]:size-3")}
             >
-              <Link href="/contact">
+              <Link href="/contact" {...calTrigger("header")}>
                 Book a call <ArrowUpRight />
               </Link>
             </Button>
@@ -242,6 +243,7 @@ export function Header() {
             <Link
               href="/contact"
               onClick={closeOnNav}
+              {...calTrigger("header_mobile")}
               className="mt-2 inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-white px-4 text-[13px] font-semibold text-accent shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]"
             >
               Book a call

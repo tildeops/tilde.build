@@ -12,6 +12,7 @@ import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 import { SectionFrame } from "@/components/layout/section-frame";
 import { DeviceCluster } from "./hero/device-cluster";
 import { HeroBuildOverlay } from "./hero/build-overlay";
+import { calTrigger } from "@/lib/cal";
 
 /**
  * Landing hero. Inherits the HeroBento expansion pattern from /shopify-headless:
@@ -143,6 +144,7 @@ export function Hero() {
                 <div className="mx-auto mt-9 flex w-full max-w-xs flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:w-auto">
                   <Link
                     href="/contact"
+                    {...calTrigger("hero")}
                     className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-[15px] font-semibold text-accent shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:scale-[1.02]"
                   >
                     Book a discovery call
