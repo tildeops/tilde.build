@@ -37,7 +37,8 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const title = `tilde — ${site.tagline}`;
+const title = `tilde · ${site.tagline}`;
+const description = "We build everything your business actually needs.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -45,8 +46,7 @@ export const metadata: Metadata = {
     default: title,
     template: `%s · ${site.name}`,
   },
-  description:
-    "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots. Built by a small team of senior engineers — no project managers, no handoffs.",
+  description,
   applicationName: site.name,
   authors: [{ name: site.name, url: site.url }],
   creator: site.name,
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     title,
-    description: site.description,
+    description,
     type: "website",
     url: site.url,
     siteName: site.name,
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title,
-    description: site.description,
+    description,
     site: site.twitterHandle,
     creator: site.twitterHandle,
   },
