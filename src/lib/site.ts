@@ -29,6 +29,11 @@ export const site = {
    * Empty string → the verification meta tag is omitted.
    */
   googleSiteVerification: process.env.GSC_VERIFICATION ?? "",
+  /**
+   * "Build in progress" hero overlay. On by default while the site is being
+   * built; set NEXT_PUBLIC_BUILD_IN_PROGRESS=false to hide it (e.g. at launch).
+   */
+  buildInProgress: process.env.NEXT_PUBLIC_BUILD_IN_PROGRESS !== "false",
 };
 
 export const navItems = [

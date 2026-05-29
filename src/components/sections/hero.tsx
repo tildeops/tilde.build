@@ -11,6 +11,7 @@ import { LiquidBackground } from "@/components/effects/liquid-background";
 import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 import { SectionFrame } from "@/components/layout/section-frame";
 import { DeviceCluster } from "./hero/device-cluster";
+import { HeroBuildOverlay } from "./hero/build-overlay";
 
 /**
  * Landing hero. Inherits the HeroBento expansion pattern from /shopify-headless:
@@ -98,6 +99,8 @@ export function Hero() {
               themeOverride="bridge"
               className="absolute inset-0 -z-10"
             />
+
+            <HeroBuildOverlay />
 
             <div
               aria-hidden
