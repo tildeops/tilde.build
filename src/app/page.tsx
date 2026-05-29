@@ -2,6 +2,7 @@ import { ServiceLd, FAQLd } from "@/components/seo/json-ld";
 import { TrackSection } from "@/components/analytics/track-section";
 import { Hero } from "@/components/sections/hero";
 import { PainPoints } from "@/components/sections/pain-points";
+import { ServicesBento } from "@/components/sections/services-bento";
 import { ServicesShowcase } from "@/components/sections/services-showcase";
 import { Pricing } from "@/components/sections/pricing";
 import { Process } from "@/components/sections/process";
@@ -38,6 +39,8 @@ export default function Home() {
       </TrackSection>
       <Gap />
       <TrackSection name="services">
+        <ServicesBento />
+        <Gap />
         <ServicesShowcase />
       </TrackSection>
       <Gap />
