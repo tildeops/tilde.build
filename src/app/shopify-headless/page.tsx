@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { FAQ } from "@/components/sections/faq";
 import { HeroBento } from "@/components/sections/shopify-headless/hero-bento";
 import { MacbookReveal } from "@/components/sections/shopify-headless/macbook-reveal";
@@ -8,13 +7,16 @@ import { EmailTemplateSwap } from "@/components/sections/shopify-headless/email-
 import { AttributionDashboard } from "@/components/sections/shopify-headless/attribution-dashboard";
 import { PricingHeadless } from "@/components/sections/shopify-headless/pricing-headless";
 import { BridgeFinalCTA } from "@/components/sections/shopify-headless/bridge-final-cta";
+import { BreadcrumbLd } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { headlessFaqItems } from "@/lib/shopify-headless/faq";
 
-export const metadata: Metadata = {
-  title: "Headless Shopify — the storefront your brand actually deserves",
+export const metadata = pageMetadata({
+  title: "Headless Shopify Storefronts",
   description:
     "Tilde rebuilds your Shopify store as a custom Next.js storefront. Faster, fully on-brand, with attribution that adds up — and add-ons for WhatsApp bots, custom emails, and a unified dashboard.",
-};
+  path: "/shopify-headless",
+});
 
 // Uniform inter-section spacer. Pinned + sticky sections end flush with the
 // next one, so we inject this between them to keep vertical rhythm consistent
@@ -28,6 +30,12 @@ const Gap = () => (
 export default function ShopifyHeadlessPage() {
   return (
     <>
+      <BreadcrumbLd
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Headless Shopify", path: "/shopify-headless" },
+        ]}
+      />
       <HeroBento />
       <MacbookReveal />
       <Gap />

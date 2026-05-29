@@ -1,18 +1,26 @@
-import type { Metadata } from "next";
 import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
 import { ContactForm } from "@/components/sections/contact-form";
 import { CalEmbed } from "@/components/sections/cal-embed";
+import { BreadcrumbLd } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Contact",
   description:
     "Book a 30-minute discovery call or drop us a note. We respond within one business day.",
-};
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (
     <>
+      <BreadcrumbLd
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Contact", path: "/contact" },
+        ]}
+      />
       <SectionFrame
         className="pt-6 md:pt-10"
         innerClassName="py-14 md:py-20 lg:py-24"

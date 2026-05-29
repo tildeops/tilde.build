@@ -9,6 +9,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { LiquidBackground } from "@/components/effects/liquid-background";
+import { site } from "@/lib/site";
 
 export function FinalCTA() {
   const blockRef = useRef<HTMLDivElement | null>(null);
@@ -95,7 +96,9 @@ export function FinalCTA() {
                   variant="ghost"
                   className="text-on-accent hover:bg-on-accent/10"
                 >
-                  <Link href="mailto:hello@tilde.dev">Email us instead</Link>
+                  <Link href={`mailto:${site.contactEmail}`}>
+                    Email us instead
+                  </Link>
                 </Button>
               </div>
             </div>

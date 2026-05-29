@@ -1,0 +1,7 @@
+# Responsible disclosure — Tilde Infotech Solutions Pvt. Ltd.
+# https://www.rfc-editor.org/rfc/rfc9116
+
+Contact: mailto:hello@tilde.build
+Expires: 2027-05-29T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://tilde.build/.well-known/security.txt

@@ -29,7 +29,8 @@ export async function POST(req: Request) {
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  const fromAddress = process.env.RESEND_FROM ?? "tilde <hello@tilde.dev>";
+  const fromAddress =
+    process.env.RESEND_FROM ?? `tilde <${site.contactEmail}>`;
   const toAddress = process.env.RESEND_TO ?? site.contactEmail;
 
   if (!apiKey) {

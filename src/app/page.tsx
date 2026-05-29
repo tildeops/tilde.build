@@ -1,4 +1,4 @@
-import { OrganizationLd, ServiceLd, FAQLd } from "@/components/seo/json-ld";
+import { ServiceLd, FAQLd } from "@/components/seo/json-ld";
 import { NotchNav } from "@/components/sections/shopify-headless/notch-nav";
 import { Hero } from "@/components/sections/hero";
 import { PainPoints } from "@/components/sections/pain-points";
@@ -17,7 +17,6 @@ const Gap = () => <div aria-hidden className="h-8 w-full md:h-20 lg:h-24" />;
 export default function Home() {
   return (
     <div data-page-theme="bridge">
-      <OrganizationLd />
       <ServiceLd />
       <FAQLd />
       <NotchNav />

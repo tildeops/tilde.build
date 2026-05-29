@@ -1,18 +1,20 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
 import { FAQ } from "@/components/sections/faq";
 import { IntegrationTile } from "@/components/sections/shopify-headless/integrations-grid";
+import { BreadcrumbLd } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { flagship, addons, excluded } from "@/lib/shopify-headless/pricing";
 import { integrations } from "@/lib/shopify-headless/integrations";
 import { headlessFaqItems } from "@/lib/shopify-headless/faq";
 
-export const metadata: Metadata = {
-  title: "Pricing — Tilde headless Shopify",
+export const metadata = pageMetadata({
+  title: "Pricing",
   description:
     "₹40,000 fixed for the full headless Shopify rebuild. Full feature breakdown, integrations, and optional add-ons.",
-};
+  path: "/pricing",
+});
 
 const CATEGORIES: { id: "build" | "migration" | "handover"; label: string; blurb: string }[] = [
   {
@@ -35,6 +37,12 @@ const CATEGORIES: { id: "build" | "migration" | "handover"; label: string; blurb
 export default function PricingPage() {
   return (
     <>
+      <BreadcrumbLd
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Pricing", path: "/pricing" },
+        ]}
+      />
       {/* Hero */}
       <SectionFrame
         className="pt-6 md:pt-10"

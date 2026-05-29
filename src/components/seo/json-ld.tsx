@@ -5,16 +5,54 @@ export function OrganizationLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": `${site.url}/#organization`,
     name: site.name,
+    legalName: site.legalName,
     url: site.url,
+    logo: `${site.url}/icon.svg`,
+    image: `${site.url}/opengraph-image`,
     email: site.contactEmail,
     description: site.description,
+    areaServed: "Worldwide",
     sameAs: [site.social.x, site.social.github, site.social.linkedin],
     address: {
       "@type": "PostalAddress",
       addressLocality: site.city,
       addressCountry: "IN",
     },
+  };
+  return <Script data={data} />;
+}
+
+export function WebSiteLd() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${site.url}/#website`,
+    name: site.name,
+    url: site.url,
+    description: site.description,
+    publisher: { "@id": `${site.url}/#organization` },
+    inLanguage: "en",
+  };
+  return <Script data={data} />;
+}
+
+/** Renders a BreadcrumbList for a sub-page: Home → <page>. */
+export function BreadcrumbLd({
+  items,
+}: {
+  items: { name: string; path: string }[];
+}) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: `${site.url}${item.path}`,
+    })),
   };
   return <Script data={data} />;
 }

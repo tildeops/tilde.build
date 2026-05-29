@@ -147,10 +147,10 @@ export function BridgeFinalCTA() {
                   <p className="mt-5 text-[12px] font-medium text-white/55">
                     Or email{" "}
                     <a
-                      href="mailto:hi@tilde.dev"
+                      href="mailto:hello@tilde.build"
                       className="underline-offset-4 hover:underline"
                     >
-                      hi@tilde.dev
+                      hello@tilde.build
                     </a>
                     {" "}— we read everything.
                   </p>

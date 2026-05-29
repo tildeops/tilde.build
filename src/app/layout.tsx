@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
@@ -10,6 +10,10 @@ import {
   themeModeInitScript,
 } from "@/components/providers/theme-mode-provider";
 import { ACTIVE_THEME } from "@/lib/theme";
+import { site } from "@/lib/site";
+import { OrganizationLd, WebSiteLd } from "@/components/seo/json-ld";
+import { Analytics } from "@/components/analytics/analytics";
+import { CookieConsent } from "@/components/analytics/cookie-consent";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -31,28 +35,71 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const title = `tilde — ${site.tagline}`;
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://tilde.dev"),
+  metadataBase: new URL(site.url),
   title: {
-    default: "tilde — One studio. Whole stack.",
-    template: "%s · tilde",
+    default: title,
+    template: `%s · ${site.name}`,
   },
   description:
     "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots. Built by a small team of senior engineers — no project managers, no handoffs.",
+  applicationName: site.name,
+  authors: [{ name: site.name, url: site.url }],
+  creator: site.name,
+  publisher: site.legalName,
+  keywords: [
+    "headless Shopify",
+    "Shopify Hydrogen",
+    "custom ecommerce",
+    "WhatsApp bot",
+    "Telegram bot",
+    "mobile app development",
+    "Meta Ads",
+    "Next.js development studio",
+    "software studio India",
+  ],
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "tilde — One studio. Whole stack.",
-    description:
-      "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots. Built by a small team of senior engineers.",
+    title,
+    description: site.description,
     type: "website",
-    url: "https://tilde.dev",
-    siteName: "tilde",
+    url: site.url,
+    siteName: site.name,
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "tilde — One studio. Whole stack.",
-    description:
-      "Custom web, mobile apps, Shopify storefronts, and WhatsApp/Telegram bots.",
+    title,
+    description: site.description,
+    site: site.twitterHandle,
+    creator: site.twitterHandle,
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  ...(site.googleSiteVerification
+    ? { verification: { google: site.googleSiteVerification } }
+    : {}),
+  manifest: "/manifest.webmanifest",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
 
 export default function RootLayout({
@@ -74,6 +121,8 @@ export default function RootLayout({
         className="min-h-screen bg-bg text-ink"
         suppressHydrationWarning
       >
+        <OrganizationLd />
+        <WebSiteLd />
         <ThemeModeProvider>
           <LenisProvider>
             <GSAPProvider>
@@ -85,6 +134,8 @@ export default function RootLayout({
             </GSAPProvider>
           </LenisProvider>
         </ThemeModeProvider>
+        <CookieConsent />
+        <Analytics />
       </body>
     </html>
   );
