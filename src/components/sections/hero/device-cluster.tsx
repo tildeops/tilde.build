@@ -144,49 +144,71 @@ function ChatTile() {
 }
 
 function LaptopTile() {
-  // Mini laptop with a storefront mockup. Product tiles shimmer.
+  // MacBook Pro showing a storefront. Aluminium lid + black bezel + notch,
+  // hinge, and a wider bottom case. Product tiles shimmer.
   return (
-    <div className="flex h-full w-full items-center justify-center bg-bg-elevated p-3">
-      <div
-        className="relative w-full overflow-hidden rounded-md border border-ink/10 bg-white shadow-[0_6px_16px_-6px_rgba(0,0,0,0.18)]"
-        style={{ aspectRatio: "16/10" }}
-      >
-        <div className="flex items-center gap-1 border-b border-black/[0.05] bg-[#f6f6f6] px-1.5 py-1">
-          <span className="size-1 rounded-full bg-[#ff5f57]" />
-          <span className="size-1 rounded-full bg-[#febc2e]" />
-          <span className="size-1 rounded-full bg-[#28c840]" />
-          <span className="ml-1 font-mono text-[6px] text-black/40">
-            your-brand.com
-          </span>
-        </div>
-        <div className="grid h-full grid-cols-3 gap-1 p-1.5">
-          <div className="col-span-1 flex flex-col gap-1">
-            <p className="font-display text-[9px] leading-none text-ink">
-              Made well.
-            </p>
-            <p className="font-display text-[9px] italic leading-none text-ink-muted">
-              Made yours.
-            </p>
-            <span
-              className="mt-auto inline-flex w-fit items-center rounded-full bg-accent px-1.5 py-0.5 text-[6px] font-semibold text-on-accent"
-              style={{ boxShadow: "0 2px 6px -2px rgb(var(--accent-rgb) / 0.5)" }}
+    <div className="flex h-full w-full items-center justify-center bg-bg-elevated p-2">
+      <div className="w-[86%]">
+        {/* Lid — thin aluminium rim around a black bezel */}
+        <div className="relative rounded-[9px] bg-gradient-to-b from-[#46474d] via-[#2b2b2f] to-[#19191c] p-[3px] shadow-[0_8px_18px_-8px_rgba(0,0,0,0.45)]">
+          <div className="relative rounded-[7px] bg-[#08080a] p-[3px]">
+            {/* notch */}
+            <div className="absolute left-1/2 top-[3px] z-20 h-[3px] w-[15%] -translate-x-1/2 rounded-b-[2px] bg-[#08080a]" />
+            {/* display */}
+            <div
+              className="relative overflow-hidden rounded-[3px] bg-white"
+              style={{ aspectRatio: "16/10" }}
             >
-              Shop now →
-            </span>
+              <div className="flex items-center gap-1 border-b border-black/[0.05] bg-[#f6f6f6] px-1.5 py-1">
+                <span className="size-1 rounded-full bg-[#ff5f57]" />
+                <span className="size-1 rounded-full bg-[#febc2e]" />
+                <span className="size-1 rounded-full bg-[#28c840]" />
+                <span className="ml-1 font-mono text-[6px] text-black/40">
+                  your-brand.com
+                </span>
+              </div>
+              <div className="grid h-full grid-cols-3 gap-1 p-1.5">
+                <div className="col-span-1 flex flex-col gap-1">
+                  <p className="font-display text-[9px] leading-none text-ink">
+                    Made well.
+                  </p>
+                  <p className="font-display text-[9px] italic leading-none text-ink-muted">
+                    Made yours.
+                  </p>
+                  <span
+                    className="mt-auto inline-flex w-fit items-center rounded-full bg-accent px-1.5 py-0.5 text-[6px] font-semibold text-on-accent"
+                    style={{ boxShadow: "0 2px 6px -2px rgb(var(--accent-rgb) / 0.5)" }}
+                  >
+                    Shop now →
+                  </span>
+                </div>
+                <div className="col-span-2 grid grid-cols-3 gap-1">
+                  {[0.35, 0.6, 0.2, 0.45, 0.3, 0.55].map((shade, i) => (
+                    <div
+                      key={i}
+                      data-shimmer-tile
+                      className="rounded-sm"
+                      style={{
+                        backgroundColor: `rgb(var(--accent-rgb) / ${shade})`,
+                        animation: `tile-fade 3.6s ease-in-out ${i * 0.18}s infinite`,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="col-span-2 grid grid-cols-3 gap-1">
-            {[0.35, 0.6, 0.2, 0.45, 0.3, 0.55].map((shade, i) => (
-              <div
-                key={i}
-                data-shimmer-tile
-                className="rounded-sm"
-                style={{
-                  backgroundColor: `rgb(var(--accent-rgb) / ${shade})`,
-                  animation: `tile-fade 3.6s ease-in-out ${i * 0.18}s infinite`,
-                }}
-              />
-            ))}
-          </div>
+        </div>
+
+        {/* Hinge + bottom case (wider than the lid, with an opening notch) */}
+        <div className="relative left-1/2 h-[7px] w-[114%] -translate-x-1/2">
+          <div className="absolute inset-0 rounded-b-[7px] rounded-t-[1.5px] bg-gradient-to-b from-[#dcdde1] via-[#bcbec4] to-[#95979d]" />
+          {/* hinge highlight */}
+          <div className="absolute inset-x-0 top-0 h-px bg-white/50" />
+          {/* opening lip notch */}
+          <div className="absolute left-1/2 top-0 h-[2.5px] w-[15%] -translate-x-1/2 rounded-b-[3px] bg-[#888a90]" />
+          {/* drop shadow under the case */}
+          <div className="absolute inset-x-[10%] -bottom-[3px] h-[3px] rounded-full bg-black/20 blur-[2px]" />
         </div>
       </div>
     </div>

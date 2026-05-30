@@ -172,7 +172,7 @@ export function Process() {
         className="hidden lg:block relative h-screen w-full overflow-hidden"
       >
         {/* Title — top left */}
-        <div className="absolute left-0 top-0 z-20 max-w-[58%] pt-2">
+        <div className="absolute left-0 top-[8vh] z-20 max-w-[58%]">
           <FadeUp>
             <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
               <span
@@ -193,8 +193,8 @@ export function Process() {
           </RevealLines>
         </div>
 
-        {/* STEP label — pinned at the top-center, just above where the active marker arrives */}
-        <div className="absolute left-1/2 top-2 z-20 -translate-x-1/2">
+        {/* STEP label — pinned just above where the active marker arrives */}
+        <div className="absolute left-1/2 top-[34vh] z-20 -translate-x-1/2">
           <span className="rounded-sm bg-bg-elevated px-2 py-0.5 font-mono text-[10px] tracking-[0.2em] text-ink">
             STEP
           </span>
@@ -203,11 +203,11 @@ export function Process() {
         {/* Vertical drop line — from the active marker down toward the text */}
         <span
           aria-hidden
-          className="absolute left-1/2 top-[19vh] z-10 h-[15vh] w-px -translate-x-px bg-ink/15"
+          className="absolute left-1/2 top-[46vh] z-10 h-[12vh] w-px -translate-x-px bg-ink/15"
         />
 
         {/* Active step text — crossfades among all steps */}
-        <div className="absolute left-1/2 top-[36vh] z-20 -translate-x-1/2 w-[clamp(280px,32vw,420px)] text-center">
+        <div className="absolute left-1/2 top-[60vh] z-20 -translate-x-1/2 w-[clamp(280px,32vw,420px)] text-center">
           {processSteps.map((s, i) => (
             <div
               key={s.n}
@@ -224,14 +224,16 @@ export function Process() {
           ))}
         </div>
 
-        {/* The rotating disk. Huge circle; only the top arc is visible.
-            Disk rotates with scroll; each marker counter-rotates to stay upright. */}
+        {/* The rotating disk. The circle is sized to the viewport width so
+            roughly the top half (a dome) sits inside the pinned area. The
+            disk rotates with scroll; each marker counter-rotates to stay
+            upright. */}
         <div
           data-arc-disk
-          className="absolute left-1/2 top-[16vh] -translate-x-1/2 rounded-full border border-ink/15"
+          className="absolute left-1/2 top-[40vh] -translate-x-1/2 rounded-full border border-ink/15"
           style={{
-            width: "160vw",
-            height: "160vw",
+            width: "100vw",
+            height: "100vw",
           }}
           aria-hidden
         >
@@ -246,7 +248,7 @@ export function Process() {
                   left: "50%",
                   // Position marker on the disk edge at `angle` from top,
                   // then counter-rotate so it reads upright initially.
-                  transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-80vw) rotate(${-angle}deg)`,
+                  transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-50vw) rotate(${-angle}deg)`,
                 }}
               >
                 <div
