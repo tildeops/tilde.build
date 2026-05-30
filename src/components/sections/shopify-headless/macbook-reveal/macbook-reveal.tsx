@@ -126,12 +126,27 @@ function DesktopMacbookReveal() {
         gsap.set(browser, { transformOrigin: `${ox}px ${oy}px` });
       };
 
+      // ---------- Tilde inner-width sizing ----------
+      // The tilde layer lives inside the width-animated clip, so it needs a
+      // FIXED width (it must not reflow as the wipe sweeps). Pin it to the
+      // browser content width so it lays out exactly like the default layer
+      // (which is inset-x-0) instead of the full 100vw fallback in the markup.
+      const measureTildeInnerWidth = () => {
+        const area = browserRefs.screensAreaRef.current;
+        if (!area) return;
+        const inner = area.querySelector<HTMLElement>("[data-tilde-inner]");
+        if (inner) inner.style.width = `${area.clientWidth}px`;
+      };
+
       // ---------- Scroll-distance measurement ----------
       const measureScrollDistances = () => {
         const area = browserRefs.screensAreaRef.current;
         const dEl = browserRefs.defaultScrollRef.current;
         const tEl = browserRefs.tildeScrollRef.current;
         if (!area || !dEl || !tEl) return;
+        // Width must be pinned before reading the tilde scrollHeight, since the
+        // layout height depends on it.
+        measureTildeInnerWidth();
         const viewportH = area.clientHeight;
         scrollDistances.current.default = Math.max(0, dEl.scrollHeight - viewportH);
         scrollDistances.current.tilde = Math.max(0, tEl.scrollHeight - viewportH);
