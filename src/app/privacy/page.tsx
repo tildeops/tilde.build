@@ -1,4 +1,6 @@
-import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
+import { SectionFrame } from "@/components/layout/section-frame";
+import { PageHero } from "@/components/layout/page-hero";
+import { ContactCTA } from "@/components/layout/contact-cta";
 import { BreadcrumbLd } from "@/components/seo/json-ld";
 import { pageMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
@@ -15,23 +17,22 @@ const LAST_UPDATED = "29 May 2026";
 export default function PrivacyPage() {
   return (
     <div data-page-theme="bridge">
-      <SectionFrame className="pt-6 md:pt-10">
-        <BreadcrumbLd
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Privacy Policy", path: "/privacy" },
-          ]}
-        />
-      <div className="mx-auto max-w-3xl">
-        <Eyebrow>~ Legal</Eyebrow>
-        <h1 className="mt-5 font-display leading-[1.05] tracking-[-0.02em] text-[clamp(2.25rem,5vw,3.5rem)]">
-          Privacy Policy
-        </h1>
-        <p className="mt-4 text-sm text-ink-muted">
-          Last updated: {LAST_UPDATED}
-        </p>
+      <BreadcrumbLd
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Privacy Policy", path: "/privacy" },
+        ]}
+      />
 
-        <div className="prose prose-neutral mt-10 max-w-none text-ink [&_h2]:font-display [&_h2]:text-2xl [&_h2]:mt-12 [&_h2]:mb-4 [&_h3]:font-display [&_h3]:text-lg [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:text-ink-muted [&_p]:leading-relaxed [&_ul]:text-ink-muted [&_li]:leading-relaxed [&_a]:text-accent [&_strong]:text-ink">
+      <PageHero
+        eyebrow="~ Legal"
+        title="Privacy Policy"
+        description={`How tilde collects, uses, and protects your personal data — including cookies, analytics, and your rights. Last updated ${LAST_UPDATED}.`}
+      />
+
+      <SectionFrame className="pt-2 md:pt-4">
+      <div className="mx-auto max-w-3xl">
+        <div className="prose prose-neutral max-w-none text-ink [&_h2]:font-display [&_h2]:text-2xl [&_h2]:mt-12 [&_h2]:mb-4 [&_h3]:font-display [&_h3]:text-lg [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:text-ink-muted [&_p]:leading-relaxed [&_ul]:text-ink-muted [&_li]:leading-relaxed [&_a]:text-accent [&_strong]:text-ink">
           <p>
             This Privacy Policy explains how <strong>{site.legalName}</strong>{" "}
             (“tilde”, “we”, “us”) collects, uses, and protects personal
@@ -158,6 +159,11 @@ export default function PrivacyPage() {
         </div>
       </div>
       </SectionFrame>
+
+      <ContactCTA
+        title="Questions about your data?"
+        body="Want to access, correct, or delete your information? Reach out and we'll help."
+      />
     </div>
   );
 }

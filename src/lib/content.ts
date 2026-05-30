@@ -1,6 +1,8 @@
 // Landing-page content. Service-agnostic copy for the end-to-end studio
 // positioning. Used by the section components in src/components/sections/*.
 
+import type { Money } from "@/lib/pricing/currency";
+
 export const painPoints = [
   {
     icon: "Box",
@@ -119,10 +121,8 @@ export type EngagementTier = {
   eyebrow: string;
   name: string;
   description: string;
-  /** Display number used by CountUp. */
-  amount: number;
-  /** Currency prefix shown before the amount. */
-  currency: string;
+  /** Dual-currency display amount (INR for India, USD otherwise). */
+  amount: Money;
   /** What sits to the right of the number (e.g. "+", "/mo", "/hr"). */
   suffix?: string;
   /** Short caption below the price. */
@@ -141,15 +141,14 @@ export const engagementTiers: readonly EngagementTier[] = [
     eyebrow: "Most projects start here",
     name: "Fixed-scope project",
     description:
-      "A defined deliverable, a fixed price, a known timeline. Best for storefronts, bots, landing-page sprints — anything we can scope on the discovery call.",
-    amount: 40000,
-    currency: "₹",
+      "A defined deliverable, a fixed price, a known timeline. Best for storefronts, bots, landing-page sprints, anything we can scope on the discovery call.",
+    amount: { inr: 40000, usd: 1000 },
     suffix: "+",
     cadence: "fixed, one-time · starts from",
     features: [
-      "Headless Shopify storefront — ₹40,000",
-      "WhatsApp / Telegram bot — from ₹25,000",
-      "Landing page or microsite — from ₹15,000",
+      "Headless Shopify storefront",
+      "WhatsApp / Telegram bot",
+      "Landing page or microsite",
       "Two revision rounds, no surprise invoices",
       "Full code handover · 30-day support",
     ],
@@ -166,8 +165,7 @@ export const engagementTiers: readonly EngagementTier[] = [
     name: "Monthly retainer",
     description:
       "Embedded engineering. We become part of your team for the month, shipping features against a rolling backlog. Capped hours, predictable bill.",
-    amount: 60000,
-    currency: "₹",
+    amount: { inr: 60000, usd: 1200 }, // USD draft — confirm
     suffix: "/mo",
     cadence: "from · 40 hrs / month",
     features: [
@@ -185,8 +183,7 @@ export const engagementTiers: readonly EngagementTier[] = [
     name: "Hourly engineering",
     description:
       "Got a specific problem? Pay for the hours it takes to solve. Useful for audits, performance work, integrations, or unsticking your in-house team.",
-    amount: 2000,
-    currency: "₹",
+    amount: { inr: 2000, usd: 50 },
     suffix: "/hr",
     cadence: "min. 10 hours · billed weekly",
     features: [

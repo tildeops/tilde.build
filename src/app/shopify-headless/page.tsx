@@ -7,9 +7,14 @@ import { EmailTemplateSwap } from "@/components/sections/shopify-headless/email-
 import { AttributionDashboard } from "@/components/sections/shopify-headless/attribution-dashboard";
 import { PricingHeadless } from "@/components/sections/shopify-headless/pricing-headless";
 import { BridgeFinalCTA } from "@/components/sections/shopify-headless/bridge-final-cta";
-import { BreadcrumbLd } from "@/components/seo/json-ld";
+import {
+  BreadcrumbLd,
+  FAQLd,
+  ServicePricingLd,
+} from "@/components/seo/json-ld";
 import { pageMetadata } from "@/lib/seo";
 import { headlessFaqItems } from "@/lib/shopify-headless/faq";
+import { SERVICES_MAP } from "@/lib/pricing/services";
 
 export const metadata = pageMetadata({
   title: "Headless Shopify Storefronts",
@@ -36,6 +41,8 @@ export default function ShopifyHeadlessPage() {
           { name: "Headless Shopify", path: "/shopify-headless" },
         ]}
       />
+      <ServicePricingLd service={SERVICES_MAP.shopify} />
+      <FAQLd items={headlessFaqItems} />
       <HeroBento />
       <MacbookReveal />
       <Gap />

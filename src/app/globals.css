@@ -302,9 +302,16 @@ html.lenis {
   }
 }
 
-/* Focus ring */
+/* Focus ring — a single, consistent indicator that follows each element's own
+   shape (no border-radius override, so rounded pills/cards stay rounded). */
 *:focus-visible {
   outline: 2px solid var(--color-accent);
-  outline-offset: 3px;
-  border-radius: 2px;
+  outline-offset: 2px;
+}
+
+/* Visually-hidden inputs (e.g. the checkbox inside a styled selectable card)
+   surface focus through a ring on their label, so they must not paint their
+   own stray outline. */
+.sr-only:focus-visible {
+  outline: none;
 }

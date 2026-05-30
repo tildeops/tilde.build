@@ -47,9 +47,19 @@ export const site = {
   maintenance: process.env.NEXT_PUBLIC_MAINTENANCE !== "false",
 };
 
+/**
+ * Blog visibility switch. While `false`, the blog index and every post are
+ * kept out of the sitemap and served with a `noindex` robots directive, so
+ * search engines don't crawl or index them yet. The pages still render and
+ * carry full metadata — they're just withheld from search. Flip to `true`
+ * (or set NEXT_PUBLIC_BLOG_INDEXABLE=true) to list them in the sitemap and
+ * allow indexing at launch.
+ */
+export const BLOG_INDEXABLE = process.env.NEXT_PUBLIC_BLOG_INDEXABLE === "true";
+
 export const navItems = [
   { label: "Services", href: "/#services" },
-  { label: "Pricing", href: "/#pricing" },
+  { label: "Pricing", href: "/pricing" },
   { label: "Process", href: "/#process" },
-  { label: "About", href: "/#about" },
+  { label: "About", href: "/about" },
 ];

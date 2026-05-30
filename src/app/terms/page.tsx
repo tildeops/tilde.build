@@ -1,4 +1,6 @@
-import { SectionFrame, Eyebrow } from "@/components/layout/section-frame";
+import { SectionFrame } from "@/components/layout/section-frame";
+import { PageHero } from "@/components/layout/page-hero";
+import { ContactCTA } from "@/components/layout/contact-cta";
 import { BreadcrumbLd } from "@/components/seo/json-ld";
 import { pageMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
@@ -15,23 +17,22 @@ const LAST_UPDATED = "29 May 2026";
 export default function TermsPage() {
   return (
     <div data-page-theme="bridge">
-      <SectionFrame className="pt-6 md:pt-10">
-        <BreadcrumbLd
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Terms of Service", path: "/terms" },
-          ]}
-        />
-      <div className="mx-auto max-w-3xl">
-        <Eyebrow>~ Legal</Eyebrow>
-        <h1 className="mt-5 font-display leading-[1.05] tracking-[-0.02em] text-[clamp(2.25rem,5vw,3.5rem)]">
-          Terms of Service
-        </h1>
-        <p className="mt-4 text-sm text-ink-muted">
-          Last updated: {LAST_UPDATED}
-        </p>
+      <BreadcrumbLd
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Terms of Service", path: "/terms" },
+        ]}
+      />
 
-        <div className="prose prose-neutral mt-10 max-w-none text-ink [&_h2]:font-display [&_h2]:text-2xl [&_h2]:mt-12 [&_h2]:mb-4 [&_p]:text-ink-muted [&_p]:leading-relaxed [&_ul]:text-ink-muted [&_li]:leading-relaxed [&_a]:text-accent [&_strong]:text-ink">
+      <PageHero
+        eyebrow="~ Legal"
+        title="Terms of Service"
+        description={`The terms that govern your use of tilde.build and how we engage on client work. Last updated ${LAST_UPDATED}.`}
+      />
+
+      <SectionFrame className="pt-2 md:pt-4">
+      <div className="mx-auto max-w-3xl">
+        <div className="prose prose-neutral max-w-none text-ink [&_h2]:font-display [&_h2]:text-2xl [&_h2]:mt-12 [&_h2]:mb-4 [&_p]:text-ink-muted [&_p]:leading-relaxed [&_ul]:text-ink-muted [&_li]:leading-relaxed [&_a]:text-accent [&_strong]:text-ink">
           <p>
             These Terms of Service (“Terms”) govern your use of{" "}
             <a href={site.url}>tilde.build</a> (the “Site”), operated by{" "}
@@ -177,6 +178,11 @@ export default function TermsPage() {
         </div>
       </div>
       </SectionFrame>
+
+      <ContactCTA
+        title="Questions about these terms?"
+        body="If anything here is unclear, reach out — we're happy to walk through it."
+      />
     </div>
   );
 }

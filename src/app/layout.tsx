@@ -9,6 +9,7 @@ import {
   ThemeModeProvider,
   themeModeInitScript,
 } from "@/components/providers/theme-mode-provider";
+import { CurrencyProvider } from "@/components/providers/currency-provider";
 import { ACTIVE_THEME } from "@/lib/theme";
 import { site } from "@/lib/site";
 import { OrganizationLd, WebSiteLd } from "@/components/seo/json-ld";
@@ -138,6 +139,7 @@ export default function RootLayout({
         <OrganizationLd />
         <WebSiteLd />
         <ThemeModeProvider>
+          <CurrencyProvider>
           {site.maintenance ? (
             // Maintenance mode: no nav, no footer, no smooth-scroll hijack —
             // just the single, sealed-off hero screen.
@@ -157,6 +159,7 @@ export default function RootLayout({
               </GSAPProvider>
             </LenisProvider>
           )}
+          </CurrencyProvider>
         </ThemeModeProvider>
         {/* No cookie banner on the maintenance splash — it would be the only
             navigable link left on an otherwise sealed-off screen. */}

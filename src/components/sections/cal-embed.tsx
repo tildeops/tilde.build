@@ -26,12 +26,14 @@ export function CalEmbed() {
       // instead of stuttering against Lenis's smooth-scroll loop.
       data-lenis-prevent
       className="overflow-hidden rounded-2xl border border-rule bg-bg"
-      style={{ height: 680, minHeight: 640 }}
     >
+      {/* No fixed height / inner scroll — the embed auto-resizes its iframe to
+          the content so the whole calendar is visible instead of scrolling
+          within a clipped 680px box. */}
       <Cal
         namespace={site.cal.namespace}
         calLink={site.cal.link}
-        style={{ width: "100%", height: "100%", overflow: "scroll" }}
+        style={{ width: "100%" }}
         config={{ layout: "month_view", useSlotsViewOnSmallScreen: "true" }}
       />
     </div>

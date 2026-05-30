@@ -149,10 +149,12 @@ export function NotchNav() {
             scrollTrigger: {
               trigger: hero,
               start: "top top",
-              // Match the hero-bento mobile-tuned scrub window so the notch
-              // arrives at top:0 at the same moment the hero band is full-bleed.
+              // Match the hero band's scrub window AND smoothing exactly so the
+              // notch tracks the band's top edge frame-for-frame instead of
+              // lagging it. The band uses 0.25 on mobile / 0.4 elsewhere — a
+              // mismatch here lets the two drift apart mid-scroll.
               end: c.isXs || c.isSm ? "+=40%" : "+=70%",
-              scrub: 0.4,
+              scrub: c.isXs || c.isSm ? 0.25 : 0.4,
               invalidateOnRefresh: true,
             },
           }
@@ -173,7 +175,13 @@ export function NotchNav() {
       mm.revert();
       st.kill();
     };
-  }, [heroMode]);
+    // `revertOnUpdate` is REQUIRED here. NotchNav lives in the root layout and
+    // never unmounts, so without it @gsap/react defers this context's cleanup
+    // to unmount (i.e. never) and merely *adds* a fresh set of ScrollTriggers
+    // on every route change. The stale hero trigger from a previous visit then
+    // keeps scrubbing `top` on later pages — the notch resting "a little below"
+    // the top. revertOnUpdate reverts the prior context on each heroMode change.
+  }, { dependencies: [heroMode], revertOnUpdate: true });
 
   // Animate the expand/collapse morph. First run sets the size instantly so
   // the initial expanded-in-hero state doesn't flash through compact on mount.
@@ -290,7 +298,10 @@ export function NotchNav() {
       <div
         ref={travelRef}
         className="pointer-events-none fixed inset-x-0 z-[60] flex justify-center"
-        style={{ top: 32 }}
+        // Generic pages resolve to top:0; only hero pages start tucked into the
+        // band's edge. Keying the initial inline value off heroMode avoids the
+        // 32px "drop then snap up" flash on non-hero pages before GSAP runs.
+        style={{ top: heroMode ? 32 : 0 }}
       >
         <div
           ref={notchRef}

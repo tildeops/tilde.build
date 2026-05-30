@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const buttonVariants = cva(
   // Base: relative + isolate + overflow-hidden for the fill-wipe pseudo.
   // before is the sliding underlay; we hide it offscreen and slide in on hover.
-  "group/btn relative isolate overflow-hidden inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:relative [&_svg]:z-[1] before:content-[''] before:absolute before:inset-0 before:-z-10 before:-translate-x-[101%] before:transition-transform before:duration-[600ms] before:ease-[cubic-bezier(0.22,1,0.36,1)] hover:before:translate-x-0 motion-reduce:before:transition-none motion-reduce:before:translate-x-0 motion-reduce:before:opacity-0",
+  "group/btn relative isolate overflow-hidden inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:relative [&_svg]:z-[1] before:content-[''] before:absolute before:inset-0 before:-z-10 before:-translate-x-[101%] before:transition-transform before:duration-[600ms] before:ease-[cubic-bezier(0.22,1,0.36,1)] hover:before:translate-x-0 motion-reduce:before:transition-none motion-reduce:before:translate-x-0 motion-reduce:before:opacity-0",
   {
     variants: {
       variant: {
