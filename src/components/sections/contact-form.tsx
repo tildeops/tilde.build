@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight, Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { trackEvent } from "@/lib/analytics";
@@ -212,7 +212,7 @@ function Field({
           name={name}
           rows={4}
           placeholder=" "
-          className="peer block w-full rounded-xl border border-rule bg-bg px-4 pt-7 pb-3 text-base text-ink placeholder:text-transparent transition-colors duration-300 focus:border-accent focus:outline-none focus:shadow-[0_0_0_4px_rgb(var(--accent-rgb)/0.08)]"
+          className="peer block w-full rounded-xl border border-rule bg-bg px-4 pt-7 pb-3 text-base text-ink placeholder:text-transparent transition-colors duration-300 focus:border-accent"
         />
       ) : (
         <input
@@ -220,7 +220,7 @@ function Field({
           type={type}
           required={required}
           placeholder=" "
-          className="peer block w-full rounded-xl border border-rule bg-bg px-4 pt-7 pb-3 text-base text-ink placeholder:text-transparent transition-colors duration-300 focus:border-accent focus:outline-none focus:shadow-[0_0_0_4px_rgb(var(--accent-rgb)/0.08)]"
+          className="peer block w-full rounded-xl border border-rule bg-bg px-4 pt-7 pb-3 text-base text-ink placeholder:text-transparent transition-colors duration-300 focus:border-accent"
         />
       )}
     </label>
@@ -236,25 +236,108 @@ function SelectField({
   name: string;
   options: { v: string; l: string }[];
 }) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  const selected = options.find((o) => o.v === value);
+
+  // Close on outside click / Escape.
+  useEffect(() => {
+    if (!open) return;
+    function onPointer(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  // Reveal animation for the panel.
+  useGSAP(
+    () => {
+      if (open && panelRef.current) {
+        gsap.fromTo(
+          panelRef.current,
+          { opacity: 0, y: -6 },
+          { opacity: 1, y: 0, duration: 0.25, ease: "editorial" }
+        );
+      }
+    },
+    { dependencies: [open] }
+  );
+
   return (
-    <label className="block">
+    <div className="block">
       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
         {label}
       </span>
-      <select
-        name={name}
-        className="mt-2 w-full rounded-xl border border-rule bg-bg px-4 py-3 text-base text-ink transition-colors duration-300 focus:border-accent focus:outline-none focus:shadow-[0_0_0_4px_rgb(var(--accent-rgb)/0.08)]"
-        defaultValue=""
-      >
-        <option value="" disabled>
-          Pick one…
-        </option>
-        {options.map((o) => (
-          <option key={o.v} value={o.v}>
-            {o.l}
-          </option>
-        ))}
-      </select>
-    </label>
+      {/* Hidden input carries the value into the form's FormData. */}
+      <input type="hidden" name={name} value={value} />
+
+      <div ref={wrapRef} className="relative mt-2">
+        <button
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+          className={cn(
+            "flex w-full items-center justify-between gap-3 rounded-xl border bg-bg px-4 py-3 text-left text-base transition-colors duration-300",
+            open ? "border-accent" : "border-rule hover:border-ink-muted",
+            selected ? "text-ink" : "text-ink-muted"
+          )}
+        >
+          <span className="truncate">{selected ? selected.l : "Pick one…"}</span>
+          <ChevronDown
+            className={cn(
+              "size-4 shrink-0 text-ink-muted transition-transform duration-300",
+              open && "rotate-180"
+            )}
+          />
+        </button>
+
+        {open && (
+          <div
+            ref={panelRef}
+            role="listbox"
+            className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-xl border border-rule bg-bg p-1 shadow-[0_20px_50px_-20px_rgba(11,12,14,0.35)]"
+          >
+            {options.map((o) => {
+              const isSel = o.v === value;
+              return (
+                <button
+                  key={o.v}
+                  type="button"
+                  role="option"
+                  aria-selected={isSel}
+                  onClick={() => {
+                    setValue(o.v);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-[15px] transition-colors duration-150",
+                    isSel
+                      ? "bg-accent-soft text-accent"
+                      : "text-ink hover:bg-accent-soft/50"
+                  )}
+                >
+                  <span className="truncate">{o.l}</span>
+                  {isSel && <Check className="size-4 shrink-0" />}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
