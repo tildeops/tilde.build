@@ -313,11 +313,24 @@ function GradientDefs({ id }: { id: string }) {
   );
 }
 
+// Gentle slowdown applied to every looping card visual so the bento reads
+// calm rather than frantic (1 = original speed; <1 is slower).
+const VISUAL_SPEED = 0.8;
+
 function useVisualAnim(ref: React.RefObject<SVGSVGElement | null>, fn: () => void) {
   useGSAP(
     () => {
       if (!ref.current) return;
+      // Slow only the animations this visual creates: diff the global
+      // timeline's top-level children before/after, then ease back the new
+      // ones (timeScale cascades into nested timelines automatically).
+      const before = new Set(gsap.globalTimeline.getChildren(false, true, true));
       fn();
+      gsap.globalTimeline
+        .getChildren(false, true, true)
+        .forEach((anim) => {
+          if (!before.has(anim)) anim.timeScale(anim.timeScale() * VISUAL_SPEED);
+        });
     },
     { scope: ref as React.RefObject<Element>, dependencies: [] },
   );
