@@ -7,10 +7,15 @@ import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { StaggerChildren } from "@/components/motion/stagger-children";
 import { CountUp } from "@/components/motion/count-up";
+import { useCurrency } from "@/components/providers/currency-provider";
+import { amountFor, currencySymbol, formatMoney } from "@/lib/pricing/currency";
 import { flagship, addons } from "@/lib/shopify-headless/pricing";
 import { calTrigger } from "@/lib/cal";
 
 export function PricingHeadless() {
+  const { currency } = useCurrency();
+  const fmt = (n: number) =>
+    n.toLocaleString(currency === "USD" ? "en-US" : "en-IN");
   return (
     <SectionFrame id="pricing">
       <div className="text-center">
@@ -199,9 +204,9 @@ export function PricingHeadless() {
                 Project total
               </p>
               <CountUp
-                to={flagship.price}
-                prefix={flagship.currency}
-                format={(n) => n.toLocaleString("en-IN")}
+                to={amountFor(flagship.priceMoney, currency)}
+                prefix={currencySymbol(currency)}
+                format={fmt}
                 className="mt-2 block font-display font-extrabold text-[clamp(2.6rem,8vw,4.6rem)] leading-none tracking-[-0.045em] text-ink"
               />
               <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-muted">
@@ -211,7 +216,7 @@ export function PricingHeadless() {
               {/* Line-item-style mini table — desktop only */}
               <div className="mt-7 hidden space-y-1.5 font-mono text-[11px] text-ink-muted md:block">
                 <div className="flex justify-between">
-                  <span>Build · 3–4 weeks</span>
+                  <span>Build · 3-4 weeks</span>
                   <span className="text-ink">included</span>
                 </div>
                 <div className="flex justify-between">
@@ -252,7 +257,7 @@ export function PricingHeadless() {
           </FadeUp>
           <FadeUp delay={0.1}>
             <p className="text-[12px] text-ink-muted">
-              Built in parallel — doesn&apos;t extend the timeline
+              Built in parallel, doesn&apos;t extend the timeline
             </p>
           </FadeUp>
         </div>
@@ -276,7 +281,9 @@ export function PricingHeadless() {
                 {a.blurb}
               </p>
               <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.14em] text-accent">
-                {a.price}
+                {a.pricePrefix === "+" ? "+ " : "from "}
+                {formatMoney(a.priceMoney, currency)}
+                {a.priceSuffix ?? ""}
               </p>
             </Link>
           ))}

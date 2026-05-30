@@ -10,13 +10,16 @@ import { SectionFrame } from "@/components/layout/section-frame";
 import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
 import { CountUp } from "@/components/motion/count-up";
+import { useCurrency } from "@/components/providers/currency-provider";
+import { amountFor, currencySymbol } from "@/lib/pricing/currency";
 import { calTrigger } from "@/lib/cal";
 import { engagementTiers } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
-const INR = new Intl.NumberFormat("en-IN");
-
 export function Pricing() {
+  const { currency } = useCurrency();
+  const fmt = (n: number) =>
+    n.toLocaleString(currency === "USD" ? "en-US" : "en-IN");
   const gridRef = useRef<HTMLDivElement | null>(null);
 
   useGSAP(
@@ -112,8 +115,11 @@ export function Pricing() {
 
             <div className="mt-6 flex items-baseline gap-1">
               <span className="font-display text-4xl font-extrabold tracking-tight text-ink md:text-5xl">
-                {tier.currency}
-                <CountUp to={tier.amount} format={(n) => INR.format(n)} />
+                <CountUp
+                  to={amountFor(tier.amount, currency)}
+                  prefix={currencySymbol(currency)}
+                  format={fmt}
+                />
               </span>
               {tier.suffix && (
                 <span className="font-display text-2xl font-extrabold tracking-tight text-ink-muted md:text-3xl">
@@ -166,9 +172,20 @@ export function Pricing() {
         ))}
       </div>
 
+      <div className="mt-10 text-center">
+        <Link
+          href="/pricing"
+          className="group inline-flex items-center gap-1.5 rounded-full border border-rule bg-bg-elevated px-5 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:border-accent/40"
+        >
+          See detailed pricing for every service
+          <ArrowRight className="size-3.5 text-accent transition-transform duration-300 group-hover:translate-x-0.5" />
+        </Link>
+      </div>
+
       <p className="mt-8 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
-        All prices in INR, excluding GST · International invoicing in USD / EUR
-        on request
+        {currency === "USD"
+          ? "All prices in USD, excluding applicable taxes · billed by international invoice"
+          : "All prices in INR, excluding GST · International invoicing in USD on request"}
       </p>
     </SectionFrame>
   );

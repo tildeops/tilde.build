@@ -1,6 +1,8 @@
 // Pricing data for the headless-specific PricingHeadless section and the
 // dedicated /pricing page. One flagship tier + add-ons.
 
+import type { Money } from "@/lib/pricing/currency";
+
 export type FeatureCategory = "build" | "migration" | "handover";
 
 export type PricingFeature = {
@@ -17,11 +19,13 @@ export type PricingFeature = {
 export type FlagshipTier = {
   name: string;
   tagline: string;
-  /** Numeric value used by CountUp animation */
+  /** Numeric value used by CountUp animation (INR — legacy). */
   price: number;
-  /** Currency prefix, e.g. "₹" */
+  /** Currency prefix, e.g. "₹" (legacy; prefer `priceMoney` + CurrencyProvider). */
   currency: string;
-  /** Sub-line under the price, e.g. "fixed, one-time · excl. GST" */
+  /** Dual-currency project total. */
+  priceMoney: Money;
+  /** Sub-line under the price, e.g. "fixed · one-time · excl. taxes" */
   priceMeta: string;
   features: PricingFeature[];
   cta: {
@@ -34,8 +38,12 @@ export type Addon = {
   id: string;
   name: string;
   blurb: string;
-  /** Display price string, e.g. "+ ₹15,000" or "from ₹8,000/mo" */
+  /** Display price string, e.g. "+ ₹15,000" or "from ₹8,000/mo" (legacy). */
   price: string;
+  /** Dual-currency add-on price + how to render it. */
+  priceMoney: Money;
+  pricePrefix: "+" | "from";
+  priceSuffix?: "/mo";
   /** Longer 1–2 sentence description, used on /pricing. */
   description?: string;
   /** Bullet points of what's included in the add-on, used on /pricing. */
@@ -44,26 +52,27 @@ export type Addon = {
 
 export const flagship: FlagshipTier = {
   name: "Headless Shopify rebuild",
-  tagline: "The full build, end to end, in 3–4 weeks.",
+  tagline: "The full build, end to end, in 3-4 weeks.",
   price: 40000,
   currency: "₹",
-  priceMeta: "fixed · one-time · excl. GST",
+  priceMoney: { inr: 40000, usd: 1400 },
+  priceMeta: "fixed · one-time · excl. taxes",
   features: [
     {
       label: "Custom Next.js storefront on Shopify backend",
       emphasis: true,
       category: "build",
       description:
-        "A bespoke storefront in Next.js 16 with App Router. Server-rendered for speed, designed in Figma against your brand.",
+        "A bespoke storefront in Next.js 16 with App Router. Server-rendered for speed, designed against your brand.",
     },
     {
-      label: "Mobile-first responsive design (Figma included)",
+      label: "Mobile-first responsive design",
       category: "build",
       description:
-        "Designed mobile-up. You keep the Figma file with every component, variant, and the design system.",
+        "Designed mobile-up, with a component system that stays consistent across every breakpoint.",
     },
     {
-      label: "Shopify or Razorpay checkout — switchable",
+      label: "Shopify or Razorpay checkout, switchable",
       category: "build",
       description:
         "Shopify Checkout out of the box, or Razorpay if you need UPI / India-native payment options. Switchable per locale.",
@@ -76,22 +85,17 @@ export const flagship: FlagshipTier = {
         "Server-side events via Conversions API + Measurement Protocol. The numbers match across Meta, Google, and Shopify.",
     },
     {
-      label: "Klaviyo email flows scaffolded",
-      category: "build",
-      description:
-        "Welcome, abandoned cart, post-purchase, browse abandonment — five core flows wired up and ready to send.",
-    },
-    {
       label: "Hosted on Vercel · Lighthouse 95+",
       category: "build",
       description:
         "Edge-deployed on Vercel. Lighthouse mobile score 95+ guaranteed on launch — built into the contract.",
     },
     {
-      label: "Migration of products, customers, orders",
+      label: "Your Shopify backend stays — no data migration needed",
+      emphasis: true,
       category: "migration",
       description:
-        "Your existing Shopify store stays the backend. No data export, no re-keying — the new storefront just reads from it.",
+        "Your existing Shopify store stays the backend. No data export, no re-keying — the new storefront just reads from it. (Building from scratch on a new backend? See the add-on.)",
     },
     {
       label: "301 redirects for SEO continuity",
@@ -107,10 +111,10 @@ export const flagship: FlagshipTier = {
         "Push access to the repo on day one, documentation walkthrough on launch day. Take it in-house anytime.",
     },
     {
-      label: "30 days post-launch support",
+      label: "1 week post-launch support",
       category: "handover",
       description:
-        "Bug fixes, small tweaks, on-call Slack support for the first month. After that, optional retainer.",
+        "Bug fixes, small tweaks, on-call Slack support for the first week. Extend to 30 days or move to a retainer anytime.",
     },
   ],
   cta: {
@@ -121,11 +125,30 @@ export const flagship: FlagshipTier = {
 
 export const addons: Addon[] = [
   {
+    id: "email-flows",
+    name: "Email marketing flows",
+    blurb:
+      "Welcome, abandoned-cart, post-purchase and win-back sequences that bring shoppers back.",
+    price: "+ ₹20,000",
+    priceMoney: { inr: 20000, usd: 400 },
+    pricePrefix: "+",
+    description:
+      "Five core revenue flows set up on the platform that fits your list and budget — Omnisend, Brevo, or Klaviyo. (Klaviyo is powerful but pricey at scale; we'll recommend the cheapest fit on the call.)",
+    included: [
+      "Welcome, abandoned-cart, browse-abandonment, post-purchase, win-back flows",
+      "Connected to your Shopify storefront events (works headless)",
+      "Branded templates matching your storefront",
+      "Segmentation + basic reporting set up so you can see revenue per flow",
+    ],
+  },
+  {
     id: "messaging-bots",
     name: "WhatsApp + Telegram bot",
     blurb:
-      "Cart recovery, order updates, support routing — all on the channel your customers already use.",
+      "Cart recovery, order updates, support routing, all on the channel your customers already use.",
     price: "+ ₹25,000",
+    priceMoney: { inr: 25000, usd: 600 },
+    pricePrefix: "+",
     description:
       "Built on the official Business APIs (not flaky third-party bots). Customers browse, buy, and get support without leaving the chat.",
     included: [
@@ -141,6 +164,8 @@ export const addons: Addon[] = [
     blurb:
       "One source of truth across Meta, GA4, and Shopify. ROAS that finally adds up.",
     price: "+ ₹35,000",
+    priceMoney: { inr: 35000, usd: 700 }, // USD draft — confirm
+    pricePrefix: "+",
     description:
       "A unified view of where revenue actually comes from, with channel-level ROAS that matches what the platforms report.",
     included: [
@@ -156,6 +181,8 @@ export const addons: Addon[] = [
     blurb:
       "Replace the default Shopify confirmations with on-brand templates customers screenshot.",
     price: "+ ₹15,000",
+    priceMoney: { inr: 15000, usd: 300 }, // USD draft — confirm
+    pricePrefix: "+",
     description:
       "Designed in Figma, built in React Email, deployed back into your Shopify backend. Every automated message matches the storefront.",
     included: [
@@ -166,11 +193,64 @@ export const addons: Addon[] = [
     ],
   },
   {
+    id: "subscriptions",
+    name: "Subscriptions / recurring billing",
+    blurb:
+      "Turn one-off buyers into recurring revenue with subscribe-and-save and a self-serve customer portal.",
+    price: "+ ₹25,000",
+    priceMoney: { inr: 25000, usd: 500 },
+    pricePrefix: "+",
+    description:
+      "Recurring orders wired into your storefront and checkout, with a portal where customers manage their own plans.",
+    included: [
+      "Subscribe-and-save on eligible products",
+      "Customer portal: pause, skip, swap, cancel",
+      "Dunning + retry logic for failed payments",
+      "Synced to your Shopify backend and order flow",
+    ],
+  },
+  {
+    id: "extended-support",
+    name: "Extended support (30 days)",
+    blurb:
+      "Push the included 1-week warranty out to a full 30 days of bug fixes and on-call support.",
+    price: "+ ₹12,500",
+    priceMoney: { inr: 12500, usd: 250 },
+    pricePrefix: "+",
+    description:
+      "Adds three more weeks on top of the included 1-week post-launch window — roughly 5 hours of fixes and tweaks, priced off the hourly rate.",
+    included: [
+      "30 days of priority bug fixes from launch",
+      "Small tweaks and on-call Slack support",
+      "Rolls naturally into a retainer if you want to continue",
+    ],
+  },
+  {
+    id: "from-scratch",
+    name: "Headless Shopify from scratch",
+    blurb:
+      "No existing store? We stand up a brand-new Shopify backend alongside the storefront.",
+    price: "from ₹75,000",
+    priceMoney: { inr: 75000, usd: 1800 },
+    pricePrefix: "from",
+    description:
+      "When there's no Shopify store to build on, we set up the backend from zero. Product migration is billed at ₹500 / $5 per 100 products; full scope is confirmed on the discovery call.",
+    included: [
+      "Brand-new Shopify backend configured end to end",
+      "Storefront built on top, same as the flagship build",
+      "Product migration at ₹500 / $5 per 100 products",
+      "Final scope + price confirmed on the call",
+    ],
+  },
+  {
     id: "retainer",
     name: "Maintenance retainer",
     blurb:
-      "Bug fixes, small features, on-call support after the 30-day warranty ends.",
+      "Bug fixes, small features, on-call support after the 1-week warranty ends.",
     price: "from ₹15,000/mo",
+    priceMoney: { inr: 15000, usd: 300 },
+    pricePrefix: "from",
+    priceSuffix: "/mo",
     description:
       "A predictable monthly engagement for stores that want a partner on standby rather than rebuilding the relationship every quarter.",
     included: [
@@ -197,6 +277,6 @@ export const excluded = [
   },
   {
     label: "Third-party services",
-    note: "Klaviyo, Razorpay, Meta ads etc. billed directly by the provider.",
+    note: "Email platform (Omnisend / Brevo / Klaviyo), Razorpay, Meta ads etc. billed directly by the provider.",
   },
 ];
