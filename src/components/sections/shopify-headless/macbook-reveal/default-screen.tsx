@@ -1,15 +1,24 @@
 import * as React from "react";
 import type { StorefrontMockup } from "@/lib/storefronts";
+import { SafeImg } from "./safe-img";
 
 type Props = { brand: StorefrontMockup };
 
 /**
  * Generic Shopify-template storefront — long-form for the scroll-through
- * mechanic. Intentionally bland: system fonts, grey placeholder tiles,
- * Shopify-green CTAs, lazy section repetition (Featured products → Best
- * sellers → Newsletter → Instagram → Footer).
+ * mechanic. Same real product photography as the Tilde build, but dropped into
+ * a deliberately bland default theme: system fonts, Shopify-green CTAs, cramped
+ * grids, a coupon pop-up, lazy section repetition, "Powered by Shopify". The
+ * contrast is design quality, not real-vs-placeholder.
  */
 export function DefaultScreen({ brand }: Props) {
+  // A flat pool of every available photo, reused across the bland sections.
+  const gallery = [
+    ...brand.products.map((p) => p.image),
+    ...(brand.lookbookImages ?? []),
+    ...(brand.statement?.images ?? []),
+  ].filter(Boolean) as string[];
+
   return (
     <div
       className="relative bg-white text-[#1a1a1a]"
@@ -58,7 +67,12 @@ export function DefaultScreen({ brand }: Props) {
             Shop Now
           </button>
         </div>
-        <div className="size-[88px] shrink-0 rounded-md border border-[#cfcfcf] bg-[#e0e0e0]" />
+        <SafeImg
+          src={brand.products[0].image}
+          alt={brand.products[0].name}
+          tint="#e0e0e0"
+          className="size-[88px] shrink-0 rounded-md border border-[#cfcfcf] object-cover"
+        />
       </div>
 
       {/* Featured products */}
@@ -143,10 +157,12 @@ export function DefaultScreen({ brand }: Props) {
         </div>
         <div className="mt-3 grid grid-cols-6 gap-1.5">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div
+            <SafeImg
               key={i}
-              className="aspect-square rounded-sm border border-[#dedede] bg-[#e6e6e6]"
-              aria-hidden
+              src={gallery[i % gallery.length]}
+              alt=""
+              tint="#e6e6e6"
+              className="aspect-square rounded-sm border border-[#dedede] object-cover"
             />
           ))}
         </div>
@@ -222,9 +238,11 @@ function ProductBand({
       <div className="grid grid-cols-4 gap-3 px-5 py-4">
         {products.map((p) => (
           <div key={p.name} className="flex flex-col">
-            <div
-              className="aspect-square w-full rounded-sm border border-[#dedede] bg-[#f0f0f0]"
-              aria-hidden
+            <SafeImg
+              src={p.image}
+              alt={p.name}
+              tint="#f0f0f0"
+              className="aspect-square w-full rounded-sm border border-[#dedede] object-cover"
             />
             <p className="mt-1.5 truncate text-[11px] font-medium">{p.name}</p>
             <p className="text-[10px] text-[#666]">From {p.price}</p>

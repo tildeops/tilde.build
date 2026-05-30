@@ -8,11 +8,25 @@ export type StorefrontProduct = {
   price: string;
   /** Optional badge text, e.g. "New", "Limited", "Bespoke" */
   tag?: string;
-  /** Silhouette ID for the SVG product illustration on the tilde side */
+  /** Silhouette ID for the SVG product illustration (legacy mockups) */
   shape: "bottle" | "jar" | "tube" | "pump" |
          "lounge" | "stool" | "table" | "bench" |
          "tee" | "hoodie" | "pant" | "cap" |
          "ring" | "pendant" | "hoop" | "cuff";
+  /** Optional real product photo (Unsplash). Used by the photographic mockups. */
+  image?: string;
+  /** Optional one-word descriptor under the name on the editorial side */
+  note?: string;
+};
+
+/** A giant editorial sentence with small inline images woven between phrases. */
+export type StatementLine = {
+  /** Text phrases; rendered between successive images. segments.length === images.length + 1 */
+  segments: string[];
+  /** Inline image URLs woven between the segments */
+  images: string[];
+  /** Index into `images` that gets a ▶ play-button overlay (video feel) */
+  playIndex?: number;
 };
 
 export type StorefrontMockup = {
@@ -47,15 +61,31 @@ export type StorefrontMockup = {
   products: [StorefrontProduct, StorefrontProduct, StorefrontProduct, StorefrontProduct];
   /** Bottom stat strip pieces, joined with · separators */
   stat: [string, string, string];
+
+  /* ── Optional photographic / editorial fields (PARFS-style tilde build) ── */
+  /** Full-bleed editorial hero photograph (Unsplash) */
+  heroImage?: string;
+  /** Oversized stacked hero headline, 3 lines (e.g. ["Ritual","becomes","skin"]) */
+  heroHeadlineLines?: [string, string, string];
+  /** Small underlined hero link label, e.g. "All products" */
+  heroLink?: string;
+  /** Giant inline-image editorial statement line */
+  statement?: StatementLine;
+  /** Editorial lookbook frames (Unsplash) */
+  lookbookImages?: string[];
 };
+
+/** Build a tuned Unsplash delivery URL (domain whitelisted in next.config.ts). */
+const img = (id: string, w = 1100) =>
+  `https://images.unsplash.com/photo-${id}?w=${w}&q=72&auto=format&fit=crop`;
 
 export const storefronts: StorefrontMockup[] = [
   {
     slug: "plain-skin",
     category: "SKINCARE",
-    brand: "Plain Skin",
-    noun: "skincare brand",
-    url: "plainskin.in",
+    brand: "SÉRA",
+    noun: "skincare house",
+    url: "sera.in",
     accentHex: "#2d3a2a",
     bgHex: "#f1ede3",
     inkHex: "#1a1f1a",
@@ -75,12 +105,54 @@ export const storefronts: StorefrontMockup[] = [
       "Razorpay UPI native checkout",
     ],
     products: [
-      { name: "Hydrating Serum", price: "₹1,890", shape: "bottle" },
-      { name: "Barrier Cream", price: "₹2,340", tag: "New", shape: "jar" },
-      { name: "Slow Cleanser", price: "₹990", shape: "tube" },
-      { name: "SPF 40 Daily", price: "₹1,650", shape: "pump" },
+      {
+        name: "No.1 Hydrating Serum",
+        price: "₹1,890",
+        shape: "bottle",
+        note: "Hyaluronic + squalane",
+        image: img("1611930022073-b7a4ba5fcccd", 900),
+      },
+      {
+        name: "Barrier Balm",
+        price: "₹2,340",
+        tag: "New",
+        shape: "jar",
+        note: "Ceramide-rich",
+        image: img("1608248543803-ba4f8c70ae0b", 900),
+      },
+      {
+        name: "Quiet Cleanser",
+        price: "₹990",
+        shape: "tube",
+        note: "Sulphate-free gel",
+        image: img("1620916566398-39f1143ab7be", 900),
+      },
+      {
+        name: "Daylight SPF 40",
+        price: "₹1,650",
+        shape: "pump",
+        note: "Invisible mineral",
+        image: img("1631730486572-226d1f595b68", 900),
+      },
     ],
-    stat: ["Plain Skin", "9-day rebuild", "98 Lighthouse"],
+    stat: ["SÉRA", "9-day rebuild", "98 Lighthouse"],
+    heroImage: "/assets/sera-model.png",
+    heroHeadlineLines: ["Ritual", "becomes", "skin"],
+    heroLink: "All products",
+    statement: {
+      segments: ["Where every", "drop becomes", "a quiet", "ritual"],
+      images: [
+        img("1620916297397-a4a5402a3c6c", 320),
+        img("1503236823255-94609f598e71", 320),
+        img("1556760544-74068565f05c", 320),
+      ],
+      playIndex: 2,
+    },
+    lookbookImages: [
+      img("1612817288484-6f916006741a", 800),
+      img("1608068811588-3a67006b7489", 800),
+      img("1487412947147-5cebf100ffc2", 800),
+    ],
   },
   {
     slug: "slow-wood",
