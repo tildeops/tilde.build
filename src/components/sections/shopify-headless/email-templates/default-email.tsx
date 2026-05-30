@@ -1,17 +1,24 @@
 import * as React from "react";
+import { storefronts } from "@/lib/storefronts";
+import { SafeImg } from "../macbook-reveal/safe-img";
+
+const brand = storefronts.find((s) => s.slug === "plain-skin")!;
 
 /**
  * The default Shopify "Order confirmation" email — exactly as boring as it
- * arrives in your inbox. Times New Roman-ish stack, table layout, generic
- * placeholder logo, plain text everywhere.
+ * arrives in your inbox. Helvetica/Arial stack, table layout, plain-text logo,
+ * "Powered by Shopify". Same real product photos as the custom version, so the
+ * contrast is design quality, not real-vs-placeholder.
  */
 export function DefaultEmail() {
+  const serum = brand.products[0];
+  const spf = brand.products[3];
+
   return (
     <div
       className="absolute inset-0 flex flex-col overflow-y-auto bg-white text-[#1a1a1a]"
       style={{
-        fontFamily:
-          "-apple-system, 'Helvetica Neue', Arial, sans-serif",
+        fontFamily: "-apple-system, 'Helvetica Neue', Arial, sans-serif",
       }}
     >
       {/* Mail app header */}
@@ -23,7 +30,7 @@ export function DefaultEmail() {
 
       {/* Email content */}
       <div className="px-5 py-4 text-[11px]">
-        <p className="text-[#888]">From: noreply@plainskin.in</p>
+        <p className="text-[#888]">From: noreply@{brand.url}</p>
         <p className="mt-0.5 text-[#888]">To: priya@gmail.com</p>
         <p className="mt-2.5 text-[14px] font-bold leading-tight">
           Thank you for your order!
@@ -31,8 +38,10 @@ export function DefaultEmail() {
         <p className="mt-1 text-[10px] text-[#888]">June 18, 2024 · 10:42 AM</p>
 
         <div className="mt-4 border-t border-[#eee] pt-4">
-          {/* Generic placeholder logo */}
-          <div className="mx-auto mb-4 h-10 w-24 rounded-sm border border-[#ccc] bg-[#f5f5f5]" />
+          {/* Plain-text logo — no brand styling, just the store name */}
+          <p className="mb-4 text-center text-[15px] font-bold uppercase tracking-[0.12em] text-[#333]">
+            {brand.brand}
+          </p>
 
           <p className="text-center text-[12px] font-bold uppercase tracking-wide">
             ORDER #1042
@@ -47,30 +56,25 @@ export function DefaultEmail() {
           <p className="text-[11px] font-bold">Order summary</p>
           <table className="mt-2 w-full border-collapse text-[10px]">
             <tbody>
-              <tr className="border-b border-[#eee]">
-                <td className="py-2">
-                  <div className="flex items-center gap-2">
-                    <div className="size-8 shrink-0 border border-[#ddd] bg-[#f0f0f0]" />
-                    <div>
-                      <div>Hydrating Serum</div>
-                      <div className="text-[#888]">× 1</div>
+              {[serum, spf].map((p) => (
+                <tr key={p.name} className="border-b border-[#eee]">
+                  <td className="py-2">
+                    <div className="flex items-center gap-2">
+                      <SafeImg
+                        src={p.image}
+                        alt={p.name}
+                        tint="#f0f0f0"
+                        className="size-8 shrink-0 border border-[#ddd] object-cover"
+                      />
+                      <div>
+                        <div>{p.name}</div>
+                        <div className="text-[#888]">× 1</div>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className="text-right">₹1,890</td>
-              </tr>
-              <tr className="border-b border-[#eee]">
-                <td className="py-2">
-                  <div className="flex items-center gap-2">
-                    <div className="size-8 shrink-0 border border-[#ddd] bg-[#f0f0f0]" />
-                    <div>
-                      <div>SPF 40 Daily</div>
-                      <div className="text-[#888]">× 1</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="text-right">₹1,650</td>
-              </tr>
+                  </td>
+                  <td className="text-right">{p.price}</td>
+                </tr>
+              ))}
               <tr>
                 <td className="py-2 text-[#888]">Shipping</td>
                 <td className="text-right">Free</td>
@@ -86,11 +90,11 @@ export function DefaultEmail() {
 
           <p className="text-[10px] text-[#555]">
             If you have any questions, reply to this email or contact us at
-            support@plainskin.in.
+            support@{brand.url}.
           </p>
 
           <p className="mt-4 text-center text-[9px] text-[#aaa]">
-            © 2024 plainskin.in · Powered by Shopify
+            © 2024 {brand.url} · Powered by Shopify
           </p>
         </div>
       </div>
