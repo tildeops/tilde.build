@@ -84,7 +84,7 @@ export const serviceBeats: readonly ServiceBeat[] = [
     ],
     device: "laptop",
     visual: "shopify-store",
-    cta: { label: "See the flagship breakdown →", href: "/shopify-headless" },
+    cta: { label: "See the flagship breakdown →", href: "/" },
   },
   {
     id: "mobile",
@@ -156,7 +156,7 @@ export const engagementTiers: readonly EngagementTier[] = [
     highlight: true,
     flagshipExample: {
       label: "See the Shopify flagship",
-      href: "/shopify-headless",
+      href: "/",
     },
   },
   {

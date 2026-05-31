@@ -22,6 +22,12 @@ const AI_BOTS = [
 const DISALLOW = ["/api/", "/dev/"];
 
 export default function robots(): MetadataRoute.Robots {
+  // While sealed for maintenance, every route serves the takeover screen — keep
+  // all of it out of the index so nothing gets crawled as "under maintenance".
+  if (site.maintenance) {
+    return { rules: [{ userAgent: "*", disallow: "/" }] };
+  }
+
   return {
     rules: [
       { userAgent: "*", allow: "/", disallow: DISALLOW },

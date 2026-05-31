@@ -56,7 +56,7 @@ export function Footer() {
               ))}
               <li>
                 <Link
-                  href="/shopify-headless"
+                  href="/"
                   className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:opacity-80"
                 >
                   Headless Shopify

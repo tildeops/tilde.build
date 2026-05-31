@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { NotchNav } from "@/components/sections/shopify-headless/notch-nav";
+import { MaintenanceScreen } from "@/components/sections/maintenance/maintenance-screen";
 import { Footer } from "@/components/layout/footer";
 import { LenisProvider } from "@/components/providers/lenis-provider";
 import { GSAPProvider } from "@/components/providers/gsap-provider";
@@ -89,17 +90,21 @@ export const metadata: Metadata = {
     creator: site.twitterHandle,
     images: ["/og.jpg"],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
-  },
+  // While the site is sealed for maintenance, tell crawlers not to index the
+  // takeover screen (paired with the disallow-all in robots.ts).
+  robots: site.maintenance
+    ? { index: false, follow: false }
+    : {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+          "max-video-preview": -1,
+        },
+      },
   ...(site.googleSiteVerification
     ? { verification: { google: site.googleSiteVerification } }
     : {}),
@@ -141,13 +146,10 @@ export default function RootLayout({
         <ThemeModeProvider>
           <CurrencyProvider>
           {site.maintenance ? (
-            // Maintenance mode: no nav, no footer, no smooth-scroll hijack —
-            // just the single, sealed-off hero screen.
-            <GSAPProvider>
-              <main className="h-[100svh] w-full overflow-hidden">
-                {children}
-              </main>
-            </GSAPProvider>
+            // Maintenance mode: the page tree is withheld entirely. Every route
+            // resolves to the single, sealed-off maintenance screen — no nav,
+            // no footer, no smooth-scroll hijack, no GSAP (it's fully static).
+            <MaintenanceScreen />
           ) : (
             <LenisProvider>
               <GSAPProvider>

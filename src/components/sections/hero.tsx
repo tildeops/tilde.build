@@ -11,9 +11,7 @@ import { LiquidBackground } from "@/components/effects/liquid-background";
 import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
 import { SectionFrame } from "@/components/layout/section-frame";
 import { DeviceCluster } from "./hero/device-cluster";
-import { HeroMaintenanceNote } from "./hero/maintenance-note";
 import { calTrigger } from "@/lib/cal";
-import { site } from "@/lib/site";
 
 /**
  * Landing hero. Inherits the HeroBento expansion pattern from /shopify-headless:
@@ -21,10 +19,6 @@ import { site } from "@/lib/site";
  * with the band's top edge — both keyed off the `id="hero"` section.
  */
 export function Hero() {
-  // In maintenance mode the hero is the entire site: a single static screen
-  // with nothing below it, so the pin-to-full-bleed scroll is disabled and the
-  // band simply fills the viewport.
-  const maintenance = site.maintenance;
   const reduce = useReducedMotion();
   const sectionRef = useRef<HTMLElement | null>(null);
   const frameRef = useRef<HTMLDivElement | null>(null);
@@ -32,7 +26,7 @@ export function Hero() {
 
   useGSAP(
     () => {
-      if (reduce || maintenance) return;
+      if (reduce) return;
       const section = sectionRef.current;
       const frame = frameRef.current;
       const band = bandRef.current;
@@ -81,7 +75,7 @@ export function Hero() {
 
       return () => ctx.revert();
     },
-    { dependencies: [reduce, maintenance] },
+    { dependencies: [reduce] },
   );
 
   return (
@@ -105,24 +99,6 @@ export function Hero() {
               themeOverride="bridge"
               className="absolute inset-0 -z-10"
             />
-
-            {/* Maintenance mode: a static, non-interactive echo of the notch
-                nav — just the tilde wordmark in a glass pill tucked into the
-                band's top edge. No menu, no hover expansion. */}
-            {maintenance && (
-              <div
-                className="pointer-events-none absolute left-1/2 top-0 z-20 flex min-w-[152px] -translate-x-1/2 select-none items-center justify-center border border-t-0 border-white/25 bg-white/10 px-8 text-white shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] backdrop-blur-xl"
-                style={{
-                  height: 32,
-                  borderBottomLeftRadius: 18,
-                  borderBottomRightRadius: 18,
-                }}
-              >
-                <span className="font-display text-[15px] font-semibold leading-none tracking-tight">
-                  tilde
-                </span>
-              </div>
-            )}
 
             <div
               aria-hidden
@@ -162,29 +138,25 @@ export function Hero() {
               </FadeUp>
 
               <FadeUp delay={0.4}>
-                {maintenance ? (
-                  <HeroMaintenanceNote />
-                ) : (
-                  <div className="mx-auto mt-9 flex w-full max-w-xs flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:w-auto">
-                    <Link
-                      href="/contact"
-                      {...calTrigger("hero")}
-                      className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-[15px] font-semibold text-accent shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:scale-[1.02]"
-                    >
-                      Book a discovery call
-                      <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-                    </Link>
-                    <Link
-                      href="/shopify-headless"
-                      className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/[0.06] px-6 text-[15px] font-medium text-white backdrop-blur-sm transition-colors duration-300 hover:border-white/50 hover:bg-white/[0.12]"
-                    >
-                      See our flagship offering
-                      <span className="text-white/70 transition-transform duration-300 group-hover:translate-x-0.5">
-                        →
-                      </span>
-                    </Link>
-                  </div>
-                )}
+                <div className="mx-auto mt-9 flex w-full max-w-xs flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:w-auto">
+                  <Link
+                    href="/contact"
+                    {...calTrigger("hero")}
+                    className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 text-[15px] font-semibold text-accent shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:scale-[1.02]"
+                  >
+                    Book a discovery call
+                    <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+                  </Link>
+                  <Link
+                    href="/"
+                    className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/[0.06] px-6 text-[15px] font-medium text-white backdrop-blur-sm transition-colors duration-300 hover:border-white/50 hover:bg-white/[0.12]"
+                  >
+                    See our flagship offering
+                    <span className="text-white/70 transition-transform duration-300 group-hover:translate-x-0.5">
+                      →
+                    </span>
+                  </Link>
+                </div>
               </FadeUp>
             </div>
           </div>
@@ -192,33 +164,30 @@ export function Hero() {
       </div>
 
       {/* Device cluster — sits below the liquid band on the normal page
-          surface. Telegraphs the breadth of surfaces tilde ships. Hidden in
-          maintenance mode, where the hero band is the only thing on screen. */}
-      {!maintenance && (
-        <SectionFrame
-          className="pt-12 md:pt-16"
-          innerClassName="py-10 md:py-16 lg:py-20"
-        >
-          <FadeUp>
-            <div className="mx-auto max-w-2xl text-center">
-              <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
-                <span
-                  className="size-1.5 rounded-full bg-accent"
-                  style={{ boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)" }}
-                />
-                <span className="text-[12px] font-medium text-ink-muted">
-                  Built on every surface that talks to your customer
-                </span>
-              </div>
-              <h2 className="mt-5 font-display font-extrabold leading-[1.02] tracking-[-0.035em] text-ink text-[clamp(1.5rem,3.2vw,2.4rem)]">
-                Phone, laptop, store, chat — same team.
-              </h2>
+          surface. Telegraphs the breadth of surfaces tilde ships. */}
+      <SectionFrame
+        className="pt-12 md:pt-16"
+        innerClassName="py-10 md:py-16 lg:py-20"
+      >
+        <FadeUp>
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
+              <span
+                className="size-1.5 rounded-full bg-accent"
+                style={{ boxShadow: "0 0 10px rgb(var(--accent-rgb) / 0.6)" }}
+              />
+              <span className="text-[12px] font-medium text-ink-muted">
+                Built on every surface that talks to your customer
+              </span>
             </div>
-          </FadeUp>
+            <h2 className="mt-5 font-display font-extrabold leading-[1.02] tracking-[-0.035em] text-ink text-[clamp(1.5rem,3.2vw,2.4rem)]">
+              Phone, laptop, store, chat — same team.
+            </h2>
+          </div>
+        </FadeUp>
 
-          <DeviceCluster />
-        </SectionFrame>
-      )}
+        <DeviceCluster />
+      </SectionFrame>
     </section>
   );
 }

@@ -1,70 +1,54 @@
-import { ServiceLd, FAQLd } from "@/components/seo/json-ld";
-import { TrackSection } from "@/components/analytics/track-section";
-import { Hero } from "@/components/sections/hero";
-import { PainPoints } from "@/components/sections/pain-points";
-import { ServicesBento } from "@/components/sections/services-bento";
-import { ServicesShowcase } from "@/components/sections/services-showcase";
-import { Pricing } from "@/components/sections/pricing";
-import { Process } from "@/components/sections/process";
-import { TechStack } from "@/components/sections/tech-stack";
-import { Testimonials } from "@/components/sections/testimonials";
-import { About } from "@/components/sections/about";
 import { FAQ } from "@/components/sections/faq";
-import { FinalCTA } from "@/components/sections/final-cta";
-import { site } from "@/lib/site";
+import { HeroBento } from "@/components/sections/shopify-headless/hero-bento";
+import { MacbookReveal } from "@/components/sections/shopify-headless/macbook-reveal";
+import { IntegrationsGrid } from "@/components/sections/shopify-headless/integrations-grid";
+import { MessagingBots } from "@/components/sections/shopify-headless/messaging-bots";
+import { EmailTemplateSwap } from "@/components/sections/shopify-headless/email-templates";
+import { AttributionDashboard } from "@/components/sections/shopify-headless/attribution-dashboard";
+import { PricingHeadless } from "@/components/sections/shopify-headless/pricing-headless";
+import { BridgeFinalCTA } from "@/components/sections/shopify-headless/bridge-final-cta";
+import { FAQLd, ServicePricingLd } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
+import { headlessFaqItems } from "@/lib/shopify-headless/faq";
+import { SERVICES_MAP } from "@/lib/pricing/services";
 
-/** Uniform spacer between pinned-and-sticky sections. */
-const Gap = () => <div aria-hidden className="h-8 w-full md:h-20 lg:h-24" />;
+export const metadata = pageMetadata({
+  title: "Headless Shopify Storefronts",
+  description:
+    "Tilde rebuilds your Shopify store as a custom Next.js storefront. Faster, fully on-brand, with attribution that adds up — and add-ons for WhatsApp bots, custom emails, and a unified dashboard.",
+  path: "/",
+});
+
+// Uniform inter-section spacer. Pinned + sticky sections end flush with the
+// next one, so we inject this between them to keep vertical rhythm consistent
+// with the SectionFrame-based sections lower on the page. Mobile gets a much
+// shorter spacer so the empty interval between a pinned section unpinning
+// and the next section repinning doesn't read as a "dead zone".
+const Gap = () => (
+  <div aria-hidden className="h-8 w-full md:h-28 lg:h-32" />
+);
 
 export default function Home() {
-  // Maintenance mode collapses the landing page to the hero alone — the rest
-  // of the page (and its in-page anchor links) is withheld until launch.
-  if (site.maintenance) {
-    return (
-      <div data-page-theme="bridge">
-        <Hero />
-      </div>
-    );
-  }
-
+  // Page-scoped Bridge theme (cool white + electric blue + heavy sans). This
+  // wrapper used to live in shopify-headless/layout.tsx; now that this is the
+  // root route, the page provides it directly so globals.css can scope the
+  // bridge token overrides to this page only.
   return (
     <div data-page-theme="bridge">
-      <ServiceLd />
-      <FAQLd />
-      <TrackSection name="hero">
-        <Hero />
-      </TrackSection>
-      <TrackSection name="pain-points">
-        <PainPoints />
-      </TrackSection>
+      <ServicePricingLd service={SERVICES_MAP.shopify} />
+      <FAQLd items={headlessFaqItems} />
+      <HeroBento />
+      <MacbookReveal />
       <Gap />
-      <TrackSection name="services">
-        <ServicesBento />
-        <Gap />
-        <ServicesShowcase />
-      </TrackSection>
+      <IntegrationsGrid />
       <Gap />
-      <TrackSection name="process">
-        <Process />
-      </TrackSection>
-      <TrackSection name="pricing">
-        <Pricing />
-      </TrackSection>
-      <TrackSection name="tech-stack">
-        <TechStack />
-      </TrackSection>
-      <TrackSection name="testimonials">
-        <Testimonials />
-      </TrackSection>
-      <TrackSection name="about">
-        <About />
-      </TrackSection>
-      <TrackSection name="faq">
-        <FAQ />
-      </TrackSection>
-      <TrackSection name="final-cta">
-        <FinalCTA />
-      </TrackSection>
+      <MessagingBots />
+      <Gap />
+      <EmailTemplateSwap />
+      <AttributionDashboard />
+      <PricingHeadless />
+      <FAQ items={headlessFaqItems} id="headless-faq" />
+      <BridgeFinalCTA />
     </div>
   );
 }

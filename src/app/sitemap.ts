@@ -20,7 +20,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     { url: site.url, lastModified: now, priority: 1.0 },
-    { url: `${site.url}/shopify-headless`, lastModified: now, priority: 0.9 },
     { url: `${site.url}/pricing`, lastModified: now, priority: 0.8 },
     { url: `${site.url}/pricing/shopify`, lastModified: now, priority: 0.85 },
     { url: `${site.url}/pricing/ecommerce`, lastModified: now, priority: 0.8 },
