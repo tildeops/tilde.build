@@ -69,16 +69,13 @@ export function HeroBento() {
               },
             });
 
-            tl.to(
-              frame,
-              {
-                paddingTop: 0,
-                paddingRight: 0,
-                paddingBottom: 0,
-                paddingLeft: 0,
-              },
-              0
-            ).to(band, { borderRadius: 0 }, 0);
+            // Collapse the band's inset + corner radius via clip-path, driven
+            // by CSS variables. Tweening the `--pad`/`--radius` vars (read by
+            // the band's `clip-path: inset(var(--pad) round var(--radius))`)
+            // is compositor-paint only — unlike the old padding/border-radius
+            // tween it triggers NO layout reflow per frame, which is what made
+            // the WebGL-backed band thrash on real touch devices.
+            tl.to(band, { "--pad": "0px", "--radius": "0px" }, 0);
           }
         );
       }, section);
@@ -95,23 +92,25 @@ export function HeroBento() {
       className="relative w-full"
     >
       {/* Pinned, expanding hero band.
-          Frame holds the inset (margin). Band holds the rounded surface that
-          fills the frame. Scroll scrubs the frame padding -> 0 and band
-          radius -> 0, then the page scrolls on. */}
+          The band fills the full viewport shell; its inset margin + rounded
+          corners are produced by `clip-path: inset(var(--pad) round var(--radius))`.
+          Scroll scrubs --pad and --radius -> 0, revealing the page background
+          behind the clipped border exactly like the old margin did — but with
+          no per-frame layout reflow. */}
       <div className="relative h-[100svh] w-full">
-        <div
-          ref={frameRef}
-          className="absolute inset-0 p-3 sm:p-5 md:p-6 lg:p-8"
-        >
+        <div ref={frameRef} className="absolute inset-0">
           <div
             ref={bandRef}
-            // `translateZ(0)` + isolation forces this element into its own
-            // compositor layer, which contains the WebGL canvas inside its
-            // rounded `overflow:hidden` clip on iOS Safari. Without this,
-            // a child with its own compositor layer (the WebGL canvas) can
-            // bleed past the parent's rounded corners.
-            style={{ transform: "translateZ(0)" }}
-            className="relative isolate flex h-full w-full items-center justify-center overflow-hidden rounded-[28px] bg-accent text-on-accent sm:rounded-[32px] md:rounded-[40px]"
+            // `translateZ(0)` + isolation keeps the WebGL canvas on its own
+            // compositor layer. The clip-path (with `round`) both insets the
+            // band and rounds its corners, and clips the canvas to that shape.
+            // --pad/--radius are also the reduced-motion resting state (the
+            // GSAP tween is skipped when prefers-reduced-motion is set).
+            style={{
+              transform: "translateZ(0)",
+              clipPath: "inset(var(--pad) round var(--radius))",
+            }}
+            className="relative isolate flex h-full w-full items-center justify-center overflow-hidden bg-accent text-on-accent [--pad:12px] [--radius:28px] sm:[--pad:20px] sm:[--radius:32px] md:[--pad:24px] md:[--radius:40px] lg:[--pad:32px]"
           >
             <LiquidBackground
               animated

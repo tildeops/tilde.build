@@ -51,12 +51,23 @@ export function GSAPProvider({ children }: { children: React.ReactNode }) {
       lenis.on("scroll", onScroll);
       const onRefresh = () => ScrollTrigger.update();
       ScrollTrigger.addEventListener("refresh", onRefresh);
+
+      // Canonical Lenis<->GSAP integration: drive lenis.raf from GSAP's ticker
+      // so both run on ONE frame clock (gsap time is seconds -> lenis wants ms),
+      // and disable lagSmoothing so GSAP never silently drops frames. This is
+      // what keeps scrubbed pins from reading 1-2-frame-stale scroll and
+      // jittering, especially on touch.
+      const tick = (time: number) => lenis.raf(time * 1000);
+      gsap.ticker.add(tick);
+      gsap.ticker.lagSmoothing(0);
+
       // First refresh after binding so all triggers measure with smooth scroll active
       ScrollTrigger.refresh();
 
       bound = () => {
         lenis.off("scroll", onScroll);
         ScrollTrigger.removeEventListener("refresh", onRefresh);
+        gsap.ticker.remove(tick);
       };
     };
 

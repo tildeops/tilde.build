@@ -15,6 +15,11 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
       duration: 1.4,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: !reduced,
+      // Smooth touch the same way the wheel is smoothed, so mobile behaves
+      // like the (smooth) desktop responsive-view path. Without this, native
+      // touch momentum drives the page and fights GSAP's `position:fixed` pin
+      // on the hero — the classic source of the mobile pin-jitter.
+      syncTouch: !reduced,
       touchMultiplier: 1.5,
     });
 
@@ -22,12 +27,10 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
     type WindowWithLenis = Window & { __lenis?: Lenis };
     (window as WindowWithLenis).__lenis = lenis;
 
-    let rafId = 0;
-    const raf = (time: number) => {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    };
-    rafId = requestAnimationFrame(raf);
+    // NOTE: Lenis is NOT driven by its own requestAnimationFrame loop here.
+    // GSAPProvider drives `lenis.raf` from `gsap.ticker` so Lenis and
+    // ScrollTrigger share one frame clock (a desync between two rAF loops is
+    // what made scrubbed pins read stale scroll and jitter).
 
     // Delegated anchor handling for #hash links
     const onClick = (e: MouseEvent) => {
@@ -53,7 +56,6 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       document.removeEventListener("click", onClick);
-      cancelAnimationFrame(rafId);
       lenis.destroy();
       delete (window as WindowWithLenis).__lenis;
     };
