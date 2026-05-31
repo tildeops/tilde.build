@@ -9,7 +9,7 @@ type Props = { children: React.ReactNode };
 export function PhoneFrame({ children }: Props) {
   return (
     <div
-      className="relative mx-auto w-[260px] rounded-[44px] p-2.5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.55)] sm:w-[280px] md:w-[300px] lg:w-[320px]"
+      className="relative mx-auto w-full max-w-[260px] rounded-[44px] p-2.5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.55)] sm:max-w-[280px] md:max-w-[300px] lg:max-w-[320px]"
       style={{
         background: "linear-gradient(180deg, #1a1a1c 0%, #0e0e10 55%, #1a1a1c 100%)",
         aspectRatio: "9/19",

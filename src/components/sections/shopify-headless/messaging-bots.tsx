@@ -106,10 +106,10 @@ export function MessagingBots() {
       ref={sectionRef}
       id="messaging-bots"
       className="relative w-full"
-      style={{ height: `${sectionHeightVh}vh` }}
+      style={{ height: `${sectionHeightVh}svh` }}
     >
       {/* Sticky stage — whole section stays in viewport while user scrolls through capabilities */}
-      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center px-4 pt-12 pb-6 sm:px-6 md:items-center md:px-10 md:pt-0 md:pb-0 lg:px-16">
+      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center overflow-hidden px-4 pt-12 pb-6 sm:px-6 md:items-center md:overflow-visible md:px-10 md:pt-0 md:pb-0 lg:px-16">
         <div className="grid w-full max-w-[1240px] gap-4 md:grid-cols-12 md:items-center md:gap-12">
           {/* Copy column. Order-1 on mobile (above phone), col-span-7 on
               desktop. On mobile we show only the active step's name + blurb;
@@ -236,7 +236,7 @@ export function MessagingBots() {
 
           {/* Phone column. Order-2 on mobile (below copy), col-span-5 on desktop. */}
           <div className="order-2 md:order-2 md:col-span-5">
-            <div className="mx-auto w-[260px] sm:w-[280px] md:w-[280px] lg:w-[300px]">
+            <div className="mx-auto w-full max-w-[min(260px,calc((100svh-336px)*9/19))] md:max-w-none md:w-[280px] lg:w-[300px]">
               <PhoneFrame>
                 <div ref={phoneScreenRef} key={active} className="h-full">
                   <BotConversation script={script} />

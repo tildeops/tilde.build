@@ -27,7 +27,7 @@ export function CustomEmail() {
 
   return (
     <div
-      className="absolute inset-0 flex flex-col overflow-y-auto"
+      className="absolute inset-0 flex flex-col overflow-hidden"
       style={{
         backgroundColor: BG,
         color: INK,

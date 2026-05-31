@@ -77,9 +77,9 @@ export function MobileStack() {
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
       className="relative w-full"
-      style={{ height: "200vh" }}
+      style={{ height: "200svh" }}
     >
-      <div className="sticky top-0 flex h-[100svh] w-full flex-col items-center px-4 pt-12 pb-6 sm:px-6">
+      <div className="sticky top-0 flex h-[100svh] w-full flex-col items-center overflow-hidden px-4 pt-12 pb-6 sm:px-6">
         <div className="mx-auto flex w-full max-w-[480px] flex-col items-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-rule bg-bg-elevated px-3 py-1.5">
             <span
@@ -134,7 +134,7 @@ export function MobileStack() {
           </div>
 
           {/* iPhone frame with the wipe inside */}
-          <div className="mt-4 w-full max-w-[260px]">
+          <div className="mt-4 w-full max-w-[min(260px,calc((100svh-264px)*9/19))]">
             <IPhoneFrame>
               <div className="relative h-full w-full">
                 {/* Base layer — Default storefront */}

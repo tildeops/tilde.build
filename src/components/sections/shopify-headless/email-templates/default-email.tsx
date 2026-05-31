@@ -16,7 +16,7 @@ export function DefaultEmail() {
 
   return (
     <div
-      className="absolute inset-0 flex flex-col overflow-y-auto bg-white text-[#1a1a1a]"
+      className="absolute inset-0 flex flex-col overflow-hidden bg-white text-[#1a1a1a]"
       style={{
         fontFamily: "-apple-system, 'Helvetica Neue', Arial, sans-serif",
       }}
