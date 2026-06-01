@@ -213,20 +213,44 @@ export function MobileStack() {
   );
 }
 
+/** Natural design width of the storefront screens (px). */
+const DESIGN_WIDTH = 760;
+
 /**
  * Renders a (wide-by-design) storefront screen at a downscaled width that
  * fits an iPhone viewport. The natural design width is preserved (760px)
  * and a CSS transform shrinks it so the layout reads cleanly instead of
  * squishing.
+ *
+ * The scale is derived from the *measured* container width at runtime
+ * (scale = width / 760) rather than a fixed factor, so the storefront
+ * always fills its frame exactly — even when `PHONE_FRAME_WIDTH` collapses
+ * to a narrow value on short phones, where a hardcoded scale used to render
+ * wider than the screen and spill past the bezel.
  */
 function ScaledStorefront({ children }: { children: React.ReactNode }) {
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  // 0.36 ≈ a 300px frame / 760 — a sane first paint before measurement.
+  const [scale, setScale] = React.useState(0.36);
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      const w = el.clientWidth;
+      if (w > 0) setScale(w / DESIGN_WIDTH);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   return (
-    <div className="absolute inset-0">
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden">
       <div
         className="absolute left-0 top-0 origin-top-left"
         style={{
-          width: "760px",
-          transform: "scale(0.36)",
+          width: `${DESIGN_WIDTH}px`,
+          transform: `scale(${scale})`,
         }}
       >
         {children}

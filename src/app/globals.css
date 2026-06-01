@@ -197,6 +197,49 @@ html.lenis {
   }
 }
 
+/* Crescent glow — gentle brightness pulse for the glass-panel hero. Peaks at
+   0.8 so the blue never ramps to full intensity. */
+@keyframes crescent-breathe {
+  0%,
+  100% {
+    opacity: 0.64;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+.crescent-glow {
+  animation: crescent-breathe 13s ease-in-out infinite;
+  will-change: opacity;
+}
+
+/* Band bob — every pane's blue band travels in sync from its rest peak to the
+   mirror peak (`--shift`, set per pane) and back, flipping the arc between a
+   bottom semicircle (∪) and a top semicircle (∩). */
+@keyframes band-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--shift, 0%));
+  }
+}
+.band-bob {
+  /* duration + delay come from inline style (per-pane); keep the rest here. */
+  animation-name: band-bob;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crescent-glow,
+  .band-bob {
+    animation: none;
+  }
+}
+
 /* Holographic shimmer — slow conic-gradient rotation for tile chrome */
 @keyframes tile-shimmer {
   0% {
@@ -225,6 +268,28 @@ html.lenis {
   58%,
   100% {
     transform: translateX(260%) skewX(-22deg);
+    opacity: 0;
+  }
+}
+/* Slow, near-continuous variant — the streak stays over the button almost the
+   whole cycle (visible 12%–88%, brief fades at the seam) so a slow duration
+   reads as a constant drifting sheen rather than an occasional flash. Name keeps
+   the `flash-diagonal` prefix so the reduced-motion rule below still matches. */
+@keyframes flash-diagonal-slow {
+  0% {
+    transform: translateX(-100%) skewX(-20deg);
+    opacity: 0;
+  }
+  12% {
+    transform: translateX(-72%) skewX(-20deg);
+    opacity: 1;
+  }
+  88% {
+    transform: translateX(112%) skewX(-20deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(140%) skewX(-20deg);
     opacity: 0;
   }
 }

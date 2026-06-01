@@ -15,11 +15,11 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
       duration: 1.4,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: !reduced,
-      // Smooth touch the same way the wheel is smoothed, so mobile behaves
-      // like the (smooth) desktop responsive-view path. Without this, native
-      // touch momentum drives the page and fights GSAP's `position:fixed` pin
-      // on the hero — the classic source of the mobile pin-jitter.
-      syncTouch: !reduced,
+      // Touch is intentionally left to native OS momentum (Lenis default
+      // syncTouch: false). Lenis touch-smoothing lerps against the thumb and
+      // feels glitchy page-wide on real devices; native momentum is smoother.
+      // The hero scrub no longer needs it — the clip-path expansion removed the
+      // per-frame reflow that used to be the real source of pin-jitter.
       touchMultiplier: 1.5,
     });
 

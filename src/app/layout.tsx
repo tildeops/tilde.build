@@ -114,6 +114,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Draw edge-to-edge under the notch/Dynamic Island so the hero band fills the
+  // whole screen, and activate non-zero env(safe-area-inset-*) values that the
+  // NotchNav reads to tuck itself below the physical notch.
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#000000" },

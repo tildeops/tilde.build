@@ -301,7 +301,10 @@ export function NotchNav() {
         // Generic pages resolve to top:0; only hero pages start tucked into the
         // band's edge. Keying the initial inline value off heroMode avoids the
         // 32px "drop then snap up" flash on non-hero pages before GSAP runs.
-        style={{ top: heroMode ? 32 : 0 }}
+        // paddingTop reserves the device notch safe-area (0 on notch-less
+        // devices); the pill renders inside it, so it always hangs below the
+        // notch. GSAP only animates `top`, so the padding survives the scrub.
+        style={{ top: heroMode ? 32 : 0, paddingTop: "env(safe-area-inset-top)" }}
       >
         <div
           ref={notchRef}

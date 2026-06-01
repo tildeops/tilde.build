@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -30,7 +30,7 @@ export function IntegrationsGrid() {
         <PinnedHorizontalScroll />
       </div>
       <div className="md:hidden">
-        <CoverflowWheel />
+        <MobileHorizontalScroll />
       </div>
     </div>
   );
@@ -164,99 +164,76 @@ function PinnedHorizontalScroll() {
 }
 
 /* ============================================================ */
-/* Mobile coverflow wheel — vertical 3D rotation through cards   */
+/* Mobile horizontal scroll — native sticky, no GSAP pin         */
 /* ============================================================ */
 
-function CoverflowWheel() {
+/**
+ * Mobile counterpart to the desktop `PinnedHorizontalScroll`: the section
+ * sticks to the viewport and vertical scroll slides the horizontal track
+ * sideways — the same mechanic as desktop. The difference is it runs on a
+ * native CSS `sticky` stage + a passive scroll listener instead of a GSAP pin.
+ * (A GSAP pin + 3D coverflow used to crash iOS Safari here by exhausting GPU
+ * memory; this is the same crash-free shape `MobileStack` uses.) A bouncing
+ * down-arrow cue signals that vertical scroll drives the cards, and fades out
+ * once the user starts scrolling.
+ */
+function MobileHorizontalScroll() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const wheelRef = useRef<HTMLDivElement | null>(null);
-  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const trackRef = useRef<HTMLDivElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
+  const hintRef = useRef<HTMLDivElement | null>(null);
 
-  useGSAP(
-    () => {
-      const section = sectionRef.current;
-      if (!section) return;
+  useEffect(() => {
+    const section = sectionRef.current;
+    const track = trackRef.current;
+    if (!section || !track) return;
 
-      // ~60% of viewport-height of scroll per card feels like one firm
-      // thumb-swipe per card.
-      const runwayVh = Math.max(1, integrations.length) * 60;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const rect = section.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const total = section.offsetHeight - vh;
+      if (total <= 0) return;
+      const scrolled = Math.max(0, Math.min(total, -rect.top));
+      const p = scrolled / total;
+      // Distance the track must travel so its right edge clears the viewport.
+      const distance = Math.max(0, track.scrollWidth - window.innerWidth + 32);
+      track.style.transform = `translate3d(${(-distance * p).toFixed(1)}px, 0, 0)`;
+      if (progressRef.current) {
+        progressRef.current.style.transform = `scaleX(${p})`;
+      }
+      if (hintRef.current) {
+        hintRef.current.style.opacity = p > 0.03 ? "0" : "1";
+      }
+    };
 
-      // iOS picker / alarm-clock dial geometry. Cards sit on the outside
-      // of a horizontal cylinder; the wheel rotates around its X axis,
-      // so from the front the user sees a stack of cards with the active
-      // one flat in the center and neighbours curving away above and below.
-      //
-      // Geometric constraint: two flat rectangles tilted by STEP_DEG on
-      // the cylinder surface only avoid intersecting if
-      //   half_card_height < RADIUS * tan(STEP_DEG / 2)
-      // Tile is scale(0.6) of a 400-tall native ⇒ 240 visual, h/2 = 120.
-      // STEP=28° → tan(14°)=0.249, so RADIUS must exceed 120/0.249=482.
-      // RADIUS=520 gives ~130 clearance — ~10 px margin over the 120 half,
-      // which lets adjacent cards sit almost flush (only ~4 px visible
-      // gap) for the continuous-wheel-surface feel.
-      const STEP_DEG = 28; // angular spacing between adjacent slots
-      const RADIUS = 520; // cylinder radius in CSS pixels
-      const FADE_DEG = 42; // beyond this, slots fade to ~0
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
 
-      const updateCards = (active: number) => {
-        cardRefs.current.forEach((card, i) => {
-          if (!card) return;
-          const angleDeg = (i - active) * STEP_DEG;
-          const abs = Math.abs(angleDeg);
-          // Past ~85° we're on the back of the wheel — hide outright.
-          if (abs > 85) {
-            card.style.visibility = "hidden";
-            card.style.opacity = "0";
-            return;
-          }
-          const angleRad = (angleDeg * Math.PI) / 180;
-          const y = RADIUS * Math.sin(angleRad); // px from center (positive = down)
-          const z = RADIUS * Math.cos(angleRad) - RADIUS; // 0 at front, negative receding
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
 
-          card.style.visibility = "visible";
-          card.style.opacity = String(Math.max(0, 1 - abs / FADE_DEG));
-          // translate centers the card in the wheel and offsets vertically;
-          // translateZ + rotateX places it on the cylinder surface facing out.
-          card.style.transform =
-            `translate(-50%, calc(-50% + ${y.toFixed(2)}px))` +
-            ` translateZ(${z.toFixed(2)}px)` +
-            ` rotateX(${(-angleDeg).toFixed(2)}deg)`;
-          card.style.zIndex = String(1000 - Math.round(abs));
-        });
-      };
-
-      // Initial paint with the first card centered.
-      updateCards(0);
-
-      const st = ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: `+=${runwayVh}vh`,
-        pin: true,
-        scrub: 0.5,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          const active = self.progress * Math.max(0, integrations.length - 1);
-          updateCards(active);
-          if (progressRef.current) {
-            progressRef.current.style.transform = `scaleX(${self.progress})`;
-          }
-        },
-      });
-
-      return () => st.kill();
-    },
-    { scope: sectionRef as React.RefObject<HTMLElement>, dependencies: [] },
-  );
+  // Vertical scroll runway that maps to the full horizontal traverse.
+  const sectionHeight = `${100 + integrations.length * 45}svh`;
 
   return (
     <section
       ref={sectionRef}
-      className="relative h-[100svh] w-full overflow-hidden"
+      className="relative w-full"
+      style={{ height: sectionHeight }}
     >
-      <div className="absolute inset-0 flex flex-col">
+      <div className="sticky top-0 flex h-[100svh] w-full flex-col overflow-hidden">
         {/* Header band */}
         <div className="mx-auto w-full max-w-[1240px] px-4 pt-12 sm:px-6">
           <FadeUp>
@@ -282,83 +259,12 @@ function CoverflowWheel() {
               server-side so the numbers match.
             </p>
           </FadeUp>
-        </div>
 
-        {/* Wheel stage. The mask softly fades cards at the top and bottom
-            edges of this band so neighbours don't bleed into the section
-            header above or the scroll-progress rail below. */}
-        <div
-          className="relative flex-1"
-          style={{
-            maskImage:
-              "linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%)",
-          }}
-        >
-          <div
-            ref={wheelRef}
-            className="absolute inset-0"
-            style={{
-              // Closer camera makes the top/bottom of the wheel curl
-              // away more dramatically — alarm-clock dial feel.
-              perspective: "600px",
-              perspectiveOrigin: "50% 50%",
-            }}
-          >
-            <div
-              className="absolute inset-0"
-              style={{ transformStyle: "preserve-3d" }}
-            >
-              {integrations.map((item, i) => (
-                <div
-                  key={item.id}
-                  ref={(el) => {
-                    cardRefs.current[i] = el;
-                  }}
-                  className="absolute left-1/2 top-1/2"
-                  style={{
-                    transformOrigin: "50% 50%",
-                    transformStyle: "preserve-3d",
-                    backfaceVisibility: "hidden",
-                    WebkitBackfaceVisibility: "hidden",
-                    willChange: "transform, opacity",
-                    visibility: "hidden",
-                    opacity: 0,
-                  }}
-                >
-                  {/* Inner scale wrapper: tiles render at 60% of native
-                      so the card half-height (84px) stays under the
-                      cylinder's clearance (~97px at R=420, STEP=26°),
-                      preventing adjacent cards from cutting through each
-                      other where their tilted planes would otherwise meet.
-
-                      Width is widened to use the screen ((100vw - 30px) / 0.6
-                      gives a visual width of viewport-minus-30px after the
-                      0.6 scale, capped at 580px native ≈ 348px visual).
-                      Height stays at the tile's native 280 (168 visual). */}
-                  <div
-                    className="[&>*]:!w-full [&>*]:!h-full"
-                    style={{
-                      width: "min(580px, calc((100vw - 30px) / 0.6))",
-                      height: 400,
-                      transform: "scale(0.6)",
-                      transformOrigin: "50% 50%",
-                    }}
-                  >
-                    <IntegrationTile item={item} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer progress rail — mirrors the desktop variant. */}
-        <div className="mx-auto w-full max-w-[1240px] px-4 pb-10 sm:px-6">
-          <div className="flex items-center gap-3">
+          {/* Progress rail — sits directly under the copy and fills as the
+              track slides sideways with scroll. */}
+          <div className="mt-6 flex items-center gap-3">
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
-              Scroll
+              {integrations.length} integrations
             </span>
             <div className="relative h-[2px] flex-1 overflow-hidden rounded-full bg-rule">
               <div
@@ -367,14 +273,48 @@ function CoverflowWheel() {
                 style={{ transform: "scaleX(0)" }}
               />
             </div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
-              {integrations.length}
+          </div>
+        </div>
+
+        {/* Horizontal track — vertical scroll slides it sideways. */}
+        <div className="relative flex-1 flex items-center overflow-hidden">
+          <div
+            ref={trackRef}
+            className="flex items-stretch gap-4 pl-4 pr-[80px] will-change-transform sm:gap-6"
+          >
+            {integrations.map((item) => (
+              <IntegrationTile key={item.id} item={item} lite />
+            ))}
+          </div>
+
+          {/* Scroll-down cue — bounces, fades once the user starts. */}
+          <div
+            ref={hintRef}
+            aria-hidden
+            className="pointer-events-none absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1 transition-opacity duration-300"
+          >
+            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-ink-muted">
+              Scroll
+            </span>
+            <span className="flex size-7 animate-bounce items-center justify-center rounded-full border border-rule bg-bg-elevated/80 text-ink-muted backdrop-blur">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+              >
+                <path d="M8 3 V13 M3 8 l5 5 l5 -5" />
+              </svg>
             </span>
           </div>
-          <p className="mt-4 text-center text-[12px] text-ink-muted">
-            + custom integrations on request.
-          </p>
         </div>
+
+        {/* Caption pinned near the bottom. */}
+        <p className="mx-auto w-full max-w-[1240px] px-4 pb-8 text-center text-[12px] text-ink-muted sm:px-6">
+          + custom integrations on request.
+        </p>
       </div>
     </section>
   );
@@ -422,11 +362,26 @@ function ReducedMotionFallback() {
 /* Tile — two-tone product chip                                  */
 /* ============================================================ */
 
-export function IntegrationTile({ item }: { item: Integration }) {
+export function IntegrationTile({
+  item,
+  lite = false,
+}: {
+  item: Integration;
+  /**
+   * Drops the most GPU-expensive decoration layers (animated conic shimmer,
+   * feTurbulence film grain, backdrop-blur). Used by the mobile reveal where
+   * many tiles render at once and these layers crashed iOS Safari.
+   */
+  lite?: boolean;
+}) {
   return (
     <div
       data-int-tile
-      className="group relative flex-none w-[240px] sm:w-[260px] lg:w-[280px] h-[280px] sm:h-[300px] lg:h-[320px] snap-start overflow-hidden rounded-[20px] shadow-[0_24px_60px_-30px_rgba(8,30,90,0.30),0_2px_4px_-2px_rgba(8,30,90,0.10)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:rotate-[-0.4deg]"
+      className={`group relative flex-none snap-start overflow-hidden rounded-[20px] shadow-[0_24px_60px_-30px_rgba(8,30,90,0.30),0_2px_4px_-2px_rgba(8,30,90,0.10)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:rotate-[-0.4deg] ${
+        lite
+          ? "w-[248px] h-[320px]"
+          : "w-[240px] sm:w-[260px] lg:w-[280px] h-[280px] sm:h-[300px] lg:h-[320px]"
+      }`}
       style={{
         background: `linear-gradient(135deg, ${item.bg} 0%, ${darken(item.bg, 0.18)} 100%)`,
         color: item.fg,
@@ -435,15 +390,17 @@ export function IntegrationTile({ item }: { item: Integration }) {
       {/* --- Intricate layered effects --- */}
 
       {/* 1. Slow-rotating holographic shimmer (conic gradient) */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute -inset-[40%] z-0 opacity-30"
-        style={{
-          background:
-            "conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,0.0) 0deg, rgba(255,255,255,0.28) 60deg, rgba(255,255,255,0.0) 130deg, rgba(255,255,255,0.18) 230deg, rgba(255,255,255,0.0) 320deg, rgba(255,255,255,0.0) 360deg)",
-          animation: "tile-shimmer 14s linear infinite",
-        }}
-      />
+      {!lite && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -inset-[40%] z-0 opacity-30"
+          style={{
+            background:
+              "conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,0.0) 0deg, rgba(255,255,255,0.28) 60deg, rgba(255,255,255,0.0) 130deg, rgba(255,255,255,0.18) 230deg, rgba(255,255,255,0.0) 320deg, rgba(255,255,255,0.0) 360deg)",
+            animation: "tile-shimmer 14s linear infinite",
+          }}
+        />
+      )}
 
       {/* 2. Diagonal mesh lines — visible only on hover */}
       <span
@@ -456,14 +413,16 @@ export function IntegrationTile({ item }: { item: Integration }) {
       />
 
       {/* 3. Film grain */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 mix-blend-overlay opacity-[0.10]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-        }}
-      />
+      {!lite && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0 mix-blend-overlay opacity-[0.10]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          }}
+        />
+      )}
 
       {/* 4. Top-left bright bloom */}
       <span
@@ -501,7 +460,7 @@ export function IntegrationTile({ item }: { item: Integration }) {
       {/* Frosted icon disc — centered in the full card */}
       <div className="absolute inset-0 z-10 flex items-center justify-center">
         <div
-          className="relative grid size-[92px] place-items-center rounded-[22px] bg-white/[0.16] backdrop-blur-sm ring-1 ring-white/25 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+          className={`relative grid ${lite ? "size-[84px]" : "size-[92px]"} place-items-center rounded-[22px] bg-white/[0.16] ${lite ? "" : "backdrop-blur-sm"} ring-1 ring-white/25 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]`}
           style={{
             boxShadow:
               "inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.18), 0 12px 28px -14px rgba(0,0,0,0.4)",
@@ -509,7 +468,7 @@ export function IntegrationTile({ item }: { item: Integration }) {
         >
           <svg
             viewBox="0 0 64 64"
-            className="size-[54px]"
+            className={lite ? "size-[48px]" : "size-[54px]"}
             style={{ color: item.fg }}
             aria-hidden
             dangerouslySetInnerHTML={{ __html: item.logo }}
@@ -518,21 +477,17 @@ export function IntegrationTile({ item }: { item: Integration }) {
       </div>
 
       {/* Text — directly on the gradient at the bottom of the same card */}
-      <div className="absolute inset-x-0 bottom-0 z-10 px-5 pb-5 pt-3">
-        {/* Hairline above the name to anchor it */}
-        <span
-          aria-hidden
-          className="mb-3 block h-px w-8"
-          style={{ background: "rgba(255,255,255,0.30)" }}
-        />
+      <div
+        className={`absolute inset-x-0 bottom-0 z-10 ${lite ? "px-4 pb-4 pt-2" : "px-5 pb-5 pt-3"}`}
+      >
         <p
-          className="text-[22px] font-semibold leading-tight tracking-[-0.01em]"
+          className={`${lite ? "text-[16px]" : "text-[22px]"} font-semibold leading-tight tracking-[-0.01em]`}
           style={{ color: item.fg }}
         >
           {item.name}
         </p>
         <p
-          className="mt-1.5 font-mono text-[12px] font-medium uppercase tracking-[0.20em]"
+          className={`mt-1.5 font-mono ${lite ? "text-[10px]" : "text-[12px]"} font-medium uppercase tracking-[0.20em]`}
           style={{ color: item.fg, opacity: 0.7 }}
         >
           {item.category}

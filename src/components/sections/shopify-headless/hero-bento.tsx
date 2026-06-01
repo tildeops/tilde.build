@@ -97,7 +97,7 @@ export function HeroBento() {
           Scroll scrubs --pad and --radius -> 0, revealing the page background
           behind the clipped border exactly like the old margin did — but with
           no per-frame layout reflow. */}
-      <div className="relative h-[100svh] w-full">
+      <div className="relative h-[100lvh] w-full">
         <div ref={frameRef} className="absolute inset-0">
           <div
             ref={bandRef}
