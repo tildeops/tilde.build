@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { FadeUp } from "@/components/motion/fade-up";
 import { RevealLines } from "@/components/motion/reveal-lines";
+import { PhoneFrame, PHONE_FRAME_WIDTH } from "@/components/ui/phone-frame";
 import { botScripts, type BotScript } from "@/lib/shopify-headless/messaging-scripts";
 
 export function MessagingBots() {
@@ -109,8 +110,8 @@ export function MessagingBots() {
       style={{ height: `${sectionHeightVh}svh` }}
     >
       {/* Sticky stage — whole section stays in viewport while user scrolls through capabilities */}
-      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center overflow-hidden px-4 pt-12 pb-6 sm:px-6 md:items-center md:overflow-visible md:px-10 md:pt-0 md:pb-0 lg:px-16">
-        <div className="grid w-full max-w-[1240px] gap-4 md:grid-cols-12 md:items-center md:gap-12">
+      <div className="sticky top-0 flex h-[100svh] w-full items-start justify-center overflow-hidden px-4 pt-6 pb-6 sm:px-6 md:items-center md:overflow-visible md:px-10 md:pt-0 md:pb-0 lg:px-16">
+        <div className="grid w-full max-w-[1240px] gap-3 md:grid-cols-12 md:items-center md:gap-12">
           {/* Copy column. Order-1 on mobile (above phone), col-span-7 on
               desktop. On mobile we show only the active step's name + blurb;
               on desktop, the full 4-step clickable list. */}
@@ -154,15 +155,12 @@ export function MessagingBots() {
               >
                 {script.label}
               </p>
-              <p
-                key={`blurb-${active}`}
-                className="mt-1 text-[13px] text-ink-muted leading-snug"
-              >
-                {script.blurb}
-              </p>
               {/* Thin horizontal progress bar — shows how far the user has
-                  scrolled through the steps. Replaces the 4-dot indicator. */}
-              <div className="mt-5 h-[3px] w-full overflow-hidden rounded-full bg-rule">
+                  scrolled through the steps. Replaces the 4-dot indicator.
+                  The step blurb is desktop-only — on mobile the label + bar
+                  carry it, which keeps the sticky stage short enough for the
+                  phone to size up consistently with the other sections. */}
+              <div className="mt-3 h-[3px] w-full overflow-hidden rounded-full bg-rule">
                 <div
                   ref={mobileProgressRef}
                   className="h-full origin-left bg-accent"
@@ -229,74 +227,22 @@ export function MessagingBots() {
               </ul>
             </div>
 
-            <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted md:mt-6">
+            <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted md:mt-6">
               Scroll to step through ↓
             </p>
           </div>
 
           {/* Phone column. Order-2 on mobile (below copy), col-span-5 on desktop. */}
           <div className="order-2 md:order-2 md:col-span-5">
-            <div className="mx-auto w-full max-w-[min(260px,calc((100svh-336px)*9/19))] md:max-w-none md:w-[280px] lg:w-[300px]">
-              <PhoneFrame>
-                <div ref={phoneScreenRef} key={active} className="h-full">
-                  <BotConversation script={script} />
-                </div>
-              </PhoneFrame>
-            </div>
+            <PhoneFrame className={PHONE_FRAME_WIDTH} contentClassName="pt-9">
+              <div ref={phoneScreenRef} key={active} className="h-full">
+                <BotConversation script={script} />
+              </div>
+            </PhoneFrame>
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-/* ------------------------------------------------------------ */
-
-function PhoneFrame({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className="relative mx-auto rounded-[44px] p-2.5 shadow-[0_40px_90px_-40px_rgba(8,30,90,0.55)]"
-      style={{
-        background:
-          "linear-gradient(180deg, #1a1a1c 0%, #0e0e10 55%, #1a1a1c 100%)",
-        aspectRatio: "9/19",
-      }}
-    >
-      {/* Side button hints */}
-      <span
-        className="absolute -left-[3px] top-[110px] h-10 w-1 rounded-l-full"
-        style={{ background: "#1a1a1c" }}
-        aria-hidden
-      />
-      <span
-        className="absolute -left-[3px] top-[170px] h-16 w-1 rounded-l-full"
-        style={{ background: "#1a1a1c" }}
-        aria-hidden
-      />
-      <span
-        className="absolute -right-[3px] top-[140px] h-20 w-1 rounded-r-full"
-        style={{ background: "#1a1a1c" }}
-        aria-hidden
-      />
-
-      {/* Screen */}
-      <div
-        className="relative h-full w-full overflow-hidden rounded-[34px] bg-white"
-        style={{
-          boxShadow:
-            "inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 8px rgba(0,0,0,0.6)",
-        }}
-      >
-        {/* Notch */}
-        <div
-          aria-hidden
-          className="absolute left-1/2 top-2 z-20 h-6 w-24 -translate-x-1/2 rounded-full"
-          style={{ background: "#0a0a0a" }}
-        />
-        {/* Content sits below the notch (pt-9 = 36px clears the 32px notch box) */}
-        <div className="absolute inset-0 pt-9">{children}</div>
-      </div>
-    </div>
   );
 }
 

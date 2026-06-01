@@ -1,5 +1,6 @@
 import { type ServiceBeat } from "@/lib/content";
 import { cn } from "@/lib/utils";
+import { PhoneFrame, PHONE_FRAME_WIDTH } from "@/components/ui/phone-frame";
 
 type Variant = ServiceBeat["visual"];
 
@@ -9,52 +10,10 @@ type Variant = ServiceBeat["visual"];
  */
 export function PhoneVisual({ variant }: { variant: Variant }) {
   return (
-    <div className="relative mx-auto" style={{ width: 280 }}>
-      <div
-        className="relative rounded-[44px] p-2.5 shadow-[0_40px_90px_-40px_rgba(8,30,90,0.55)]"
-        style={{
-          background:
-            "linear-gradient(180deg, #1a1a1c 0%, #0e0e10 55%, #1a1a1c 100%)",
-          aspectRatio: "9/19",
-        }}
-      >
-        {/* Side buttons */}
-        <span
-          className="absolute -left-[3px] top-[18%] h-10 w-1 rounded-l-full"
-          style={{ background: "#1a1a1c" }}
-          aria-hidden
-        />
-        <span
-          className="absolute -left-[3px] top-[28%] h-16 w-1 rounded-l-full"
-          style={{ background: "#1a1a1c" }}
-          aria-hidden
-        />
-        <span
-          className="absolute -right-[3px] top-[24%] h-20 w-1 rounded-r-full"
-          style={{ background: "#1a1a1c" }}
-          aria-hidden
-        />
-
-        <div
-          className="relative h-full w-full overflow-hidden rounded-[34px] bg-white"
-          style={{
-            boxShadow:
-              "inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 8px rgba(0,0,0,0.6)",
-          }}
-        >
-          {/* Notch */}
-          <div
-            aria-hidden
-            className="absolute left-1/2 top-2 z-30 h-6 w-24 -translate-x-1/2 rounded-full"
-            style={{ background: "#0a0a0a" }}
-          />
-          <div className="absolute inset-0 pt-9">
-            {variant === "mobile-app" && <MobileAppScreen />}
-            {variant === "chat-bot" && <ChatBotScreen />}
-          </div>
-        </div>
-      </div>
-    </div>
+    <PhoneFrame className={PHONE_FRAME_WIDTH} contentClassName="pt-9">
+      {variant === "mobile-app" && <MobileAppScreen />}
+      {variant === "chat-bot" && <ChatBotScreen />}
+    </PhoneFrame>
   );
 }
 

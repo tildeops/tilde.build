@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { storefronts } from "@/lib/storefronts";
+import { cn } from "@/lib/utils";
+import { PhoneFrame, PHONE_FRAME_WIDTH } from "@/components/ui/phone-frame";
 import { DefaultScreen } from "./default-screen";
 import { TildeScreen } from "./tilde-screen";
 
@@ -134,8 +136,7 @@ export function MobileStack() {
           </div>
 
           {/* iPhone frame with the wipe inside */}
-          <div className="mt-4 w-full max-w-[min(260px,calc((100svh-264px)*9/19))]">
-            <IPhoneFrame>
+          <PhoneFrame className={cn("mt-4", PHONE_FRAME_WIDTH)} contentClassName="">
               <div className="relative h-full w-full">
                 {/* Base layer — Default storefront */}
                 <div className="absolute inset-0 overflow-hidden bg-white">
@@ -201,8 +202,7 @@ export function MobileStack() {
                   </div>
                 </div>
               </div>
-            </IPhoneFrame>
-          </div>
+          </PhoneFrame>
 
           <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-ink-muted">
             Scroll to compare ↓
@@ -230,55 +230,6 @@ function ScaledStorefront({ children }: { children: React.ReactNode }) {
         }}
       >
         {children}
-      </div>
-    </div>
-  );
-}
-
-function IPhoneFrame({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className="relative mx-auto w-full rounded-[44px] p-2.5"
-      style={{
-        aspectRatio: "9 / 19",
-        background:
-          "linear-gradient(180deg, #1c1c1f 0%, #0e0e10 55%, #18181b 100%)",
-        boxShadow:
-          "0 50px 100px -40px rgba(8,30,90,0.40), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 1px 0 rgba(255,255,255,0.10) inset",
-      }}
-    >
-      {/* Side button hints */}
-      <span
-        className="absolute -left-[3px] top-[18%] h-10 w-1 rounded-l-full"
-        style={{ background: "#1a1a1c" }}
-        aria-hidden
-      />
-      <span
-        className="absolute -left-[3px] top-[28%] h-16 w-1 rounded-l-full"
-        style={{ background: "#1a1a1c" }}
-        aria-hidden
-      />
-      <span
-        className="absolute -right-[3px] top-[24%] h-20 w-1 rounded-r-full"
-        style={{ background: "#1a1a1c" }}
-        aria-hidden
-      />
-
-      <div
-        className="relative h-full w-full overflow-hidden rounded-[36px] bg-white"
-        style={{
-          boxShadow:
-            "inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 8px rgba(0,0,0,0.6)",
-        }}
-      >
-        {children}
-
-        {/* Notch — overlays the content */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-2 z-30 h-6 w-24 -translate-x-1/2 rounded-full"
-          style={{ background: "#0a0a0a" }}
-        />
       </div>
     </div>
   );
