@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useReducedMotion } from "@/lib/motion/use-reduced-motion";
@@ -76,10 +76,14 @@ function EmailSwap() {
       const idx = Math.min(N - 1, Math.floor(progress * N * 0.9999));
       setActive((prev) => (prev !== idx ? idx : prev));
 
-      // Drive the custom-email clip + the matching separator bar.
+      // Drive the custom-email reveal + the matching separator bar. The custom
+      // layer fills the whole phone and is revealed top-down via clip-path (the
+      // same wipe mechanic MobileStack uses) so it never squishes.
       const pct = Math.round(progress * 100);
       if (customClipRef.current) {
-        customClipRef.current.style.height = `${pct}%`;
+        const clip = `inset(0 0 ${100 - pct}% 0)`;
+        customClipRef.current.style.clipPath = clip;
+        customClipRef.current.style.setProperty("-webkit-clip-path", clip);
       }
       if (separatorRef.current) {
         // Fade in/out near the ends so the bar doesn't sit at the very top/bottom edges
@@ -147,17 +151,25 @@ function EmailSwap() {
             <div ref={phoneScreenRef} className="flex w-full justify-center">
               <PhoneFrame>
                 <div className="relative h-full w-full">
-                  <DefaultEmail />
+                  {/* Default email — fills the phone, scaled to a consistent
+                      design width so it never cramps on narrow mobile frames. */}
+                  <ScaledEmail>
+                    <DefaultEmail />
+                  </ScaledEmail>
 
-                  {/* Custom email — vertical clip reveal driven by scroll progress */}
+                  {/* Custom email — same scale, revealed top-down via clip-path */}
                   <div
                     ref={customClipRef}
-                    className="absolute inset-x-0 top-0 z-20 overflow-hidden"
-                    style={{ height: "0%", willChange: "height" }}
+                    className="absolute inset-0 z-20"
+                    style={{
+                      clipPath: "inset(0 0 100% 0)",
+                      WebkitClipPath: "inset(0 0 100% 0)",
+                      willChange: "clip-path",
+                    }}
                   >
-                    <div className="relative h-full w-full">
+                    <ScaledEmail>
                       <CustomEmail />
-                    </div>
+                    </ScaledEmail>
                   </div>
 
                   {/* Horizontal separator handle — sits at the wipe line */}
@@ -333,6 +345,58 @@ function EmailSwap() {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ============================================================ */
+/* Scaled email — keeps the layout consistent on any phone width */
+/* ============================================================ */
+
+/**
+ * Width the email mockups are laid out at before being scaled to the phone.
+ * Deliberately WIDER than the frame's inner screen so `scale = width / DESIGN`
+ * comes out < 1 — i.e. the email is zoomed OUT, which reveals more of its
+ * vertical content (the visible slice grows with the design width), so the
+ * product photo + order summary fit inside the screen instead of being cut.
+ */
+const EMAIL_DESIGN_WIDTH = 520;
+
+/**
+ * Renders an email mockup at a fixed design width and scales it uniformly to
+ * the actual phone-screen width (scale = width / EMAIL_DESIGN_WIDTH). Without
+ * this, the fixed-px font sizes are laid out against whatever the frame
+ * collapses to, which crams (or magnifies) the layout. Scaling lays the email
+ * out once at the design width and fits it to the frame — crisp and identical
+ * at every size. Mirrors `ScaledStorefront` in mobile-stack.tsx.
+ */
+function ScaledEmail({ children }: { children: ReactNode }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      const w = el.clientWidth;
+      if (w > 0) setScale(w / EMAIL_DESIGN_WIDTH);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden">
+      <div
+        className="absolute left-0 top-0 origin-top-left"
+        style={{
+          width: `${EMAIL_DESIGN_WIDTH}px`,
+          height: `${100 / scale}%`,
+          transform: `scale(${scale})`,
+        }}
+      >
+        {children}
+      </div>
+    </div>
   );
 }
 

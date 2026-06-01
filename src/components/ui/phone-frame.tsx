@@ -5,12 +5,13 @@ import { cn } from "@/lib/utils";
  * Unified width for every single-phone mockup across the site. One ceiling +
  * one height-overhead so the phones come out IDENTICAL in width wherever they
  * appear (previously each section computed its own, so they drifted unequal and
- * too narrow). The `calc((100svh - 256px) * 9/19)` clamp keeps the tall 9/19
- * frame fully visible inside a sticky `h-[100svh]` stage; 264px is the copy
- * overhead each section reserves above the phone. Tune in one place if needed.
+ * too narrow). The `calc((100svh - 288px) * 9/19)` clamp keeps the tall 9/19
+ * frame fully visible inside a sticky `h-[100svh]` stage; 288px is the copy
+ * overhead each section reserves above the phone PLUS the stage's `pb-6` bottom
+ * padding, so the frame clears short viewports with margin. Tune in one place.
  */
 export const PHONE_FRAME_WIDTH =
-  "w-full max-w-[min(300px,calc((100svh-264px)*9/19))] md:max-w-none md:w-[300px] lg:w-[320px]";
+  "w-full max-w-[min(300px,calc((100svh-288px)*9/19))] md:max-w-none md:w-[300px] lg:w-[320px]";
 
 type Props = {
   children: React.ReactNode;
@@ -37,7 +38,7 @@ export function PhoneFrame({
   return (
     <div
       className={cn(
-        "relative mx-auto rounded-[44px] p-2.5 shadow-[0_40px_90px_-40px_rgba(8,30,90,0.55)]",
+        "relative mx-auto rounded-[44px] p-2.5 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.20)]",
         className,
       )}
       style={{

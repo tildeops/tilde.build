@@ -351,6 +351,19 @@ function BotConversation({ script }: { script: BotScript }) {
             </div>
           ))}
         </div>
+
+        {/* Bottom fade — a clipped final bubble dissolves into the chat
+            background instead of slamming into the compose bar. Matches the
+            thread bg so it reads as "more messages above". */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-10"
+          style={{
+            background: `linear-gradient(to top, ${
+              isWhatsapp ? "#ECE5DD" : "#C7D6E3"
+            } 18%, transparent)`,
+          }}
+        />
       </div>
 
       {/* Compose bar */}

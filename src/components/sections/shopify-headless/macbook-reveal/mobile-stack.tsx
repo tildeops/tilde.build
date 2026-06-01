@@ -136,7 +136,7 @@ export function MobileStack() {
           </div>
 
           {/* iPhone frame with the wipe inside */}
-          <PhoneFrame className={cn("mt-4", PHONE_FRAME_WIDTH)} contentClassName="">
+          <PhoneFrame className={cn("mt-4", PHONE_FRAME_WIDTH)} contentClassName="pt-8">
               <div className="relative h-full w-full">
                 {/* Base layer — Default storefront */}
                 <div className="absolute inset-0 overflow-hidden bg-white">
@@ -213,8 +213,11 @@ export function MobileStack() {
   );
 }
 
-/** Natural design width of the storefront screens (px). */
-const DESIGN_WIDTH = 760;
+/** Natural design width of the storefront screens (px). Wider than the frame so
+ *  the storefront scales down further (zoomed out) and reads more spaciously on
+ *  mobile. Only affects this mobile wipe — desktop MacBook reveal and the /sera
+ *  page use TildeScreen's own `zoom`. */
+const DESIGN_WIDTH = 860;
 
 /**
  * Renders a (wide-by-design) storefront screen at a downscaled width that
@@ -230,8 +233,8 @@ const DESIGN_WIDTH = 760;
  */
 function ScaledStorefront({ children }: { children: React.ReactNode }) {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
-  // 0.36 ≈ a 300px frame / 760 — a sane first paint before measurement.
-  const [scale, setScale] = React.useState(0.36);
+  // 0.31 ≈ a 270px frame / 860 — a sane first paint before measurement.
+  const [scale, setScale] = React.useState(0.31);
 
   React.useEffect(() => {
     const el = containerRef.current;

@@ -294,6 +294,21 @@ export function NotchNav() {
         </div>
       </div>
 
+      {/* Notch safe-area fill — covers the device safe-area strip above the
+          pill so page content can't show through the gap (it otherwise reads
+          as a floating pill, not a notch). Anchored at top:0 — independent of
+          the GSAP `top` scrub on the pill — and 0px tall on notch-less devices.
+          Page-white once scrolled past the hero; transparent over the hero so
+          it never paints white over the hero imagery. */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none fixed inset-x-0 top-0 z-[60] transition-colors duration-300 ease-out",
+          darkSurface ? "bg-bg" : "bg-transparent",
+        )}
+        style={{ height: "env(safe-area-inset-top)" }}
+      />
+
       {/* Fixed wrapper whose `top` is scroll-scrubbed. */}
       <div
         ref={travelRef}
