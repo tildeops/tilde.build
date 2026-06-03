@@ -234,7 +234,15 @@ export function MessagingBots() {
 
           {/* Phone column. Order-2 on mobile (below copy), col-span-5 on desktop. */}
           <div className="order-2 md:order-2 md:col-span-5">
-            <PhoneFrame className={PHONE_FRAME_WIDTH} contentClassName="pt-9">
+            <PhoneFrame
+              className={PHONE_FRAME_WIDTH}
+              contentClassName="pt-8"
+              screenClassName={
+                script.platform === "whatsapp"
+                  ? "bg-[#075E54]"
+                  : "bg-[#517DA2]"
+              }
+            >
               <div ref={phoneScreenRef} key={active} className="h-full">
                 <ScaledConversation>
                   <BotConversation script={script} />
@@ -295,8 +303,9 @@ function BotConversation({ script }: { script: BotScript }) {
   const isWhatsapp = script.platform === "whatsapp";
   return (
     <div className="flex h-full flex-col">
-      {/* Status bar */}
-      <div className="flex shrink-0 items-center justify-between px-5 pb-1 text-[10px] text-black/70">
+      {/* Status bar — sits on the colored screen strip below the notch, so the
+          time + signal read white like a real phone's status bar over chrome. */}
+      <div className="flex shrink-0 items-center justify-between px-5 pb-1 text-[10px] text-white/80">
         <span>9:41</span>
         <span className="flex items-center gap-1">
           <span>•••</span>

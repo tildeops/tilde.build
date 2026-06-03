@@ -111,7 +111,7 @@ export function NotchNav() {
     if (!travel) return;
 
     if (!heroMode) {
-      gsap.set(travel, { top: 0 });
+      gsap.set(travel, { top: 0, y: 0 });
       const onScroll = () => setPastHero(window.scrollY > 24);
       onScroll();
       window.addEventListener("scroll", onScroll, { passive: true });
@@ -140,11 +140,15 @@ export function NotchNav() {
         };
         const startTop = c.isLg ? 32 : c.isMd ? 24 : c.isSm ? 20 : 12;
 
+        // Animate `transform: translateY` (not `top`): a layout-property tween
+        // resolves on a different render pass than the band's compositor-only
+        // clip-path, so the two drift a sub-pixel apart per frame and the gap
+        // shimmers. translateY composites in lockstep with the band.
         gsap.fromTo(
           travel,
-          { top: startTop },
+          { y: startTop },
           {
-            top: 0,
+            y: 0,
             ease: "none",
             scrollTrigger: {
               trigger: hero,
@@ -313,13 +317,18 @@ export function NotchNav() {
       <div
         ref={travelRef}
         className="pointer-events-none fixed inset-x-0 z-[60] flex justify-center"
-        // Generic pages resolve to top:0; only hero pages start tucked into the
-        // band's edge. Keying the initial inline value off heroMode avoids the
-        // 32px "drop then snap up" flash on non-hero pages before GSAP runs.
-        // paddingTop reserves the device notch safe-area (0 on notch-less
-        // devices); the pill renders inside it, so it always hangs below the
-        // notch. GSAP only animates `top`, so the padding survives the scrub.
-        style={{ top: heroMode ? 32 : 0, paddingTop: "env(safe-area-inset-top)" }}
+        // Pinned at top:0; the scrub animates `transform: translateY` instead.
+        // The heroMode placeholder transform avoids a first-paint flash before
+        // GSAP runs (its fromTo immediately sets the real per-breakpoint
+        // startTop, e.g. 12 on xs). paddingTop reserves the device notch
+        // safe-area (0 on notch-less devices); since only `transform` is
+        // scrubbed, the padding survives the scrub.
+        style={{
+          top: 0,
+          paddingTop: "env(safe-area-inset-top)",
+          transform: heroMode ? "translateY(32px)" : undefined,
+          willChange: "transform",
+        }}
       >
         <div
           ref={notchRef}

@@ -149,7 +149,7 @@ function EmailSwap() {
               renders above; on desktop it moves to order-1 (left column). */}
           <div className="order-2 md:order-1 md:col-span-5">
             <div ref={phoneScreenRef} className="flex w-full justify-center">
-              <PhoneFrame>
+              <PhoneFrame contentClassName="pt-8" screenClassName="bg-[#f6f6f6]">
                 <div className="relative h-full w-full">
                   {/* Default email — fills the phone, scaled to a consistent
                       design width so it never cramps on narrow mobile frames. */}
@@ -432,7 +432,10 @@ function EmailMobileStack() {
           <p className="mb-3 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
             Default Shopify
           </p>
-          <PhoneFrame className="mx-auto w-full max-w-[280px]">
+          <PhoneFrame
+            className="mx-auto w-full max-w-[280px]"
+            screenClassName="bg-[#f6f6f6]"
+          >
             <div className="relative h-full w-full">
               <DefaultEmail />
             </div>
@@ -442,7 +445,10 @@ function EmailMobileStack() {
           <p className="mb-3 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">
             Tilde custom
           </p>
-          <PhoneFrame className="mx-auto w-full max-w-[280px]">
+          <PhoneFrame
+            className="mx-auto w-full max-w-[280px]"
+            screenClassName="bg-[#f6f6f6]"
+          >
             <div className="relative h-full w-full">
               <CustomEmail />
             </div>

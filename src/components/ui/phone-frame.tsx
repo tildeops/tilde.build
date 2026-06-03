@@ -23,6 +23,12 @@ type Props = {
    * simply overlay the content.
    */
   contentClassName?: string;
+  /**
+   * Background of the screen itself. Defaults to `bg-white`. Pass the app's
+   * header tone (e.g. `bg-[#075E54]`) so the notch safe-area strip above the
+   * content reads as that app's chrome instead of a bare white gap.
+   */
+  screenClassName?: string;
 };
 
 /**
@@ -34,6 +40,7 @@ export function PhoneFrame({
   children,
   className = PHONE_FRAME_WIDTH,
   contentClassName = "pt-10",
+  screenClassName = "bg-white",
 }: Props) {
   return (
     <div
@@ -66,7 +73,10 @@ export function PhoneFrame({
 
       {/* Screen */}
       <div
-        className="relative h-full w-full overflow-hidden rounded-[34px] bg-white"
+        className={cn(
+          "relative h-full w-full overflow-hidden rounded-[34px]",
+          screenClassName,
+        )}
         style={{
           boxShadow:
             "inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 8px rgba(0,0,0,0.6)",
