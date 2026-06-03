@@ -333,9 +333,13 @@ export function NotchNav() {
           }}
           onClick={handleNotchTap}
           className={cn(
-            "pointer-events-auto relative overflow-hidden border border-t-0",
+            "pointer-events-auto relative overflow-hidden border",
+            // Desktop always tucks into the top edge (square, border-less top).
+            // Mobile floats as a fully-rounded pill once scrolled onto a solid
+            // surface, but stays square + tucked while over the liquid hero.
+            (!isMobile || !darkSurface) && "border-t-0",
             "text-white backdrop-blur-xl",
-            "transition-[background-color,border-color] duration-300 ease-out",
+            "transition-[background-color,border-color,border-top-left-radius,border-top-right-radius] duration-300 ease-out",
             "shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]",
             darkSurface
               ? "bg-black/75 border-white/10"
@@ -344,8 +348,10 @@ export function NotchNav() {
           style={{
             width: COMPACT_W,
             height: COMPACT_H,
-            borderTopLeftRadius: 0,
-            borderTopRightRadius: 0,
+            // Rounded top only on mobile + solid surface; square over the
+            // liquid hero band so the pill reads as tucked into the top edge.
+            borderTopLeftRadius: isMobile && darkSurface ? RADIUS_COMPACT : 0,
+            borderTopRightRadius: isMobile && darkSurface ? RADIUS_COMPACT : 0,
             borderBottomLeftRadius: RADIUS_COMPACT,
             borderBottomRightRadius: RADIUS_COMPACT,
             willChange: "width, height, border-radius",

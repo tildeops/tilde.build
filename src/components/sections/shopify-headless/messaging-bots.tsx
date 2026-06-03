@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { FadeUp } from "@/components/motion/fade-up";
@@ -236,7 +236,9 @@ export function MessagingBots() {
           <div className="order-2 md:order-2 md:col-span-5">
             <PhoneFrame className={PHONE_FRAME_WIDTH} contentClassName="pt-9">
               <div ref={phoneScreenRef} key={active} className="h-full">
-                <BotConversation script={script} />
+                <ScaledConversation>
+                  <BotConversation script={script} />
+                </ScaledConversation>
               </div>
             </PhoneFrame>
           </div>
@@ -247,6 +249,47 @@ export function MessagingBots() {
 }
 
 /* ------------------------------------------------------------ */
+
+/**
+ * Width the chat UI is laid out at before being scaled down to the phone.
+ * Wider than the frame's inner screen so `scale = width / CHAT_DESIGN_WIDTH`
+ * comes out < 1 — the whole conversation renders smaller, so more bubbles fit
+ * and the thread stops bleeding past the compose bar. Mirrors `ScaledEmail`
+ * and `ScaledStorefront`.
+ */
+const CHAT_DESIGN_WIDTH = 340;
+
+function ScaledConversation({ children }: { children: ReactNode }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  // 0.82 ≈ a 280px frame / 340 — a sane first paint before measurement.
+  const [scale, setScale] = useState(0.82);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      const w = el.clientWidth;
+      if (w > 0) setScale(w / CHAT_DESIGN_WIDTH);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="relative h-full w-full overflow-hidden">
+      <div
+        className="absolute left-0 top-0 origin-top-left"
+        style={{
+          width: `${CHAT_DESIGN_WIDTH}px`,
+          height: `${100 / scale}%`,
+          transform: `scale(${scale})`,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 function BotConversation({ script }: { script: BotScript }) {
   const isWhatsapp = script.platform === "whatsapp";
